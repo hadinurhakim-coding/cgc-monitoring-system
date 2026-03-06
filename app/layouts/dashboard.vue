@@ -14,19 +14,10 @@
       :class="isCollapsed ? 'lg:pl-20' : 'lg:pl-64'"
     >
       <!-- Header -->
-      <DashboardHeader :page-title="pageTitle" />
+      <DashboardHeader />
 
       <!-- Page Content -->
       <main class="flex-1 overflow-y-auto p-4 lg:p-6">
-        <!-- Breadcrumb -->
-        <nav aria-label="Breadcrumb" class="flex items-center gap-1.5 text-sm mb-4">
-          <NuxtLink to="/dashboard" class="text-gray-400 dark:text-gray-500 hover:text-gcg-primary dark:hover:text-gcg-accent transition-colors">
-            Dashboard
-          </NuxtLink>
-          <UIcon name="i-lucide-chevron-right" class="size-3.5 text-gray-400 dark:text-gray-600" />
-          <span class="text-gcg-dark dark:text-white font-medium">{{ pageTitle }}</span>
-        </nav>
-
         <slot />
       </main>
     </div>

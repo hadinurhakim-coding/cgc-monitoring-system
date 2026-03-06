@@ -22,7 +22,13 @@
 
     <!-- Logo -->
     <div class="relative z-10">
-      <span class="text-white text-lg font-bold tracking-wider">LOGO</span>
+      <img
+        src="/images/Logo_PLN.png"
+        alt="Logo PLN"
+        class="h-8 md:h-10 w-auto object-contain"
+        loading="eager"
+        decoding="async"
+      />
     </div>
 
     <!-- Main Text Content -->
