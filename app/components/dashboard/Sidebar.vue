@@ -199,7 +199,38 @@
       </template>
     </nav>
 
-    <div class="mt-auto" />
+    <!-- Settings (bottom) -->
+    <div class="mt-auto pt-4 border-t border-gray-200 dark:border-gray-800">
+      <NuxtLink
+        v-if="!isCollapsed"
+        to="/dashboard/settings"
+        class="flex items-center gap-3 rounded-lg py-2.5 px-4 text-sm transition-colors"
+        :class="
+          activeItem === '/dashboard/settings'
+            ? 'bg-gcg-light dark:bg-white/5 text-gcg-primary dark:text-gcg-accent font-semibold'
+            : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+        "
+        @click="handleSelect('/dashboard/settings')"
+      >
+        <UIcon name="i-lucide-settings" class="size-5" />
+        <span class="truncate">Settings</span>
+      </NuxtLink>
+
+      <UTooltip v-else text="Settings" :popper="{ placement: 'right' }">
+        <NuxtLink
+          to="/dashboard/settings"
+          class="flex items-center justify-center size-11 rounded-lg mx-auto transition-colors"
+          :class="
+            activeItem === '/dashboard/settings'
+              ? 'bg-gcg-light dark:bg-white/5 text-gcg-primary dark:text-gcg-accent'
+              : 'hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-300'
+          "
+          @click="handleSelect('/dashboard/settings')"
+        >
+          <UIcon name="i-lucide-settings" class="size-5" />
+        </NuxtLink>
+      </UTooltip>
+    </div>
   </aside>
 </template>
 
