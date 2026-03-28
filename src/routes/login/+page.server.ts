@@ -66,8 +66,19 @@ export const actions: Actions = {
 
 		if (magicLinkError) {
 			console.error("Magic link send failed:", magicLinkError.message);
+
+			let errorMessage = "Gagal mengirim magic link. Silakan coba lagi.";
+
+			// Handle specific Supabase error messages
+			if (magicLinkError.message.toLowerCase().includes("rate limit")) {
+				errorMessage = "Terlalu banyak permintaan pengiriman email. Silakan tunggu beberapa saat.";
+			} else if (magicLinkError.message) {
+				// Tampilkan pesan error spesifik jika ada (misal dari SMTP)
+				errorMessage = `Gagal mengirim: ${magicLinkError.message}`;
+			}
+
 			return fail(400, {
-				error: "Gagal mengirim magic link. Silakan coba lagi.",
+				error: errorMessage,
 				email
 			});
 		}
