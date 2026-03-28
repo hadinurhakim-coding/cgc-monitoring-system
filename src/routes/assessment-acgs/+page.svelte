@@ -2,16 +2,18 @@
 	import FilterIcon from "@lucide/svelte/icons/filter";
 	import ChevronDownIcon from "@lucide/svelte/icons/chevron-down";
 	import SearchIcon from "@lucide/svelte/icons/search";
+	import PencilLineIcon from "@lucide/svelte/icons/pencil-line";
 	import { goto } from "$app/navigation";
-	import type { PageData } from "./$types.js";
+	import type { ActionData, PageData } from "./$types.js";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import { Separator } from "$lib/components/ui/separator/index.js";
 	import { Button } from "$lib/components/ui/button/index.js";
 	import { Input } from "$lib/components/ui/input/index.js";
+	import * as Sheet from "$lib/components/ui/sheet/index.js";
 	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
 	import AppSidebar from "$lib/components/app-sidebar.svelte";
 
-	let { data }: { data: PageData } = $props();
+	let { data, form }: { data: PageData; form: ActionData } = $props();
 
 	const currentYear = new Date().getFullYear();
 	const yearsBack = 75;
@@ -22,6 +24,15 @@
 	let yearSearchQuery = $state("");
 	let rowsPerPage = $state(25);
 	let currentPage = $state(1);
+	let editorOpen = $state(false);
+	let editingQuestionCode = $state("");
+	let editingQuestionEn = $state("");
+	let editingQuestionId = $state("");
+	let implementationDraft = $state("");
+	let evidenceDraft = $state("");
+	let recommendationDraft = $state("");
+	let statusDraft = $state<"yes" | "no" | "na" | "">("");
+	let existingEvidence = $state("");
 	const rowsPerPageOptions = [10, 25, 50];
 
 	const filteredYears = $derived.by(() => {
@@ -31,6 +42,7 @@
 	});
 
 	const partRows = $derived(data.parts);
+	const answersByCode = $derived(data.answersByCode ?? {});
 	const flattenedQuestions = $derived.by(() => {
 		const rows: Array<{
 			partCode: string;
@@ -42,11 +54,23 @@
 			questionCode: string;
 			questionEn: string;
 			questionId: string;
+			answer: {
+				implementation: string;
+				evidence: string;
+				status: "yes" | "no" | "na" | null;
+				recommendation: string;
+			};
 		}> = [];
 
 		for (const part of partRows) {
 			for (const section of part.sections) {
 				for (const question of section.questions) {
+					const answer = answersByCode[question.code] ?? {
+						implementation: "",
+						evidence: "",
+						status: null,
+						recommendation: ""
+					};
 					rows.push({
 						partCode: part.code,
 						partTitleEn: part.title_en,
@@ -56,7 +80,8 @@
 						sectionTitleId: section.title_id,
 						questionCode: question.code,
 						questionEn: question.question_en,
-						questionId: question.question_id
+						questionId: question.question_id,
+						answer
 					});
 				}
 			}
@@ -81,7 +106,17 @@
 					code: string;
 					title_en: string;
 					title_id: string;
-					questions: Array<{ code: string; question_en: string; question_id: string }>;
+					questions: Array<{
+						code: string;
+						question_en: string;
+						question_id: string;
+						answer: {
+							implementation: string;
+							evidence: string;
+							status: "yes" | "no" | "na" | null;
+							recommendation: string;
+						};
+					}>;
 				}>;
 			}
 		>();
@@ -112,7 +147,8 @@
 			section.questions.push({
 				code: row.questionCode,
 				question_en: row.questionEn,
-				question_id: row.questionId
+				question_id: row.questionId,
+				answer: row.answer
 			});
 		}
 
@@ -156,6 +192,35 @@
 		if (!Number.isFinite(value)) return;
 		rowsPerPage = value;
 		currentPage = 1;
+	}
+
+	function openEditor(question: {
+		code: string;
+		question_en: string;
+		question_id: string;
+		answer: {
+			implementation: string;
+			evidence: string;
+			status: "yes" | "no" | "na" | null;
+			recommendation: string;
+		};
+	}) {
+		editingQuestionCode = question.code;
+		editingQuestionEn = question.question_en;
+		editingQuestionId = question.question_id;
+		implementationDraft = question.answer.implementation;
+		evidenceDraft = question.answer.evidence;
+		existingEvidence = question.answer.evidence;
+		recommendationDraft = question.answer.recommendation;
+		statusDraft = question.answer.status ?? "";
+		editorOpen = true;
+	}
+
+	function getStatusLabel(status: "yes" | "no" | "na" | null) {
+		if (status === "yes") return "YES";
+		if (status === "no") return "NO";
+		if (status === "na") return "N/A";
+		return "-";
 	}
 </script>
 
@@ -287,14 +352,46 @@
 											<td class="border border-slate-900 p-2 font-semibold text-[#0082ca]">
 												{question.code}
 											</td>
-											<td class="border border-slate-900 p-2 leading-6">
+											<td class="border border-slate-900 p-2 leading-6 align-top">
 												<div class="text-black">{question.question_en}</div>
 												<div class="mt-2 text-[#6d9cc5]">{question.question_id}</div>
 											</td>
-											<td class="border border-slate-900 p-2"></td>
-											<td class="border border-slate-900 p-2"></td>
-											<td class="border border-slate-900 p-2"></td>
-											<td class="border border-slate-900 p-2"></td>
+											<td class="border border-slate-900 p-1.5 align-top">
+												<button
+													type="button"
+													class="hover:bg-muted/40 flex min-h-14 w-full items-start rounded px-2 py-1 text-left text-sm"
+													onclick={() => openEditor(question)}
+												>
+													{question.answer.implementation || "-"}
+												</button>
+											</td>
+											<td class="border border-slate-900 p-1.5 align-top">
+												<button
+													type="button"
+													class="hover:bg-muted/40 flex min-h-14 w-full items-start rounded px-2 py-1 text-left text-sm break-all"
+													onclick={() => openEditor(question)}
+												>
+													{question.answer.evidence || "-"}
+												</button>
+											</td>
+											<td class="border border-slate-900 p-1.5 align-top">
+												<button
+													type="button"
+													class="hover:bg-muted/40 flex min-h-14 w-full items-center rounded px-2 py-1 text-left text-sm font-medium"
+													onclick={() => openEditor(question)}
+												>
+													{getStatusLabel(question.answer.status)}
+												</button>
+											</td>
+											<td class="border border-slate-900 p-1.5 align-top">
+												<button
+													type="button"
+													class="hover:bg-muted/40 flex min-h-14 w-full items-start rounded px-2 py-1 text-left text-sm"
+													onclick={() => openEditor(question)}
+												>
+													{question.answer.recommendation || "-"}
+												</button>
+											</td>
 										</tr>
 									{/each}
 								{/each}
@@ -345,3 +442,94 @@
 		</main>
 	</Sidebar.Inset>
 </Sidebar.Provider>
+
+<Sheet.Root bind:open={editorOpen}>
+	<Sheet.Content side="right" class="w-full sm:max-w-xl">
+		<Sheet.Header>
+			<Sheet.Title class="flex items-center gap-2">
+				<PencilLineIcon class="size-4" />
+				Input Penilaian {editingQuestionCode}
+			</Sheet.Title>
+			<Sheet.Description>
+				<div class="text-black">{editingQuestionEn}</div>
+				<div class="mt-1 text-[#6d9cc5]">{editingQuestionId}</div>
+			</Sheet.Description>
+		</Sheet.Header>
+
+		<form method="POST" action="?/saveAnswer" enctype="multipart/form-data" class="space-y-4 px-6">
+			<input type="hidden" name="year" value={selectedYear} />
+			<input type="hidden" name="question_code" value={editingQuestionCode} />
+			<input type="hidden" name="existing_evidence" value={existingEvidence} />
+
+			<div class="space-y-1">
+				<label for="implementation" class="text-sm font-medium">IMPLEMENTASI</label>
+				<textarea
+					id="implementation"
+					name="implementation"
+					class="border-input bg-background min-h-24 w-full rounded-md border px-3 py-2 text-sm"
+					bind:value={implementationDraft}
+				></textarea>
+			</div>
+
+			<div class="space-y-1">
+				<label for="evidence_note" class="text-sm font-medium">EVIDENCE (catatan/link/path)</label>
+				<textarea
+					id="evidence_note"
+					name="evidence_note"
+					class="border-input bg-background min-h-20 w-full rounded-md border px-3 py-2 text-sm"
+					bind:value={evidenceDraft}
+				></textarea>
+			</div>
+
+			<div class="space-y-1">
+				<label for="evidence_file" class="text-sm font-medium">Upload Evidence File (maks 15 MB)</label>
+				<input
+					id="evidence_file"
+					name="evidence_file"
+					type="file"
+					accept=".pdf,.png,.jpg,.jpeg,.webp"
+					class="border-input bg-background h-10 w-full rounded-md border px-3 py-2 text-sm"
+				/>
+				<p class="text-muted-foreground text-xs">
+					File akan disimpan di bucket <strong>gcg-evidance</strong>.
+				</p>
+			</div>
+
+			<div class="space-y-1">
+				<label for="status" class="text-sm font-medium">STATUS YES OR NO</label>
+				<select
+					id="status"
+					name="status"
+					class="border-input bg-background h-10 w-full rounded-md border px-3 py-2 text-sm"
+					bind:value={statusDraft}
+				>
+					<option value="">Pilih status</option>
+					<option value="yes">YES</option>
+					<option value="no">NO</option>
+					<option value="na">N/A</option>
+				</select>
+			</div>
+
+			<div class="space-y-1">
+				<label for="recommendation" class="text-sm font-medium">REKOMENDASI</label>
+				<textarea
+					id="recommendation"
+					name="recommendation"
+					class="border-input bg-background min-h-24 w-full rounded-md border px-3 py-2 text-sm"
+					bind:value={recommendationDraft}
+				></textarea>
+			</div>
+
+			{#if form?.error}
+				<p class="text-sm text-red-600">{form.error}</p>
+			{/if}
+
+			<Sheet.Footer class="px-0 pb-0">
+				<div class="flex items-center justify-end gap-2">
+					<Button type="button" variant="outline" onclick={() => (editorOpen = false)}>Batal</Button>
+					<Button type="submit">Simpan</Button>
+				</div>
+			</Sheet.Footer>
+		</form>
+	</Sheet.Content>
+</Sheet.Root>
