@@ -1,30 +1,19 @@
 import { fail } from "@sveltejs/kit";
-import { createClient } from "@supabase/supabase-js";
-import {
-	SUPABASE_ANON_KEY,
-	SUPABASE_SERVICE_ROLE_KEY,
-	SUPABASE_URL
-} from "$env/static/private";
+import { createAdminServerClient, createAnonServerClient } from "$lib/server/auth.js";
 import type { Actions } from "./$types.js";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const adminClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
-	auth: {
-		autoRefreshToken: false,
-		persistSession: false
-	}
-});
-
-const authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-	auth: {
-		autoRefreshToken: false,
-		persistSession: false
-	}
-});
+const adminClient = createAdminServerClient();
+const authClient = createAnonServerClient();
 
 export const actions: Actions = {
 	default: async ({ request, url }) => {
+		const redirectTo = url.searchParams.get("redirectTo");
+		const nextPath =
+			redirectTo && redirectTo.startsWith("/") && !redirectTo.startsWith("//")
+				? redirectTo
+				: "/dashboard";
 		const formData = await request.formData();
 		const rawEmail = formData.get("email");
 		const email = typeof rawEmail === "string" ? rawEmail.trim().toLowerCase() : "";
@@ -59,7 +48,7 @@ export const actions: Actions = {
 		const { error: magicLinkError } = await authClient.auth.signInWithOtp({
 			email,
 			options: {
-				emailRedirectTo: `${url.origin}/`,
+				emailRedirectTo: `${url.origin}/auth/callback?next=${encodeURIComponent(nextPath)}`,
 				shouldCreateUser: false
 			}
 		});

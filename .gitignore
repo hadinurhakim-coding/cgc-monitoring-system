@@ -25,3 +25,6 @@ vite.config.ts.timestamp-*
 
 # Supabase local temp cache
 supabase/.temp
+
+# Cursor local plans/settings
+.cursor

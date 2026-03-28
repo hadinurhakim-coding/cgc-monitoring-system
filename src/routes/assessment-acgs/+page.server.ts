@@ -1,6 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { randomUUID } from "node:crypto";
 import { fail } from "@sveltejs/kit";
+import { redirect } from "@sveltejs/kit";
 import { SUPABASE_SERVICE_ROLE_KEY, SUPABASE_URL } from "$env/static/private";
 import type { Actions, PageServerLoad } from "./$types.js";
 
@@ -45,8 +46,18 @@ type AnswerView = {
 
 const MAX_EVIDENCE_BYTES = 15 * 1024 * 1024;
 const EVIDENCE_BUCKET = "gcg-evidance";
+const ALLOWED_EVIDENCE_MIME = new Set(["application/pdf", "image/png", "image/jpeg", "image/jpg", "image/webp"]);
 
-export const load: PageServerLoad = async ({ url }) => {
+function getDivisionFilter(divisionId: string | null) {
+	if (divisionId) return { key: "eq", value: divisionId } as const;
+	return { key: "is", value: null } as const;
+}
+
+export const load: PageServerLoad = async ({ url, locals }) => {
+	if (!locals.auth.isAuthenticated) {
+		throw redirect(303, "/login");
+	}
+
 	const selectedYearParam = Number(url.searchParams.get("year"));
 	const currentYear = new Date().getFullYear();
 	const selectedYear = Number.isFinite(selectedYearParam) ? selectedYearParam : currentYear;
@@ -108,14 +119,18 @@ export const load: PageServerLoad = async ({ url }) => {
 	}));
 
 	let answersByCode: Record<string, AnswerView> = {};
-	const { data: assessment } = await adminClient
+	const divisionFilter = getDivisionFilter(locals.auth.divisionId);
+	let assessmentQuery = adminClient
 		.from("acgs_assessments")
 		.select("id")
 		.eq("year", selectedYear)
-		.is("division_id", null)
 		.order("created_at", { ascending: true })
-		.limit(1)
-		.maybeSingle();
+		.limit(1);
+	assessmentQuery =
+		divisionFilter.key === "eq"
+			? assessmentQuery.eq("division_id", divisionFilter.value)
+			: assessmentQuery.is("division_id", divisionFilter.value);
+	const { data: assessment } = await assessmentQuery.maybeSingle();
 
 	if (assessment?.id) {
 		const { data: answers } = await adminClient
@@ -146,7 +161,13 @@ export const load: PageServerLoad = async ({ url }) => {
 	return {
 		selectedYear,
 		parts: normalizedParts,
-		answersByCode
+		answersByCode,
+		authUser: {
+			id: locals.auth.userId,
+			email: locals.auth.email,
+			role: locals.auth.role,
+			divisionId: locals.auth.divisionId
+		}
 	};
 };
 
@@ -169,7 +190,11 @@ async function ensureEvidenceBucket() {
 }
 
 export const actions: Actions = {
-	saveAnswer: async ({ request }) => {
+	saveAnswer: async ({ request, locals }) => {
+		if (!locals.auth.isAuthenticated || !locals.auth.userId) {
+			return fail(401, { error: "Sesi login tidak valid. Silakan login ulang." });
+		}
+
 		const formData = await request.formData();
 		const year = Number(formData.get("year"));
 		const questionCode = String(formData.get("question_code") ?? "").trim();
@@ -189,11 +214,22 @@ export const actions: Actions = {
 		}
 
 		const status = rawStatus === "yes" || rawStatus === "no" || rawStatus === "na" ? rawStatus : null;
+		if (!status) {
+			return fail(400, { error: "Status wajib diisi (YES/NO/N/A)." });
+		}
+
+		if (!implementation) {
+			return fail(400, { error: "Kolom implementasi wajib diisi." });
+		}
+
 		let uploadedPath = "";
 
 		if (file instanceof File && file.size > 0) {
 			if (file.size > MAX_EVIDENCE_BYTES) {
 				return fail(400, { error: "Ukuran file bukti maksimal 15 MB." });
+			}
+			if (file.type && !ALLOWED_EVIDENCE_MIME.has(file.type)) {
+				return fail(400, { error: "Format file tidak didukung. Gunakan PDF/JPG/PNG/WEBP." });
 			}
 
 			await ensureEvidenceBucket();
@@ -227,14 +263,18 @@ export const actions: Actions = {
 		}
 
 		let assessmentId = "";
-		const { data: existingAssessment } = await adminClient
+		const divisionFilter = getDivisionFilter(locals.auth.divisionId);
+		let existingAssessmentQuery = adminClient
 			.from("acgs_assessments")
 			.select("id")
 			.eq("year", year)
-			.is("division_id", null)
 			.order("created_at", { ascending: true })
-			.limit(1)
-			.maybeSingle();
+			.limit(1);
+		existingAssessmentQuery =
+			divisionFilter.key === "eq"
+				? existingAssessmentQuery.eq("division_id", divisionFilter.value)
+				: existingAssessmentQuery.is("division_id", divisionFilter.value);
+		const { data: existingAssessment } = await existingAssessmentQuery.maybeSingle();
 		if (existingAssessment?.id) {
 			assessmentId = existingAssessment.id;
 		} else {
@@ -242,8 +282,10 @@ export const actions: Actions = {
 				.from("acgs_assessments")
 				.insert({
 					year,
-					division_id: null,
-					status: "draft"
+					division_id: locals.auth.divisionId,
+					status: "draft",
+					created_by: locals.auth.userId,
+					updated_by: locals.auth.userId
 				})
 				.select("id")
 				.single();
@@ -259,6 +301,13 @@ export const actions: Actions = {
 			finalEvidence = evidenceNote ? `${evidenceNote}\n[FILE] ${uploadedPath}` : `[FILE] ${uploadedPath}`;
 		}
 
+		const { data: existingAnswer } = await adminClient
+			.from("acgs_assessment_answers")
+			.select("id")
+			.eq("assessment_id", assessmentId)
+			.eq("question_id", question.id)
+			.maybeSingle();
+
 		const { error: upsertError } = await adminClient.from("acgs_assessment_answers").upsert(
 			{
 				assessment_id: assessmentId,
@@ -266,7 +315,8 @@ export const actions: Actions = {
 				implementation,
 				evidence: finalEvidence,
 				status,
-				recommendation
+				recommendation,
+				updated_by: locals.auth.userId
 			},
 			{ onConflict: "assessment_id,question_id" }
 		);
@@ -276,6 +326,12 @@ export const actions: Actions = {
 			return fail(500, { error: "Gagal menyimpan jawaban." });
 		}
 
-		return { success: true, questionCode };
+		return {
+			success: true,
+			questionCode,
+			actionType: existingAnswer?.id ? "update" : "create",
+			message: existingAnswer?.id ? "Nilai berhasil diperbarui." : "Nilai berhasil disimpan.",
+			eventId: randomUUID()
+		};
 	}
 };

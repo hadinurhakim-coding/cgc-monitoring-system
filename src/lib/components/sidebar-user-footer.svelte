@@ -76,7 +76,7 @@
 							</DropdownMenu.Item>
 							<DropdownMenu.Item variant="destructive" class="cursor-pointer rounded-lg px-3 py-2.5">
 								{#snippet child({ props })}
-									<a href={resolve("/login")} class="flex w-full items-center gap-2" {...props}>
+									<a href={resolve("/logout")} class="flex w-full items-center gap-2" {...props}>
 										<LogOutIcon class="size-4" />
 										<span>Logout</span>
 									</a>
