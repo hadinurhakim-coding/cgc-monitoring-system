@@ -50,7 +50,10 @@
 <Sidebar.Root collapsible="icon" {...restProps}>
 	<Sidebar.Header>
 		<Sidebar.Group>
-			<Sidebar.GroupLabel>GCG Monitoring</Sidebar.GroupLabel>
+			<Sidebar.GroupLabel class="flex items-center gap-2 px-1">
+				<img src="/Logo_PLN.png" alt="PLN" class="h-5 w-auto" />
+				<span>GCG Monitoring</span>
+			</Sidebar.GroupLabel>
 		</Sidebar.Group>
 	</Sidebar.Header>
 	<Sidebar.Content>

@@ -33,6 +33,8 @@
 		"svelte"
 	],
 	"dependencies": {
+		"@dotlottie/player-component": "^2.7.12",
+		"@lottiefiles/dotlottie-svelte": "^0.9.9",
 		"@supabase/supabase-js": "^2.100.1"
 	}
 }

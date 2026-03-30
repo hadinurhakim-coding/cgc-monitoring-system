@@ -2,8 +2,16 @@
 	import { resolve } from "$app/paths";
 	import ShieldCheckIcon from "@lucide/svelte/icons/shield-check";
 	import LoginForm from "$lib/components/login-form.svelte";
+	import { onMount } from "svelte";
 
 	const { form } = $props();
+
+	let LottieComponent = $state<typeof import("@lottiefiles/dotlottie-svelte").DotLottieSvelte>();
+
+	onMount(async () => {
+		const mod = await import("@lottiefiles/dotlottie-svelte");
+		LottieComponent = mod.DotLottieSvelte;
+	});
 </script>
 
 <div class="grid min-h-svh lg:grid-cols-2">
@@ -20,18 +28,22 @@
 		</div>
 		<div class="flex flex-1 items-center justify-center">
 			<div class="w-full max-w-xs">
-				<LoginForm form={form} />
+				<LoginForm {form} />
 			</div>
 		</div>
 	</div>
-	<div class="bg-muted relative hidden lg:block">
-		<img
-			src="/gcg-login-image-optimized.jpg"
-			alt="GCG Monitoring System"
-			loading="lazy"
-			decoding="async"
-			fetchpriority="low"
-			class="absolute inset-0 h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
-		/>
+	<div class="bg-muted relative hidden lg:block overflow-hidden">
+		<div
+			class="absolute inset-0 h-full w-full [&>canvas]:h-full [&>canvas]:w-full [&>canvas]:object-cover"
+		>
+			{#if LottieComponent}
+				<LottieComponent
+					src="/gcg-login-anim.lottie"
+					loop
+					autoplay
+					backgroundColor="transparent"
+				/>
+			{/if}
+		</div>
 	</div>
 </div>
