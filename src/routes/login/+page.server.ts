@@ -5,12 +5,11 @@ import {
 	ACCESS_TOKEN_COOKIE,
 	REFRESH_TOKEN_COOKIE
 } from "$lib/server/auth.js";
+import { isSafeRedirect } from "$lib/server/safe-redirect.js";
+import { checkRateLimit } from "$lib/server/rate-limit.js";
 import type { Actions } from "./$types.js";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-const adminClient = createAdminServerClient();
-const authClient = createAnonServerClient();
 
 export const actions: Actions = {
 	sendPin: async ({ request }) => {
@@ -22,6 +21,20 @@ export const actions: Actions = {
 		if (!email || !EMAIL_REGEX.test(email)) {
 			return fail(400, { error: "Format email tidak valid.", email, step: "email" });
 		}
+
+		// FIX: CRIT-06 — Rate limiting untuk mencegah email flooding / OTP fatigue
+		const { allowed: sendAllowed } = checkRateLimit(`otp-send:${email}`, 5, 15 * 60 * 1000);
+		if (!sendAllowed) {
+			return fail(429, {
+				error: "Terlalu banyak permintaan. Coba lagi dalam 15 menit.",
+				email,
+				step: "email"
+			});
+		}
+
+		// FIX: CRIT-02 — Client dibuat per-request, bukan module-level singleton
+		const adminClient = createAdminServerClient();
+		const authClient = createAnonServerClient();
 
 		const { data: registeredUser, error: lookupError } = await adminClient
 			.from("users")
@@ -59,12 +72,26 @@ export const actions: Actions = {
 		const email = String(formData.get("email") || "").trim().toLowerCase();
 		const pin = String(formData.get("pin") || "").replace(/\D/g, "");
 
-		const redirectTo = url.searchParams.get("redirectTo");
-		const nextPath = redirectTo && redirectTo.startsWith("/") && !redirectTo.startsWith("//") ? redirectTo : "/dashboard";
+		// FIX: CRIT-04 — Validasi redirect yang ketat (whitelist prefix)
+		const nextPath = isSafeRedirect(url.searchParams.get("redirectTo"));
+
+		// FIX: CRIT-06 — Rate limiting untuk mencegah brute-force OTP
+		const { allowed: verifyAllowed } = checkRateLimit(`otp-verify:${email}`, 10, 15 * 60 * 1000);
+		if (!verifyAllowed) {
+			return fail(429, {
+				error: "Terlalu banyak percobaan. Coba lagi dalam 15 menit.",
+				email,
+				step: "pin"
+			});
+		}
 
 		if (!pin || !/^\d{6,8}$/.test(pin)) {
 			return fail(400, { error: "PIN harus terdiri dari 6–8 digit angka.", email, step: "pin" });
 		}
+
+		// FIX: CRIT-02 — Client dibuat per-request, bukan module-level singleton
+		const adminClient = createAdminServerClient();
+		const authClient = createAnonServerClient();
 
 		const { data, error } = await authClient.auth.verifyOtp({
 			email,
@@ -82,8 +109,9 @@ export const actions: Actions = {
 		cookies.set(ACCESS_TOKEN_COOKIE, data.session.access_token, { ...cookieBase, maxAge: 60 * 60 });
 		cookies.set(REFRESH_TOKEN_COOKIE, data.session.refresh_token, { ...cookieBase, maxAge: 60 * 60 * 24 * 30 });
 
-		const forwardedFor = request.headers.get("x-forwarded-for");
-		const ip = forwardedFor?.split(",")[0]?.trim() || getClientAddress();
+		// FIX: CRIT-05 — Gunakan getClientAddress() sebagai primary source
+		// x-forwarded-for bisa dipalsukan oleh client tanpa trusted proxy configuration
+		const ip = getClientAddress();
 		const userAgent = request.headers.get("user-agent");
 
 		await adminClient.from("auth_login_audits").upsert(

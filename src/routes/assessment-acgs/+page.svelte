@@ -19,9 +19,7 @@
 	let { data, form }: { data: PageData; form: ActionData } = $props();
 
 	const currentYear = new Date().getFullYear();
-	const yearsBack = 75;
-	const baseYear = currentYear - yearsBack;
-	const years = Array.from({ length: currentYear - baseYear + 1 }, (_, i) => currentYear - i);
+	const years = Array.from({ length: currentYear - 2000 + 1 }, (_, i) => currentYear - i);
 	const rowsPerPageOptions = [10, 25, 50];
 
 	let selectedYear = $state(new Date().getFullYear());

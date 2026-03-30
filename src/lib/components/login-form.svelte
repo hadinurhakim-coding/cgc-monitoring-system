@@ -1,5 +1,6 @@
 <script lang="ts">
-	import { enhance, type SubmitFunction } from "$app/forms";
+	import { enhance } from "$app/forms";
+	import type { SubmitFunction } from "@sveltejs/kit";
 	import { FieldGroup, Field, FieldLabel } from "$lib/components/ui/field/index.js";
 	import { Input } from "$lib/components/ui/input/index.js";
 	import { Button } from "$lib/components/ui/button/index.js";
@@ -10,7 +11,7 @@
 		error?: string;
 		success?: string;
 		email?: string;
-		step?: "email" | "pin";
+		step?: string;
 	} | null;
 
 	let {
@@ -106,7 +107,7 @@
 					inputmode="numeric"
 					placeholder="00000000"
 					autocomplete="one-time-code"
-					maxlength={16}
+					maxlength={8}
 					required
 					disabled={isSubmitting}
 					class="text-center text-2xl tracking-[0.35em] font-semibold"

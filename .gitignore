@@ -28,3 +28,7 @@ supabase/.temp
 
 # Cursor local plans/settings
 .cursor
+
+# Cleanup
+resolve_conflict*.cjs
+resolve_conflict*.js

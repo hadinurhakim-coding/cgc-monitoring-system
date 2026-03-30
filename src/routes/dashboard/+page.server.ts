@@ -1,17 +1,8 @@
-import { redirect } from "@sveltejs/kit";
 import type { PageServerLoad } from "./$types.js";
 
-export const load: PageServerLoad = async ({ locals }) => {
-	if (!locals.auth.isAuthenticated) {
-		throw redirect(303, "/login?redirectTo=%2Fdashboard");
-	}
-
-	return {
-		authUser: {
-			id: locals.auth.userId,
-			email: locals.auth.email,
-			role: locals.auth.role,
-			divisionId: locals.auth.divisionId
-		}
-	};
+// FIX: ARCH-05 & ARCH-06
+// - Redundant auth check dihapus (sudah dihandle hooks.server.ts)
+// - Redundant authUser return dihapus (sudah dihandle +layout.server.ts)
+export const load: PageServerLoad = async () => {
+	return {};
 };

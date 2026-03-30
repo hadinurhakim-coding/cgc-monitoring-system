@@ -10,7 +10,7 @@
 
 <div class="pointer-events-none fixed inset-x-0 bottom-4 z-[100] flex justify-center px-4">
 	<div class="flex w-full max-w-md flex-col gap-2">
-		{#each $toastStore as toast (toast.id)}
+		{#each toastStore.items as toast (toast.id)}
 			<div class="pointer-events-auto rounded-md border bg-white px-3 py-2 shadow-sm {toneClass(toast.type)}">
 				<div class="flex items-start justify-between gap-2">
 					<p class="text-sm">{toast.message}</p>
