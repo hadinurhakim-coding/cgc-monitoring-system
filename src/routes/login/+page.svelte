@@ -3,19 +3,39 @@
 	import ShieldCheckIcon from "@lucide/svelte/icons/shield-check";
 	import LoginForm from "$lib/components/login-form.svelte";
 	import { onMount } from "svelte";
+	import { fade, fly } from "svelte/transition";
 
 	const { form } = $props();
 
-	let LottieComponent = $state<typeof import("@lottiefiles/dotlottie-svelte").DotLottieSvelte>();
+	let LottieComponent =
+		$state<
+			typeof import("@lottiefiles/dotlottie-svelte").DotLottieSvelte
+		>();
+	let lottieLoadStarted = $state(false);
 
-	onMount(async () => {
-		const mod = await import("@lottiefiles/dotlottie-svelte");
-		LottieComponent = mod.DotLottieSvelte;
+	onMount(() => {
+		const mq = window.matchMedia("(min-width: 1024px)");
+
+		const tryLoadLottie = () => {
+			if (!mq.matches || lottieLoadStarted) return;
+			lottieLoadStarted = true;
+			requestAnimationFrame(() => {
+				requestAnimationFrame(() => {
+					void import("@lottiefiles/dotlottie-svelte").then((mod) => {
+						LottieComponent = mod.DotLottieSvelte;
+					});
+				});
+			});
+		};
+
+		tryLoadLottie();
+		mq.addEventListener("change", tryLoadLottie);
+		return () => mq.removeEventListener("change", tryLoadLottie);
 	});
 </script>
 
-<div class="grid min-h-svh lg:grid-cols-2">
-	<div class="flex flex-col gap-4 p-6 md:p-10">
+<div in:fade={{ duration: 600 }} class="grid h-screen w-full lg:grid-cols-2">
+	<div in:fly={{ y: 30, duration: 800, delay: 150 }} class="flex flex-col gap-4 p-6 md:p-10 bg-[#fefcf7]">
 		<div class="flex justify-center gap-2 md:justify-start">
 			<a href={resolve("/")} class="flex items-center gap-2 font-medium">
 				<div
@@ -32,17 +52,19 @@
 			</div>
 		</div>
 	</div>
-	<div class="bg-muted relative hidden lg:block overflow-hidden">
+	<div in:fade={{ duration: 1000, delay: 350 }} class="bg-[#fefcf7] relative hidden lg:block overflow-hidden">
 		<div
 			class="absolute inset-0 h-full w-full [&>canvas]:h-full [&>canvas]:w-full [&>canvas]:object-cover"
 		>
 			{#if LottieComponent}
-				<LottieComponent
-					src="/gcg-login-anim.lottie"
-					loop
-					autoplay
-					backgroundColor="transparent"
-				/>
+				<div class="h-full w-full">
+					<LottieComponent
+						src="/gcg-login-anim.json"
+						loop
+						autoplay
+						backgroundColor="transparent"
+					/>
+				</div>
 			{/if}
 		</div>
 	</div>
