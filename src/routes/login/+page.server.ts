@@ -5,20 +5,26 @@ import {
 	SUPABASE_SERVICE_ROLE_KEY,
 	SUPABASE_URL
 } from "$env/static/private";
-import type { Actions } from "./$types.js";
+import type { Actions, PageServerLoad } from "./$types.js";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const adminClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
 const authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-// Assuming a standard way to set cookies since $lib/server/auth doesn't exist
-// based on previous file exploration.
 const ACCESS_TOKEN_COOKIE = "sb-access-token";
 const REFRESH_TOKEN_COOKIE = "sb-refresh-token";
+const RECENT_PIN_COOKIE = "gcg-recent-pin";
+
+export const load: PageServerLoad = async ({ cookies }) => {
+	const recentEmail = cookies.get(RECENT_PIN_COOKIE);
+	return {
+		recentEmail
+	};
+};
 
 export const actions: Actions = {
-	sendPin: async ({ request, url }) => {
+	sendPin: async ({ request, url, cookies }) => {
 		const redirectTo = url.searchParams.get("redirectTo");
 		const nextPath =
 			redirectTo && redirectTo.startsWith("/") && !redirectTo.startsWith("//")
@@ -83,6 +89,16 @@ export const actions: Actions = {
 			});
 		}
 
+		// Save the email in a cookie for 1 hour to prevent resending unnecessarily
+		const secure = process.env.NODE_ENV === "production";
+		cookies.set(RECENT_PIN_COOKIE, email, {
+			path: "/",
+			httpOnly: true,
+			secure,
+			sameSite: "lax",
+			maxAge: 60 * 60 // 1 hour
+		});
+
 		return {
 			success: "PIN berhasil dikirim. Silakan cek email Anda.",
 			email,
@@ -116,6 +132,9 @@ export const actions: Actions = {
 
 		cookies.set(ACCESS_TOKEN_COOKIE, data.session.access_token, { ...cookieBase, maxAge: 60 * 60 });
 		cookies.set(REFRESH_TOKEN_COOKIE, data.session.refresh_token, { ...cookieBase, maxAge: 60 * 60 * 24 * 30 });
+
+		// Remove the recent pin cookie after successful login
+		cookies.delete(RECENT_PIN_COOKIE, { path: "/" });
 
 		// Try to record login audit if table exists, ignore if not
 		try {

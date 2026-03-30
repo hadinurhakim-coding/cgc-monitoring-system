@@ -3,7 +3,7 @@
 	import ShieldCheckIcon from "@lucide/svelte/icons/shield-check";
 	import LoginForm from "$lib/components/login-form.svelte";
 
-	const { form } = $props();
+	const { data, form } = $props();
 </script>
 
 <div class="grid min-h-svh lg:grid-cols-2">
@@ -20,7 +20,7 @@
 		</div>
 		<div class="flex flex-1 items-center justify-center">
 			<div class="w-full max-w-xs">
-				<LoginForm form={form} />
+				<LoginForm form={form} recentEmail={data.recentEmail} />
 			</div>
 		</div>
 	</div>
