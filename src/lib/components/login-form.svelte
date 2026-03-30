@@ -28,6 +28,24 @@
 
 	// Menentukan apakah saat ini sedang dalam mode input PIN
 	const isPinStep = $derived(form?.step === "pin" || forcePinStep);
+
+	let isSubmitting = $state(false);
+	let pinValue = $state("");
+
+	const handleSubmit: SubmitFunction = () => {
+		isSubmitting = true;
+		return async ({ update }) => {
+			await update();
+			isSubmitting = false;
+		};
+	};
+
+	const onPinInput = (e: Event) => {
+		const target = e.target as HTMLInputElement;
+		// Hanya izinkan angka
+		target.value = target.value.replace(/[^0-9]/g, "");
+		pinValue = target.value;
+	};
 </script>
 
 <form

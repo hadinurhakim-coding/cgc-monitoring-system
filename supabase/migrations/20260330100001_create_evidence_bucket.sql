@@ -1,7 +1,7 @@
 -- ============================================================================
 -- FASE 6: CREATE EVIDENCE BUCKET MIGRATION
 -- ============================================================================
--- FIX: ARCH-02 — ensureEvidenceBucket() sebelumnya dipanggil di runtime 
+-- FIX: ARCH-02 — ensureEvidenceBucket() sebelumnya dipanggil di runtime
 -- di setiap request upload file. Ini membuang ~50ms per upload dan merupakan
 -- hak ases yang tidak perlu di production.
 --

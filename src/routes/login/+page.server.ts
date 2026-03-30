@@ -1,19 +1,16 @@
 import { fail, redirect } from "@sveltejs/kit";
 import { dev } from "$app/environment";
-import {
-	SUPABASE_ANON_KEY,
-	SUPABASE_SERVICE_ROLE_KEY,
-	SUPABASE_URL
-} from "$env/static/private";
 import type { Actions, PageServerLoad } from "./$types.js";
+import {
+	ACCESS_TOKEN_COOKIE,
+	REFRESH_TOKEN_COOKIE,
+	createAdminServerClient,
+	createAnonServerClient
+} from "$lib/server/auth.js";
+import { checkRateLimit } from "$lib/server/rate-limit.js";
+import { isSafeRedirect } from "$lib/server/safe-redirect.js";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-const adminClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
-const authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-
-const ACCESS_TOKEN_COOKIE = "sb-access-token";
-const REFRESH_TOKEN_COOKIE = "sb-refresh-token";
 const RECENT_PIN_COOKIE = "gcg-recent-pin";
 
 export const load: PageServerLoad = async ({ cookies }) => {

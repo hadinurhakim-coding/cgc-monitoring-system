@@ -2,7 +2,7 @@
 -- FASE 1: ENABLE ROW LEVEL SECURITY (RLS) PADA SEMUA TABEL
 -- ============================================================================
 -- FIX: CRIT-01 — Semua tabel data utama TIDAK memiliki RLS aktif.
--- 
+--
 -- Tanpa RLS, seluruh data terekspos melalui Supabase anon_key (public key).
 -- Policy-policy yang sudah didefinisikan di migration 20260328164000
 -- adalah DEAD CODE karena RLS belum di-enable. Migration ini mengaktifkan
