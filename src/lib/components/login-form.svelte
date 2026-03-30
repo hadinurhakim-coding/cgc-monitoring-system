@@ -49,7 +49,7 @@
 			<h1 class="text-2xl font-bold">{isPinStep ? "Masukkan PIN" : "Login ke akun Anda"}</h1>
 			<p class="text-muted-foreground text-sm text-balance">
 				{isPinStep
-					? "Masukkan 6 digit kode yang telah kami kirimkan ke email Anda."
+					? "Masukkan 8 digit kode PIN yang telah kami kirimkan ke email Anda."
 					: "Masukkan email Anda dan kami akan mengirimkan PIN aman untuk masuk."}
 			</p>
 		</div>
@@ -87,19 +87,19 @@
 			<input type="hidden" name="email" value={form?.email ?? ""} />
 
 			<Field>
-				<FieldLabel for="pin-{id}">PIN (6 Digit)</FieldLabel>
+				<FieldLabel for="pin-{id}">PIN (8 Digit)</FieldLabel>
 				<Input
 					id="pin-{id}"
 					name="pin"
 					type="text"
 					inputmode="numeric"
-					pattern="[0-9]{6}"
-					placeholder="123456"
+					pattern="[0-9]{8}"
+					placeholder="00000000"
 					autocomplete="one-time-code"
-					maxlength="6"
+					maxlength={8}
 					required
 					disabled={isSubmitting}
-					class="text-center text-2xl tracking-[0.5em] font-semibold"
+					class="text-center text-2xl tracking-[0.35em] font-semibold"
 				/>
 			</Field>
 			<Field>

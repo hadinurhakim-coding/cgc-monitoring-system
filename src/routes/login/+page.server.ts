@@ -62,9 +62,8 @@ export const actions: Actions = {
 		const redirectTo = url.searchParams.get("redirectTo");
 		const nextPath = redirectTo && redirectTo.startsWith("/") && !redirectTo.startsWith("//") ? redirectTo : "/dashboard";
 
-		// Jika PIN salah, kembalikan step: "pin" agar user tetap di halaman input PIN
-		if (!pin || pin.length !== 6) {
-			return fail(400, { error: "PIN harus terdiri dari 6 digit angka.", email, step: "pin" });
+		if (!pin || !/^\d{6,8}$/.test(pin)) {
+			return fail(400, { error: "PIN harus terdiri dari 6–8 digit angka.", email, step: "pin" });
 		}
 
 		const { data, error } = await authClient.auth.verifyOtp({
