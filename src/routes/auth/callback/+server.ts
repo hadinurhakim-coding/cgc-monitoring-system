@@ -1,4 +1,5 @@
 import { redirect } from "@sveltejs/kit";
+import { dev } from "$app/environment";
 import {
 	ACCESS_TOKEN_COOKIE,
 	REFRESH_TOKEN_COOKIE,
@@ -29,7 +30,7 @@ export const GET: RequestHandler = async ({ url, getClientAddress, request, cook
 		throw redirect(303, "/login?error=Gagal+verifikasi+magic+link");
 	}
 
-	const secure = process.env.NODE_ENV === "production";
+	const secure = !dev;
 	const cookieBase = {
 		path: "/",
 		httpOnly: true,

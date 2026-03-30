@@ -1,4 +1,5 @@
 import { redirect, type Handle } from "@sveltejs/kit";
+import { dev } from "$app/environment";
 import {
 	ACCESS_TOKEN_COOKIE,
 	REFRESH_TOKEN_COOKIE,
@@ -21,7 +22,7 @@ function setAuthCookies(
 	accessToken: string,
 	refreshToken: string
 ) {
-	const secure = process.env.NODE_ENV === "production";
+	const secure = !dev;
 	const baseCookie = {
 		path: "/",
 		httpOnly: true,
@@ -50,8 +51,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 		email: null,
 		role: null,
 		divisionId: null,
-		accessToken: null,
-		refreshToken: null,
 		isAuthenticated: false
 	};
 
@@ -87,15 +86,18 @@ export const handle: Handle = async ({ event, resolve }) => {
 				.eq("id", authUser.id)
 				.maybeSingle();
 
-			event.locals.auth = {
-				userId: authUser.id,
-				email: authUser.email ?? null,
-				role: userRow?.role ?? null,
-				divisionId: userRow?.division_id ?? null,
-				accessToken: resolvedAccessToken,
-				refreshToken: resolvedRefreshToken || null,
-				isAuthenticated: true
-			};
+			// FIX: ARCH-09 — Guard user tanpa entry di tabel public.users
+			if (!userRow) {
+				clearAuthCookies(event.cookies);
+			} else {
+				event.locals.auth = {
+					userId: authUser.id,
+					email: authUser.email ?? null,
+					role: userRow.role ?? null,
+					divisionId: userRow.division_id ?? null,
+					isAuthenticated: true
+				};
+			}
 		} else {
 			clearAuthCookies(event.cookies);
 		}

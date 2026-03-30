@@ -1,26 +1,32 @@
 /**
- * FIX: CRIT-06 — In-memory rate limiter untuk OTP endpoints.
+ * FIX: CRIT-06 + CRIT-09 — In-memory rate limiter untuk OTP endpoints.
  *
  * Mencegah:
  * - Brute-force OTP (verifyPin)
  * - Email flooding / OTP fatigue attack (sendPin)
  *
+ * FIX CRIT-09:
+ * - DIHAPUS: setInterval (timer leak di serverless, keep container alive)
+ * - DITAMBAHKAN: MAX_ENTRIES cap (mencegah DoS via memory exhaustion)
+ * - Menggunakan lazy cleanup saat Map penuh
+ *
  * CATATAN: Ini adalah rate limiter single-instance (in-memory).
  * Untuk deployment multi-instance, gunakan solusi distributed (Redis/Upstash).
  */
 
+const MAX_ENTRIES = 10_000;
 const attempts = new Map<string, { count: number; resetAt: number }>();
 
-// Bersihkan entri expired secara periodik (setiap 5 menit)
-const CLEANUP_INTERVAL_MS = 5 * 60 * 1000;
-setInterval(() => {
+/**
+ * Lazy cleanup — hanya dijalankan saat Map mendekati batas.
+ * Menghapus semua entry yang sudah expired.
+ */
+function lazyCleanup() {
 	const now = Date.now();
 	for (const [key, entry] of attempts) {
-		if (now > entry.resetAt) {
-			attempts.delete(key);
-		}
+		if (now > entry.resetAt) attempts.delete(key);
 	}
-}, CLEANUP_INTERVAL_MS);
+}
 
 /**
  * Cek apakah request masih diizinkan berdasarkan rate limit.
@@ -40,6 +46,14 @@ export function checkRateLimit(
 
 	// Entri belum ada atau sudah expired — reset counter
 	if (!entry || now > entry.resetAt) {
+		// Safety valve: jika Map penuh, coba lazy cleanup dulu
+		if (attempts.size >= MAX_ENTRIES) {
+			lazyCleanup();
+			// Jika masih penuh setelah cleanup, tolak untuk mencegah DoS
+			if (attempts.size >= MAX_ENTRIES) {
+				return { allowed: false, retryAfterSeconds: 60 };
+			}
+		}
 		attempts.set(key, { count: 1, resetAt: now + windowMs });
 		return { allowed: true, retryAfterSeconds: 0 };
 	}

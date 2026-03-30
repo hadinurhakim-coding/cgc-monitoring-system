@@ -19,8 +19,8 @@ const ROLE_PERMISSIONS: Record<Exclude<UserRole, null>, Permission[]> = {
  */
 export function hasPermission(role: string | null | undefined, permission: Permission): boolean {
 	if (!role) return false;
-	const r = role as Exclude<UserRole, null>;
-	return ROLE_PERMISSIONS[r]?.includes(permission) ?? false;
+	if (!(role in ROLE_PERMISSIONS)) return false;
+	return ROLE_PERMISSIONS[role as keyof typeof ROLE_PERMISSIONS].includes(permission);
 }
 
 /**

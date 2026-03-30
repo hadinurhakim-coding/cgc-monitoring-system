@@ -9,8 +9,6 @@ declare global {
 				email: string | null;
 				role: string | null;
 				divisionId: string | null;
-				accessToken: string | null;
-				refreshToken: string | null;
 				isAuthenticated: boolean;
 			};
 		}

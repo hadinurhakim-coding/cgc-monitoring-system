@@ -176,7 +176,6 @@ export const actions: Actions = {
 		const questionCode = String(formData.get("question_code") ?? "").trim();
 		const implementation = String(formData.get("implementation") ?? "").trim();
 		const evidenceNote = String(formData.get("evidence_note") ?? "").trim();
-		const existingEvidence = String(formData.get("existing_evidence") ?? "").trim();
 		const recommendation = String(formData.get("recommendation") ?? "").trim();
 		const rawStatus = String(formData.get("status") ?? "").trim().toLowerCase();
 		const file = formData.get("evidence_file");
@@ -270,6 +269,18 @@ export const actions: Actions = {
 				return fail(500, { error: "Gagal membuat data assessment." });
 			}
 			assessmentId = newAssessment.id;
+		}
+
+		// FIX: CRIT-08 — Ambil existing evidence dari DB, bukan dari hidden field client
+		let existingEvidence = "";
+		if (existingAssessment?.id) {
+			const { data: currentAnswer } = await adminClient
+				.from("acgs_assessment_answers")
+				.select("evidence")
+				.eq("assessment_id", assessmentId)
+				.eq("question_id", question.id)
+				.maybeSingle();
+			existingEvidence = currentAnswer?.evidence ?? "";
 		}
 
 		let finalEvidence = evidenceNote || existingEvidence;

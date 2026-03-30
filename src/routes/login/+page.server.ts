@@ -1,4 +1,5 @@
 import { fail, redirect } from "@sveltejs/kit";
+import { dev } from "$app/environment";
 import {
 	createAdminServerClient,
 	createAnonServerClient,
@@ -17,9 +18,9 @@ export const actions: Actions = {
 		const rawEmail = formData.get("email");
 		const email = typeof rawEmail === "string" ? rawEmail.trim().toLowerCase() : "";
 
-		// Jika gagal di tahap email, kembalikan step: "email"
+		// Jika gagal di tahap email, kembalikan step: "email" as const
 		if (!email || !EMAIL_REGEX.test(email)) {
-			return fail(400, { error: "Format email tidak valid.", email, step: "email" });
+			return fail(400, { error: "Format email tidak valid.", email, step: "email" as const });
 		}
 
 		// FIX: CRIT-06 — Rate limiting untuk mencegah email flooding / OTP fatigue
@@ -28,7 +29,7 @@ export const actions: Actions = {
 			return fail(429, {
 				error: "Terlalu banyak permintaan. Coba lagi dalam 15 menit.",
 				email,
-				step: "email"
+				step: "email" as const
 			});
 		}
 
@@ -44,11 +45,11 @@ export const actions: Actions = {
 
 		if (lookupError) {
 			console.error("User lookup failed:", lookupError.message);
-			return fail(500, { error: "Terjadi gangguan sistem. Coba lagi beberapa saat.", email, step: "email" });
+			return fail(500, { error: "Terjadi gangguan sistem. Coba lagi beberapa saat.", email, step: "email" as const });
 		}
 
 		if (!registeredUser) {
-			return fail(404, { error: "Email belum terdaftar. Hubungi administrator.", email, step: "email" });
+			return fail(404, { error: "Email belum terdaftar. Hubungi administrator.", email, step: "email" as const });
 		}
 
 		const { error: otpError } = await authClient.auth.signInWithOtp({
@@ -60,11 +61,11 @@ export const actions: Actions = {
 
 		if (otpError) {
 			console.error("OTP send failed:", otpError.message);
-			return fail(400, { error: "Gagal mengirim PIN. Silakan coba lagi.", email, step: "email" });
+			return fail(400, { error: "Gagal mengirim PIN. Silakan coba lagi.", email, step: "email" as const });
 		}
 
 		// Jika sukses, ubah state menjadi step: "pin" agar UI berubah
-		return { success: "PIN berhasil dikirim. Silakan cek email Anda.", email, step: "pin" };
+		return { success: "PIN berhasil dikirim. Silakan cek email Anda.", email, step: "pin" as const };
 	},
 
 	verifyPin: async ({ request, url, cookies, getClientAddress }) => {
@@ -81,12 +82,12 @@ export const actions: Actions = {
 			return fail(429, {
 				error: "Terlalu banyak percobaan. Coba lagi dalam 15 menit.",
 				email,
-				step: "pin"
+				step: "pin" as const
 			});
 		}
 
 		if (!pin || !/^\d{6,8}$/.test(pin)) {
-			return fail(400, { error: "PIN harus terdiri dari 6–8 digit angka.", email, step: "pin" });
+			return fail(400, { error: "PIN harus terdiri dari 6–8 digit angka.", email, step: "pin" as const });
 		}
 
 		// FIX: CRIT-02 — Client dibuat per-request, bukan module-level singleton
@@ -100,10 +101,10 @@ export const actions: Actions = {
 		});
 
 		if (error || !data.session || !data.user) {
-			return fail(401, { error: "PIN tidak valid atau sudah kedaluwarsa.", email, step: "pin" });
+			return fail(401, { error: "PIN tidak valid atau sudah kedaluwarsa.", email, step: "pin" as const });
 		}
 
-		const secure = process.env.NODE_ENV === "production";
+		const secure = !dev;
 		const cookieBase = { path: "/", httpOnly: true, secure, sameSite: "lax" as const };
 
 		cookies.set(ACCESS_TOKEN_COOKIE, data.session.access_token, { ...cookieBase, maxAge: 60 * 60 });

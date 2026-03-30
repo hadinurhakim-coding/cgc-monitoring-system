@@ -7,7 +7,7 @@
 	import EyeIcon from "@lucide/svelte/icons/eye";
 	import { goto } from "$app/navigation";
 	import type { ActionData, PageData } from "./$types.js";
-	import { toastStore } from "$lib/stores/toast.js";
+	import { toastStore } from "$lib/stores/toast.svelte.js";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import { Separator } from "$lib/components/ui/separator/index.js";
 	import { Button } from "$lib/components/ui/button/index.js";
@@ -337,7 +337,7 @@
 							<DropdownMenu.Label class="px-0 pb-2">Pilih Tahun</DropdownMenu.Label>
 							<div class="relative">
 								<SearchIcon
-									class="text-muted-foreground pointer-events-none absolute start-2.5 top-1/2 size-4 -translate-y-1/2"
+									class="text-muted-foreground pointer-events-none absolute inset-s-2.5 top-1/2 size-4 -translate-y-1/2"
 								/>
 								<Input
 									type="search"
@@ -397,7 +397,7 @@
 									</td>
 									<td class="border border-slate-900 p-2 leading-6">
 										<div class="font-semibold text-black">{part.title_en}</div>
-											<div class="mt-0.5 text-[var(--pln-light-cyan)]">{part.title_id}</div>
+											<div class="mt-0.5 text-(--pln-light-cyan)">{part.title_id}</div>
 									</td>
 									<td class="border border-slate-900 p-2"></td>
 									<td class="border border-slate-900 p-2"></td>
@@ -414,7 +414,7 @@
 										</td>
 										<td class="border border-slate-900 p-2 leading-6">
 											<div class="font-semibold text-black">{section.title_en}</div>
-											<div class="mt-0.5 text-[var(--pln-light-cyan)]">{section.title_id}</div>
+											<div class="mt-0.5 text-(--pln-light-cyan)">{section.title_id}</div>
 										</td>
 										<td class="border border-slate-900 p-2"></td>
 										<td class="border border-slate-900 p-2"></td>
@@ -439,7 +439,7 @@
 											</td>
 											<td class="border border-slate-900 p-2 leading-6 align-top">
 												<div class="text-black">{question.question_en}</div>
-												<div class="mt-2 text-[var(--pln-light-cyan)]">{question.question_id}</div>
+												<div class="mt-2 text-(--pln-light-cyan)">{question.question_id}</div>
 											</td>
 											<td class="border border-slate-900 p-1.5 align-top">
 												<button
@@ -584,7 +584,7 @@
 					{#if !questionTitleCollapsed}
 						<Sheet.Description>
 							<div class="text-black">{editingQuestionEn}</div>
-							<div class="mt-1 text-[var(--pln-light-cyan)]">{editingQuestionId}</div>
+							<div class="mt-1 text-(--pln-light-cyan)">{editingQuestionId}</div>
 						</Sheet.Description>
 					{/if}
 				</div>
@@ -607,7 +607,7 @@
 		<form method="POST" action="?/saveAnswer" enctype="multipart/form-data" class="flex h-full min-h-0 flex-col">
 			<input type="hidden" name="year" value={selectedYear} />
 			<input type="hidden" name="question_code" value={editingQuestionCode} />
-			<input type="hidden" name="existing_evidence" value={existingEvidence} />
+
 
 			<div class="min-h-0 flex-1 space-y-4 overflow-y-auto px-6 pb-4">
 				<div class="space-y-1">
@@ -641,7 +641,7 @@
 						class="border-input bg-background h-10 w-full rounded-md border px-3 py-2 text-sm"
 					/>
 					<p class="text-muted-foreground text-xs">
-						File akan disimpan di bucket <strong>gcg-evidance</strong>.
+						File akan disimpan di bucket <strong>gcg-evidence</strong>.
 					</p>
 				</div>
 

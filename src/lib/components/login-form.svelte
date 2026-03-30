@@ -11,7 +11,7 @@
 		error?: string;
 		success?: string;
 		email?: string;
-		step?: string;
+		step?: "email" | "pin";
 	} | null;
 
 	let {
