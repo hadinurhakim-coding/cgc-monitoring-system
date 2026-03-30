@@ -3,12 +3,20 @@
 	import { Separator } from "$lib/components/ui/separator/index.js";
 	import * as Card from "$lib/components/ui/card/index.js";
 	import AppSidebar from "$lib/components/app-sidebar.svelte";
+	import type { PageData } from "./$types.js";
+
+	let { data }: { data: PageData } = $props();
+	const sidebarUser = $derived({
+		name: data.authUser?.email?.split("@")[0] || "Pengguna",
+		email: data.authUser?.email || "user@example.com",
+		avatarUrl: null
+	});
 </script>
 
 <Sidebar.Provider
 	style="--sidebar-width: calc(var(--spacing) * 80); --header-height: calc(var(--spacing) * 14);"
 >
-	<AppSidebar variant="inset" />
+	<AppSidebar variant="inset" user={sidebarUser} />
 	<Sidebar.Inset>
 		<header
 			class="bg-background sticky top-0 z-20 flex h-(--header-height) items-center gap-3 border-b px-4 md:px-6"

@@ -9,19 +9,8 @@ import type { Actions } from "./$types.js";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const adminClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
-	auth: {
-		autoRefreshToken: false,
-		persistSession: false
-	}
-});
-
-const authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
-	auth: {
-		autoRefreshToken: false,
-		persistSession: false
-	}
-});
+const adminClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+const authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Assuming a standard way to set cookies since $lib/server/auth doesn't exist
 // based on previous file exploration.
@@ -29,7 +18,12 @@ const ACCESS_TOKEN_COOKIE = "sb-access-token";
 const REFRESH_TOKEN_COOKIE = "sb-refresh-token";
 
 export const actions: Actions = {
-	sendPin: async ({ request }) => {
+	sendPin: async ({ request, url }) => {
+		const redirectTo = url.searchParams.get("redirectTo");
+		const nextPath =
+			redirectTo && redirectTo.startsWith("/") && !redirectTo.startsWith("//")
+				? redirectTo
+				: "/dashboard";
 		const formData = await request.formData();
 		const rawEmail = formData.get("email");
 		const email = typeof rawEmail === "string" ? rawEmail.trim().toLowerCase() : "";

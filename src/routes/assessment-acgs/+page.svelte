@@ -1,10 +1,13 @@
 <script lang="ts">
 	import FilterIcon from "@lucide/svelte/icons/filter";
 	import ChevronDownIcon from "@lucide/svelte/icons/chevron-down";
+	import ChevronUpIcon from "@lucide/svelte/icons/chevron-up";
 	import SearchIcon from "@lucide/svelte/icons/search";
 	import PencilLineIcon from "@lucide/svelte/icons/pencil-line";
+	import EyeIcon from "@lucide/svelte/icons/eye";
 	import { goto } from "$app/navigation";
 	import type { ActionData, PageData } from "./$types.js";
+	import { toastStore } from "$lib/stores/toast.js";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import { Separator } from "$lib/components/ui/separator/index.js";
 	import { Button } from "$lib/components/ui/button/index.js";
@@ -19,12 +22,18 @@
 	const yearsBack = 75;
 	const baseYear = currentYear - yearsBack;
 	const years = Array.from({ length: currentYear - baseYear + 1 }, (_, i) => currentYear - i);
+	const rowsPerPageOptions = [10, 25, 50];
+
 	let selectedYear = $state(new Date().getFullYear());
 	let yearFilterOpen = $state(false);
 	let yearSearchQuery = $state("");
 	let rowsPerPage = $state(25);
 	let currentPage = $state(1);
+
 	let editorOpen = $state(false);
+	let detailOpen = $state(false);
+	let questionTitleCollapsed = $state(false);
+
 	let editingQuestionCode = $state("");
 	let editingQuestionEn = $state("");
 	let editingQuestionId = $state("");
@@ -33,7 +42,30 @@
 	let recommendationDraft = $state("");
 	let statusDraft = $state<"yes" | "no" | "na" | "">("");
 	let existingEvidence = $state("");
-	const rowsPerPageOptions = [10, 25, 50];
+
+	let detailTitle = $state("");
+	let detailValue = $state("");
+	let detailQuestion:
+		| {
+				code: string;
+				question_en: string;
+				question_id: string;
+				answer: {
+					implementation: string;
+					evidence: string;
+					status: "yes" | "no" | "na" | null;
+					recommendation: string;
+				};
+		  }
+		| null = $state(null);
+
+	let handledSuccessEvent = $state("");
+	let handledErrorMessage = $state("");
+	const sidebarUser = $derived({
+		name: data.authUser?.email?.split("@")[0] || "Pengguna",
+		email: data.authUser?.email || "user@example.com",
+		avatarUrl: null
+	});
 
 	const filteredYears = $derived.by(() => {
 		const q = yearSearchQuery.trim();
@@ -86,9 +118,9 @@
 				}
 			}
 		}
-
 		return rows;
 	});
+
 	const totalQuestions = $derived(flattenedQuestions.length);
 	const totalPages = $derived(Math.max(1, Math.ceil(totalQuestions / rowsPerPage)));
 	const pagedQuestions = $derived.by(() => {
@@ -154,6 +186,7 @@
 
 		return Array.from(partMap.values());
 	});
+
 	const pageStart = $derived(totalQuestions === 0 ? 0 : (currentPage - 1) * rowsPerPage + 1);
 	const pageEnd = $derived(Math.min(currentPage * rowsPerPage, totalQuestions));
 
@@ -168,6 +201,21 @@
 
 	$effect(() => {
 		if (currentPage > totalPages) currentPage = totalPages;
+	});
+
+	$effect(() => {
+		if (form?.eventId && form.eventId !== handledSuccessEvent && form.success) {
+			handledSuccessEvent = form.eventId;
+			editorOpen = false;
+			toastStore.pushToast("success", form.message ?? "Nilai berhasil disimpan.");
+		}
+	});
+
+	$effect(() => {
+		if (form?.error && form.error !== handledErrorMessage) {
+			handledErrorMessage = form.error;
+			toastStore.pushToast("error", form.error);
+		}
 	});
 
 	async function selectYear(year: number) {
@@ -213,7 +261,29 @@
 		existingEvidence = question.answer.evidence;
 		recommendationDraft = question.answer.recommendation;
 		statusDraft = question.answer.status ?? "";
+		questionTitleCollapsed = false;
 		editorOpen = true;
+	}
+
+	function openDetail(
+		title: string,
+		value: string,
+		question: {
+			code: string;
+			question_en: string;
+			question_id: string;
+			answer: {
+				implementation: string;
+				evidence: string;
+				status: "yes" | "no" | "na" | null;
+				recommendation: string;
+			};
+		}
+	) {
+		detailTitle = title;
+		detailValue = value || "-";
+		detailQuestion = question;
+		detailOpen = true;
 	}
 
 	function getStatusLabel(status: "yes" | "no" | "na" | null) {
@@ -222,12 +292,19 @@
 		if (status === "na") return "N/A";
 		return "-";
 	}
+
+	function shortText(value: string) {
+		if (!value) return "-";
+		const normalized = value.replace(/\s+/g, " ").trim();
+		if (normalized.length <= 90) return normalized;
+		return `${normalized.slice(0, 90)}...`;
+	}
 </script>
 
 <Sidebar.Provider
 	style="--sidebar-width: calc(var(--spacing) * 80); --header-height: calc(var(--spacing) * 14);"
 >
-	<AppSidebar variant="inset" />
+	<AppSidebar variant="inset" user={sidebarUser} />
 	<Sidebar.Inset>
 		<header
 			class="bg-background sticky top-0 z-20 flex h-(--header-height) items-center gap-3 border-b px-4 md:px-6"
@@ -295,7 +372,7 @@
 			<div class="overflow-x-auto rounded-md border">
 				<table class="w-full min-w-[980px] border-collapse text-sm">
 					<thead>
-						<tr class="bg-[#012a66] text-white">
+						<tr class="bg-primary text-primary-foreground">
 							<th class="border border-slate-900 p-3 text-center font-semibold">ITEM</th>
 							<th class="border border-slate-900 p-3 text-center font-semibold">
 								STANDAR TATA KELOLA PERUSAHAAN
@@ -317,14 +394,12 @@
 						{#if pagedPartRows.length}
 							{#each pagedPartRows as part (part.code)}
 								<tr>
-									<td
-										class="w-16 border border-slate-900 p-2 font-semibold text-[#0082ca] whitespace-pre-line"
-									>
+									<td class="text-primary w-16 border border-slate-900 p-2 font-semibold whitespace-pre-line">
 										PART {part.code}<br />BAGIAN {part.code}
 									</td>
 									<td class="border border-slate-900 p-2 leading-6">
 										<div class="font-semibold text-black">{part.title_en}</div>
-										<div class="mt-0.5 text-[#6d9cc5]">{part.title_id}</div>
+											<div class="mt-0.5 text-[var(--pln-light-cyan)]">{part.title_id}</div>
 									</td>
 									<td class="border border-slate-900 p-2"></td>
 									<td class="border border-slate-900 p-2"></td>
@@ -334,12 +409,14 @@
 
 								{#each part.sections as section (section.code)}
 									<tr>
-										<td class="border border-slate-900 p-2 align-top font-semibold text-[#0082ca]">
-											{section.code}
+										<td class="text-primary border border-slate-900 p-2 align-top font-semibold">
+											<div class="flex items-center justify-between gap-1">
+												<span>{section.code}</span>
+											</div>
 										</td>
 										<td class="border border-slate-900 p-2 leading-6">
 											<div class="font-semibold text-black">{section.title_en}</div>
-											<div class="mt-0.5 text-[#6d9cc5]">{section.title_id}</div>
+											<div class="mt-0.5 text-[var(--pln-light-cyan)]">{section.title_id}</div>
 										</td>
 										<td class="border border-slate-900 p-2"></td>
 										<td class="border border-slate-900 p-2"></td>
@@ -349,36 +426,56 @@
 
 									{#each section.questions as question (question.code)}
 										<tr>
-											<td class="border border-slate-900 p-2 font-semibold text-[#0082ca]">
-												{question.code}
+											<td class="text-primary border border-slate-900 p-2 font-semibold">
+												<div class="flex items-start justify-between gap-1">
+													<span>{question.code}</span>
+													<button
+														type="button"
+														class="hover:bg-muted rounded p-1"
+														onclick={() => openEditor(question)}
+														aria-label="Edit nilai pertanyaan"
+													>
+														<PencilLineIcon class="size-3.5" />
+													</button>
+												</div>
 											</td>
 											<td class="border border-slate-900 p-2 leading-6 align-top">
 												<div class="text-black">{question.question_en}</div>
-												<div class="mt-2 text-[#6d9cc5]">{question.question_id}</div>
+												<div class="mt-2 text-[var(--pln-light-cyan)]">{question.question_id}</div>
 											</td>
 											<td class="border border-slate-900 p-1.5 align-top">
 												<button
 													type="button"
 													class="hover:bg-muted/40 flex min-h-14 w-full items-start rounded px-2 py-1 text-left text-sm"
-													onclick={() => openEditor(question)}
+													onclick={() =>
+														openDetail("IMPLEMENTASI", question.answer.implementation, question)}
 												>
-													{question.answer.implementation || "-"}
+													<span class="max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
+														{shortText(question.answer.implementation)}
+													</span>
 												</button>
 											</td>
 											<td class="border border-slate-900 p-1.5 align-top">
 												<button
 													type="button"
 													class="hover:bg-muted/40 flex min-h-14 w-full items-start rounded px-2 py-1 text-left text-sm break-all"
-													onclick={() => openEditor(question)}
+													onclick={() => openDetail("EVIDENCE", question.answer.evidence, question)}
 												>
-													{question.answer.evidence || "-"}
+													<span class="max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
+														{shortText(question.answer.evidence)}
+													</span>
 												</button>
 											</td>
 											<td class="border border-slate-900 p-1.5 align-top">
 												<button
 													type="button"
 													class="hover:bg-muted/40 flex min-h-14 w-full items-center rounded px-2 py-1 text-left text-sm font-medium"
-													onclick={() => openEditor(question)}
+													onclick={() =>
+														openDetail(
+															"STATUS YES OR NO",
+															getStatusLabel(question.answer.status),
+															question
+														)}
 												>
 													{getStatusLabel(question.answer.status)}
 												</button>
@@ -387,9 +484,12 @@
 												<button
 													type="button"
 													class="hover:bg-muted/40 flex min-h-14 w-full items-start rounded px-2 py-1 text-left text-sm"
-													onclick={() => openEditor(question)}
+													onclick={() =>
+														openDetail("REKOMENDASI", question.answer.recommendation, question)}
 												>
-													{question.answer.recommendation || "-"}
+													<span class="max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
+														{shortText(question.answer.recommendation)}
+													</span>
 												</button>
 											</td>
 										</tr>
@@ -443,88 +543,142 @@
 	</Sidebar.Inset>
 </Sidebar.Provider>
 
+<Sheet.Root bind:open={detailOpen}>
+	<Sheet.Content side="bottom" class="mx-auto w-full max-w-4xl">
+		<Sheet.Header>
+			<Sheet.Title class="flex items-center gap-2">
+				<EyeIcon class="size-4" />
+				Detail Nilai - {detailTitle}
+			</Sheet.Title>
+			<Sheet.Description>{detailQuestion?.code ?? ""}</Sheet.Description>
+		</Sheet.Header>
+		<div class="max-h-[55vh] overflow-y-auto px-6 pb-4">
+			<pre class="bg-muted/40 text-foreground overflow-x-auto rounded-md p-3 text-sm whitespace-pre-wrap">{detailValue}</pre>
+		</div>
+		<Sheet.Footer class="border-t px-6 py-4">
+			<div class="flex items-center justify-end gap-2">
+				<Button type="button" variant="outline" onclick={() => (detailOpen = false)}>Tutup</Button>
+				{#if detailQuestion}
+					<Button
+						type="button"
+						onclick={() => {
+							detailOpen = false;
+							if (detailQuestion) openEditor(detailQuestion);
+						}}
+					>
+						Edit Nilai
+					</Button>
+				{/if}
+			</div>
+		</Sheet.Footer>
+	</Sheet.Content>
+</Sheet.Root>
+
 <Sheet.Root bind:open={editorOpen}>
 	<Sheet.Content side="right" class="w-full sm:max-w-xl">
 		<Sheet.Header>
-			<Sheet.Title class="flex items-center gap-2">
-				<PencilLineIcon class="size-4" />
-				Input Penilaian {editingQuestionCode}
-			</Sheet.Title>
-			<Sheet.Description>
-				<div class="text-black">{editingQuestionEn}</div>
-				<div class="mt-1 text-[#6d9cc5]">{editingQuestionId}</div>
-			</Sheet.Description>
+			<div class="flex items-start justify-between gap-3">
+				<div>
+					<Sheet.Title class="flex items-center gap-2">
+						<PencilLineIcon class="size-4" />
+						Input Penilaian {editingQuestionCode}
+					</Sheet.Title>
+					{#if !questionTitleCollapsed}
+						<Sheet.Description>
+							<div class="text-black">{editingQuestionEn}</div>
+							<div class="mt-1 text-[var(--pln-light-cyan)]">{editingQuestionId}</div>
+						</Sheet.Description>
+					{/if}
+				</div>
+				<Button
+					type="button"
+					variant="outline"
+					size="icon-sm"
+					onclick={() => (questionTitleCollapsed = !questionTitleCollapsed)}
+					aria-label={questionTitleCollapsed ? "Maximize judul pertanyaan" : "Minimize judul pertanyaan"}
+				>
+					{#if questionTitleCollapsed}
+						<ChevronDownIcon class="size-4" />
+					{:else}
+						<ChevronUpIcon class="size-4" />
+					{/if}
+				</Button>
+			</div>
 		</Sheet.Header>
 
-		<form method="POST" action="?/saveAnswer" enctype="multipart/form-data" class="space-y-4 px-6">
+		<form method="POST" action="?/saveAnswer" enctype="multipart/form-data" class="flex h-full min-h-0 flex-col">
 			<input type="hidden" name="year" value={selectedYear} />
 			<input type="hidden" name="question_code" value={editingQuestionCode} />
 			<input type="hidden" name="existing_evidence" value={existingEvidence} />
 
-			<div class="space-y-1">
-				<label for="implementation" class="text-sm font-medium">IMPLEMENTASI</label>
-				<textarea
-					id="implementation"
-					name="implementation"
-					class="border-input bg-background min-h-24 w-full rounded-md border px-3 py-2 text-sm"
-					bind:value={implementationDraft}
-				></textarea>
+			<div class="min-h-0 flex-1 space-y-4 overflow-y-auto px-6 pb-4">
+				<div class="space-y-1">
+					<label for="implementation" class="text-sm font-medium">IMPLEMENTASI</label>
+					<textarea
+						id="implementation"
+						name="implementation"
+						class="border-input bg-background min-h-24 w-full rounded-md border px-3 py-2 text-sm"
+						bind:value={implementationDraft}
+						required
+					></textarea>
+				</div>
+
+				<div class="space-y-1">
+					<label for="evidence_note" class="text-sm font-medium">EVIDENCE (catatan/link/path)</label>
+					<textarea
+						id="evidence_note"
+						name="evidence_note"
+						class="border-input bg-background min-h-20 w-full rounded-md border px-3 py-2 text-sm"
+						bind:value={evidenceDraft}
+					></textarea>
+				</div>
+
+				<div class="space-y-1">
+					<label for="evidence_file" class="text-sm font-medium">Upload Evidence File (maks 15 MB)</label>
+					<input
+						id="evidence_file"
+						name="evidence_file"
+						type="file"
+						accept=".pdf,.png,.jpg,.jpeg,.webp"
+						class="border-input bg-background h-10 w-full rounded-md border px-3 py-2 text-sm"
+					/>
+					<p class="text-muted-foreground text-xs">
+						File akan disimpan di bucket <strong>gcg-evidance</strong>.
+					</p>
+				</div>
+
+				<div class="space-y-1">
+					<label for="status" class="text-sm font-medium">STATUS YES OR NO</label>
+					<select
+						id="status"
+						name="status"
+						class="border-input bg-background h-10 w-full rounded-md border px-3 py-2 text-sm"
+						bind:value={statusDraft}
+						required
+					>
+						<option value="">Pilih status</option>
+						<option value="yes">YES</option>
+						<option value="no">NO</option>
+						<option value="na">N/A</option>
+					</select>
+				</div>
+
+				<div class="space-y-1">
+					<label for="recommendation" class="text-sm font-medium">REKOMENDASI</label>
+					<textarea
+						id="recommendation"
+						name="recommendation"
+						class="border-input bg-background min-h-24 w-full rounded-md border px-3 py-2 text-sm"
+						bind:value={recommendationDraft}
+					></textarea>
+				</div>
+
+				{#if form?.error}
+					<p class="text-sm text-red-600">{form.error}</p>
+				{/if}
 			</div>
 
-			<div class="space-y-1">
-				<label for="evidence_note" class="text-sm font-medium">EVIDENCE (catatan/link/path)</label>
-				<textarea
-					id="evidence_note"
-					name="evidence_note"
-					class="border-input bg-background min-h-20 w-full rounded-md border px-3 py-2 text-sm"
-					bind:value={evidenceDraft}
-				></textarea>
-			</div>
-
-			<div class="space-y-1">
-				<label for="evidence_file" class="text-sm font-medium">Upload Evidence File (maks 15 MB)</label>
-				<input
-					id="evidence_file"
-					name="evidence_file"
-					type="file"
-					accept=".pdf,.png,.jpg,.jpeg,.webp"
-					class="border-input bg-background h-10 w-full rounded-md border px-3 py-2 text-sm"
-				/>
-				<p class="text-muted-foreground text-xs">
-					File akan disimpan di bucket <strong>gcg-evidance</strong>.
-				</p>
-			</div>
-
-			<div class="space-y-1">
-				<label for="status" class="text-sm font-medium">STATUS YES OR NO</label>
-				<select
-					id="status"
-					name="status"
-					class="border-input bg-background h-10 w-full rounded-md border px-3 py-2 text-sm"
-					bind:value={statusDraft}
-				>
-					<option value="">Pilih status</option>
-					<option value="yes">YES</option>
-					<option value="no">NO</option>
-					<option value="na">N/A</option>
-				</select>
-			</div>
-
-			<div class="space-y-1">
-				<label for="recommendation" class="text-sm font-medium">REKOMENDASI</label>
-				<textarea
-					id="recommendation"
-					name="recommendation"
-					class="border-input bg-background min-h-24 w-full rounded-md border px-3 py-2 text-sm"
-					bind:value={recommendationDraft}
-				></textarea>
-			</div>
-
-			{#if form?.error}
-				<p class="text-sm text-red-600">{form.error}</p>
-			{/if}
-
-			<Sheet.Footer class="px-0 pb-0">
+			<Sheet.Footer class="mt-0 border-t px-6 py-4">
 				<div class="flex items-center justify-end gap-2">
 					<Button type="button" variant="outline" onclick={() => (editorOpen = false)}>Batal</Button>
 					<Button type="submit">Simpan</Button>

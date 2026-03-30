@@ -39,7 +39,12 @@
 		return page.url.pathname === "/dashboard" && page.url.hash === hash;
 	}
 
-	let { ...restProps }: ComponentProps<typeof Sidebar.Root> = $props();
+	let {
+		user,
+		...restProps
+	}: ComponentProps<typeof Sidebar.Root> & {
+		user?: { name: string; email: string; avatarUrl?: string | null };
+	} = $props();
 </script>
 
 <Sidebar.Root collapsible="icon" {...restProps}>
@@ -106,5 +111,5 @@
 			</Sidebar.GroupContent>
 		</Sidebar.Group>
 	</Sidebar.Content>
-	<SidebarUserFooter />
+	<SidebarUserFooter {user} />
 </Sidebar.Root>
