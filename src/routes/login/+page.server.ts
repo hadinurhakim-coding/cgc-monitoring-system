@@ -1,14 +1,24 @@
-import { fail } from "@sveltejs/kit";
-import { createAdminServerClient, createAnonServerClient } from "$lib/server/auth.js";
+import { fail, redirect } from "@sveltejs/kit";
+import { createClient } from "@supabase/supabase-js";
+import {
+	SUPABASE_ANON_KEY,
+	SUPABASE_SERVICE_ROLE_KEY,
+	SUPABASE_URL
+} from "$env/static/private";
 import type { Actions } from "./$types.js";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-const adminClient = createAdminServerClient();
-const authClient = createAnonServerClient();
+const adminClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+const authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// Assuming a standard way to set cookies since $lib/server/auth doesn't exist
+// based on previous file exploration.
+const ACCESS_TOKEN_COOKIE = "sb-access-token";
+const REFRESH_TOKEN_COOKIE = "sb-refresh-token";
 
 export const actions: Actions = {
-	default: async ({ request, url }) => {
+	sendPin: async ({ request, url }) => {
 		const redirectTo = url.searchParams.get("redirectTo");
 		const nextPath =
 			redirectTo && redirectTo.startsWith("/") && !redirectTo.startsWith("//")
@@ -21,7 +31,8 @@ export const actions: Actions = {
 		if (!email || !EMAIL_REGEX.test(email)) {
 			return fail(400, {
 				error: "Format email tidak valid.",
-				email
+				email,
+				step: "email" as const
 			});
 		}
 
@@ -34,36 +45,99 @@ export const actions: Actions = {
 		if (lookupError) {
 			console.error("User lookup failed:", lookupError.message);
 			return fail(500, {
-				error: "Terjadi gangguan sistem. Coba lagi beberapa saat."
+				error: "Terjadi gangguan sistem. Coba lagi beberapa saat.",
+				step: "email" as const
 			});
 		}
 
 		if (!registeredUser) {
 			return fail(404, {
 				error: "Email belum terdaftar. Hubungi admin untuk aktivasi akun.",
-				email
+				email,
+				step: "email" as const
 			});
 		}
 
-		const { error: magicLinkError } = await authClient.auth.signInWithOtp({
+		const { error: otpError } = await authClient.auth.signInWithOtp({
 			email,
 			options: {
-				emailRedirectTo: `${url.origin}/auth/callback?next=${encodeURIComponent(nextPath)}`,
 				shouldCreateUser: false
 			}
 		});
 
-		if (magicLinkError) {
-			console.error("Magic link send failed:", magicLinkError.message);
+		if (otpError) {
+			console.error("OTP send failed:", otpError.message);
+
+			let errorMessage = "Gagal mengirim PIN. Silakan coba lagi.";
+
+			if (otpError.message.toLowerCase().includes("rate limit")) {
+				errorMessage = "Terlalu banyak permintaan pengiriman email. Silakan tunggu beberapa saat.";
+			} else if (otpError.message) {
+				errorMessage = `Gagal mengirim: ${otpError.message}`;
+			}
+
 			return fail(400, {
-				error: "Gagal mengirim magic link. Silakan coba lagi.",
-				email
+				error: errorMessage,
+				email,
+				step: "email" as const
 			});
 		}
 
 		return {
-			success: "Magic link berhasil dikirim. Silakan cek email Anda.",
-			email
+			success: "PIN berhasil dikirim. Silakan cek email Anda.",
+			email,
+			step: "pin" as const
 		};
+	},
+
+	verifyPin: async ({ request, url, cookies, getClientAddress }) => {
+		const formData = await request.formData();
+		const email = String(formData.get("email") || "").trim().toLowerCase();
+		const pin = String(formData.get("pin") || "").trim();
+		const redirectTo = url.searchParams.get("redirectTo");
+		const nextPath = redirectTo && redirectTo.startsWith("/") && !redirectTo.startsWith("//") ? redirectTo : "/dashboard";
+
+		if (!pin || pin.length !== 6) {
+			return fail(400, { error: "PIN harus terdiri dari 6 digit angka.", email, step: "pin" as const });
+		}
+
+		const { data, error } = await authClient.auth.verifyOtp({
+			email,
+			token: pin,
+			type: "email"
+		});
+
+		if (error || !data.session || !data.user) {
+			return fail(401, { error: "PIN tidak valid atau sudah kedaluwarsa.", email, step: "pin" as const });
+		}
+
+		const secure = process.env.NODE_ENV === "production";
+		const cookieBase = { path: "/", httpOnly: true, secure, sameSite: "lax" as const };
+
+		cookies.set(ACCESS_TOKEN_COOKIE, data.session.access_token, { ...cookieBase, maxAge: 60 * 60 });
+		cookies.set(REFRESH_TOKEN_COOKIE, data.session.refresh_token, { ...cookieBase, maxAge: 60 * 60 * 24 * 30 });
+
+		// Try to record login audit if table exists, ignore if not
+		try {
+			const forwardedFor = request.headers.get("x-forwarded-for");
+			const ip = forwardedFor?.split(",")[0]?.trim() || getClientAddress();
+			const userAgent = request.headers.get("user-agent");
+
+			await adminClient.from("auth_login_audits").upsert(
+				{
+					user_id: data.user.id,
+					email: data.user.email ?? "",
+					provider: "email_pin",
+					last_login_at: new Date().toISOString(),
+					ip_address: ip,
+					user_agent: userAgent
+				},
+				{ onConflict: "user_id" }
+			);
+		} catch (e) {
+			console.error("Failed to record audit login", e);
+		}
+
+		throw redirect(303, nextPath);
 	}
 };
