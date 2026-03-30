@@ -1,18 +1,20 @@
 import { redirect } from "@sveltejs/kit";
+import { dev } from "$app/environment";
 import {
 	ACCESS_TOKEN_COOKIE,
 	REFRESH_TOKEN_COOKIE,
 	createAdminServerClient,
 	createAnonServerClient
 } from "$lib/server/auth.js";
+import { isSafeRedirect } from "$lib/server/safe-redirect.js";
 import type { RequestHandler } from "./$types.js";
 
 export const GET: RequestHandler = async ({ url, getClientAddress, request, cookies }) => {
 	const tokenHash = url.searchParams.get("token_hash") ?? url.searchParams.get("token");
 	const type = url.searchParams.get("type");
-	const nextParam = url.searchParams.get("next");
-	const next =
-		nextParam && nextParam.startsWith("/") && !nextParam.startsWith("//") ? nextParam : "/dashboard";
+
+	// FIX: CRIT-04 — Validasi redirect yang ketat (whitelist prefix)
+	const next = isSafeRedirect(url.searchParams.get("next"));
 
 	if (!tokenHash || !type) {
 		throw redirect(303, "/login?error=Token+magic+link+tidak+valid");
@@ -28,7 +30,7 @@ export const GET: RequestHandler = async ({ url, getClientAddress, request, cook
 		throw redirect(303, "/login?error=Gagal+verifikasi+magic+link");
 	}
 
-	const secure = process.env.NODE_ENV === "production";
+	const secure = !dev;
 	const cookieBase = {
 		path: "/",
 		httpOnly: true,
@@ -45,8 +47,10 @@ export const GET: RequestHandler = async ({ url, getClientAddress, request, cook
 	});
 
 	const adminClient = createAdminServerClient();
-	const forwardedFor = request.headers.get("x-forwarded-for");
-	const ip = forwardedFor?.split(",")[0]?.trim() || getClientAddress();
+
+	// FIX: CRIT-05 — Gunakan getClientAddress() sebagai primary source
+	// x-forwarded-for bisa dipalsukan oleh client tanpa trusted proxy configuration
+	const ip = getClientAddress();
 	const userAgent = request.headers.get("user-agent");
 
 	await adminClient.from("auth_login_audits").upsert(

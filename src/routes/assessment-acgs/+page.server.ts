@@ -1,16 +1,8 @@
-import { createClient } from "@supabase/supabase-js";
 import { randomUUID } from "node:crypto";
-import { fail } from "@sveltejs/kit";
-import { redirect } from "@sveltejs/kit";
-import { SUPABASE_SERVICE_ROLE_KEY, SUPABASE_URL } from "$env/static/private";
+import { fail, redirect } from "@sveltejs/kit";
+import { createAdminServerClient } from "$lib/server/auth.js";
+import { hasPermission } from "$lib/server/rbac.js";
 import type { Actions, PageServerLoad } from "./$types.js";
-
-const adminClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
-	auth: {
-		autoRefreshToken: false,
-		persistSession: false
-	}
-});
 
 type PartRow = {
 	code: string;
@@ -45,7 +37,7 @@ type AnswerView = {
 };
 
 const MAX_EVIDENCE_BYTES = 15 * 1024 * 1024;
-const EVIDENCE_BUCKET = "gcg-evidance";
+const EVIDENCE_BUCKET = "gcg-evidence";
 const ALLOWED_EVIDENCE_MIME = new Set(["application/pdf", "image/png", "image/jpeg", "image/jpg", "image/webp"]);
 
 function getDivisionFilter(divisionId: string | null) {
@@ -54,8 +46,11 @@ function getDivisionFilter(divisionId: string | null) {
 }
 
 export const load: PageServerLoad = async ({ url, locals }) => {
-	if (!locals.auth.isAuthenticated) {
-		throw redirect(303, "/login");
+	const adminClient = createAdminServerClient();
+
+	// FIX: ARCH-04 — Implementasi RBAC di level aplikasi
+	if (!hasPermission(locals.auth.role, "assessment:read")) {
+		throw redirect(303, "/dashboard");
 	}
 
 	const selectedYearParam = Number(url.searchParams.get("year"));
@@ -161,38 +156,19 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 	return {
 		selectedYear,
 		parts: normalizedParts,
-		answersByCode,
-		authUser: {
-			id: locals.auth.userId,
-			email: locals.auth.email,
-			role: locals.auth.role,
-			divisionId: locals.auth.divisionId
-		}
+		answersByCode
 	};
 };
 
-async function ensureEvidenceBucket() {
-	const { data: buckets, error } = await adminClient.storage.listBuckets();
-	if (error) {
-		console.error("Failed to list storage buckets:", error.message);
-		return;
-	}
 
-	const exists = buckets?.some((bucket) => bucket.name === EVIDENCE_BUCKET);
-	if (exists) return;
-
-	const { error: createError } = await adminClient.storage.createBucket(EVIDENCE_BUCKET, {
-		public: false,
-		fileSizeLimit: `${MAX_EVIDENCE_BYTES}`,
-		allowedMimeTypes: ["application/pdf", "image/png", "image/jpeg", "image/jpg", "image/webp"]
-	});
-	if (createError) console.error("Failed to create evidence bucket:", createError.message);
-}
 
 export const actions: Actions = {
 	saveAnswer: async ({ request, locals }) => {
-		if (!locals.auth.isAuthenticated || !locals.auth.userId) {
-			return fail(401, { error: "Sesi login tidak valid. Silakan login ulang." });
+		const adminClient = createAdminServerClient();
+
+		// FIX: ARCH-04 — Implementasi RBAC untuk mutasi data
+		if (!hasPermission(locals.auth.role, "assessment:write")) {
+			return fail(403, { error: "Anda tidak memiliki izin (role) untuk mengubah assessment." });
 		}
 
 		const formData = await request.formData();
@@ -200,7 +176,6 @@ export const actions: Actions = {
 		const questionCode = String(formData.get("question_code") ?? "").trim();
 		const implementation = String(formData.get("implementation") ?? "").trim();
 		const evidenceNote = String(formData.get("evidence_note") ?? "").trim();
-		const existingEvidence = String(formData.get("existing_evidence") ?? "").trim();
 		const recommendation = String(formData.get("recommendation") ?? "").trim();
 		const rawStatus = String(formData.get("status") ?? "").trim().toLowerCase();
 		const file = formData.get("evidence_file");
@@ -228,11 +203,11 @@ export const actions: Actions = {
 			if (file.size > MAX_EVIDENCE_BYTES) {
 				return fail(400, { error: "Ukuran file bukti maksimal 15 MB." });
 			}
-			if (file.type && !ALLOWED_EVIDENCE_MIME.has(file.type)) {
+			if (!file.type || !ALLOWED_EVIDENCE_MIME.has(file.type)) {
 				return fail(400, { error: "Format file tidak didukung. Gunakan PDF/JPG/PNG/WEBP." });
 			}
 
-			await ensureEvidenceBucket();
+
 			const extension = file.name.includes(".") ? file.name.split(".").pop() : "bin";
 			const safeExt = extension ? extension.replace(/[^a-zA-Z0-9]/g, "").toLowerCase() : "bin";
 			const objectPath = `assessment/${year}/${questionCode}/${randomUUID()}.${safeExt || "bin"}`;
@@ -294,6 +269,18 @@ export const actions: Actions = {
 				return fail(500, { error: "Gagal membuat data assessment." });
 			}
 			assessmentId = newAssessment.id;
+		}
+
+		// FIX: CRIT-08 — Ambil existing evidence dari DB, bukan dari hidden field client
+		let existingEvidence = "";
+		if (existingAssessment?.id) {
+			const { data: currentAnswer } = await adminClient
+				.from("acgs_assessment_answers")
+				.select("evidence")
+				.eq("assessment_id", assessmentId)
+				.eq("question_id", question.id)
+				.maybeSingle();
+			existingEvidence = currentAnswer?.evidence ?? "";
 		}
 
 		let finalEvidence = evidenceNote || existingEvidence;

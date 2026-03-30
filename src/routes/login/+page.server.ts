@@ -1,5 +1,5 @@
 import { fail, redirect } from "@sveltejs/kit";
-import { createClient } from "@supabase/supabase-js";
+import { dev } from "$app/environment";
 import {
 	SUPABASE_ANON_KEY,
 	SUPABASE_SERVICE_ROLE_KEY,
@@ -34,13 +34,24 @@ export const actions: Actions = {
 		const rawEmail = formData.get("email");
 		const email = typeof rawEmail === "string" ? rawEmail.trim().toLowerCase() : "";
 
+		// Jika gagal di tahap email, kembalikan step: "email" as const
 		if (!email || !EMAIL_REGEX.test(email)) {
-			return fail(400, {
-				error: "Format email tidak valid.",
+			return fail(400, { error: "Format email tidak valid.", email, step: "email" as const });
+		}
+
+		// FIX: CRIT-06 — Rate limiting untuk mencegah email flooding / OTP fatigue
+		const { allowed: sendAllowed } = checkRateLimit(`otp-send:${email}`, 5, 15 * 60 * 1000);
+		if (!sendAllowed) {
+			return fail(429, {
+				error: "Terlalu banyak permintaan. Coba lagi dalam 15 menit.",
 				email,
 				step: "email" as const
 			});
 		}
+
+		// FIX: CRIT-02 — Client dibuat per-request, bukan module-level singleton
+		const adminClient = createAdminServerClient();
+		const authClient = createAnonServerClient();
 
 		const { data: registeredUser, error: lookupError } = await adminClient
 			.from("users")
@@ -50,18 +61,11 @@ export const actions: Actions = {
 
 		if (lookupError) {
 			console.error("User lookup failed:", lookupError.message);
-			return fail(500, {
-				error: "Terjadi gangguan sistem. Coba lagi beberapa saat.",
-				step: "email" as const
-			});
+			return fail(500, { error: "Terjadi gangguan sistem. Coba lagi beberapa saat.", email, step: "email" as const });
 		}
 
 		if (!registeredUser) {
-			return fail(404, {
-				error: "Email belum terdaftar. Hubungi admin untuk aktivasi akun.",
-				email,
-				step: "email" as const
-			});
+			return fail(404, { error: "Email belum terdaftar. Hubungi administrator.", email, step: "email" as const });
 		}
 
 		const { error: otpError } = await authClient.auth.signInWithOtp({
@@ -73,20 +77,7 @@ export const actions: Actions = {
 
 		if (otpError) {
 			console.error("OTP send failed:", otpError.message);
-
-			let errorMessage = "Gagal mengirim PIN. Silakan coba lagi.";
-
-			if (otpError.message.toLowerCase().includes("rate limit")) {
-				errorMessage = "Terlalu banyak permintaan pengiriman email. Silakan tunggu beberapa saat.";
-			} else if (otpError.message) {
-				errorMessage = `Gagal mengirim: ${otpError.message}`;
-			}
-
-			return fail(400, {
-				error: errorMessage,
-				email,
-				step: "email" as const
-			});
+			return fail(400, { error: "Gagal mengirim PIN. Silakan coba lagi.", email, step: "email" as const });
 		}
 
 		// Save the email in a cookie for 1 hour to prevent resending unnecessarily
@@ -109,13 +100,28 @@ export const actions: Actions = {
 	verifyPin: async ({ request, url, cookies, getClientAddress }) => {
 		const formData = await request.formData();
 		const email = String(formData.get("email") || "").trim().toLowerCase();
-		const pin = String(formData.get("pin") || "").trim();
-		const redirectTo = url.searchParams.get("redirectTo");
-		const nextPath = redirectTo && redirectTo.startsWith("/") && !redirectTo.startsWith("//") ? redirectTo : "/dashboard";
+		const pin = String(formData.get("pin") || "").replace(/\D/g, "");
 
-		if (!pin || pin.length !== 6) {
-			return fail(400, { error: "PIN harus terdiri dari 6 digit angka.", email, step: "pin" as const });
+		// FIX: CRIT-04 — Validasi redirect yang ketat (whitelist prefix)
+		const nextPath = isSafeRedirect(url.searchParams.get("redirectTo"));
+
+		// FIX: CRIT-06 — Rate limiting untuk mencegah brute-force OTP
+		const { allowed: verifyAllowed } = checkRateLimit(`otp-verify:${email}`, 10, 15 * 60 * 1000);
+		if (!verifyAllowed) {
+			return fail(429, {
+				error: "Terlalu banyak percobaan. Coba lagi dalam 15 menit.",
+				email,
+				step: "pin" as const
+			});
 		}
+
+		if (!pin || !/^\d{6,8}$/.test(pin)) {
+			return fail(400, { error: "PIN harus terdiri dari 6–8 digit angka.", email, step: "pin" as const });
+		}
+
+		// FIX: CRIT-02 — Client dibuat per-request, bukan module-level singleton
+		const adminClient = createAdminServerClient();
+		const authClient = createAnonServerClient();
 
 		const { data, error } = await authClient.auth.verifyOtp({
 			email,
@@ -127,7 +133,7 @@ export const actions: Actions = {
 			return fail(401, { error: "PIN tidak valid atau sudah kedaluwarsa.", email, step: "pin" as const });
 		}
 
-		const secure = process.env.NODE_ENV === "production";
+		const secure = !dev;
 		const cookieBase = { path: "/", httpOnly: true, secure, sameSite: "lax" as const };
 
 		cookies.set(ACCESS_TOKEN_COOKIE, data.session.access_token, { ...cookieBase, maxAge: 60 * 60 });
