@@ -57,8 +57,8 @@ export const actions: Actions = {
 	verifyPin: async ({ request, url, cookies, getClientAddress }) => {
 		const formData = await request.formData();
 		const email = String(formData.get("email") || "").trim().toLowerCase();
-		const pin = String(formData.get("pin") || "").trim();
-		
+		const pin = String(formData.get("pin") || "").replace(/\D/g, "");
+
 		const redirectTo = url.searchParams.get("redirectTo");
 		const nextPath = redirectTo && redirectTo.startsWith("/") && !redirectTo.startsWith("//") ? redirectTo : "/dashboard";
 

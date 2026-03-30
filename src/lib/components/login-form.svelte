@@ -23,9 +23,14 @@
 
 	// State untuk loading UI
 	let isSubmitting = $state(false);
+	let pinValue = $state("");
 
 	// Deteksi secara reaktif apakah pengguna sudah di tahap PIN
 	const isPinStep = $derived(form?.step === "pin");
+
+	$effect(() => {
+		if (!isPinStep) pinValue = "";
+	});
 
 	// Fungsi enhance untuk menangani loading state dan update komponen
 	const handleSubmit: SubmitFunction = () => {
@@ -35,6 +40,12 @@
 			isSubmitting = false;
 		};
 	};
+
+	/** Hanya angka, max 8 digit — sinkron dengan bind:value komponen Input. */
+	function onPinInput(e: Event) {
+		const el = e.currentTarget as HTMLInputElement;
+		pinValue = el.value.replace(/\D/g, "").slice(0, 8);
+	}
 </script>
 
 <form
@@ -93,13 +104,14 @@
 					name="pin"
 					type="text"
 					inputmode="numeric"
-					pattern="[0-9]{8}"
 					placeholder="00000000"
 					autocomplete="one-time-code"
-					maxlength={8}
+					maxlength={16}
 					required
 					disabled={isSubmitting}
 					class="text-center text-2xl tracking-[0.35em] font-semibold"
+					bind:value={pinValue}
+					oninput={onPinInput}
 				/>
 			</Field>
 			<Field>
