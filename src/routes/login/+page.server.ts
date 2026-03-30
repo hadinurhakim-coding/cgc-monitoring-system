@@ -1,19 +1,35 @@
 import { fail, redirect } from "@sveltejs/kit";
 import { dev } from "$app/environment";
 import {
-	createAdminServerClient,
-	createAnonServerClient,
-	ACCESS_TOKEN_COOKIE,
-	REFRESH_TOKEN_COOKIE
-} from "$lib/server/auth.js";
-import { isSafeRedirect } from "$lib/server/safe-redirect.js";
-import { checkRateLimit } from "$lib/server/rate-limit.js";
-import type { Actions } from "./$types.js";
+	SUPABASE_ANON_KEY,
+	SUPABASE_SERVICE_ROLE_KEY,
+	SUPABASE_URL
+} from "$env/static/private";
+import type { Actions, PageServerLoad } from "./$types.js";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+const adminClient = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY);
+const authClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+const ACCESS_TOKEN_COOKIE = "sb-access-token";
+const REFRESH_TOKEN_COOKIE = "sb-refresh-token";
+const RECENT_PIN_COOKIE = "gcg-recent-pin";
+
+export const load: PageServerLoad = async ({ cookies }) => {
+	const recentEmail = cookies.get(RECENT_PIN_COOKIE);
+	return {
+		recentEmail
+	};
+};
+
 export const actions: Actions = {
-	sendPin: async ({ request }) => {
+	sendPin: async ({ request, url, cookies }) => {
+		const redirectTo = url.searchParams.get("redirectTo");
+		const nextPath =
+			redirectTo && redirectTo.startsWith("/") && !redirectTo.startsWith("//")
+				? redirectTo
+				: "/dashboard";
 		const formData = await request.formData();
 		const rawEmail = formData.get("email");
 		const email = typeof rawEmail === "string" ? rawEmail.trim().toLowerCase() : "";
@@ -64,8 +80,21 @@ export const actions: Actions = {
 			return fail(400, { error: "Gagal mengirim PIN. Silakan coba lagi.", email, step: "email" as const });
 		}
 
-		// Jika sukses, ubah state menjadi step: "pin" agar UI berubah
-		return { success: "PIN berhasil dikirim. Silakan cek email Anda.", email, step: "pin" as const };
+		// Save the email in a cookie for 1 hour to prevent resending unnecessarily
+		const secure = process.env.NODE_ENV === "production";
+		cookies.set(RECENT_PIN_COOKIE, email, {
+			path: "/",
+			httpOnly: true,
+			secure,
+			sameSite: "lax",
+			maxAge: 60 * 60 // 1 hour
+		});
+
+		return {
+			success: "PIN berhasil dikirim. Silakan cek email Anda.",
+			email,
+			step: "pin" as const
+		};
 	},
 
 	verifyPin: async ({ request, url, cookies, getClientAddress }) => {
@@ -110,22 +139,29 @@ export const actions: Actions = {
 		cookies.set(ACCESS_TOKEN_COOKIE, data.session.access_token, { ...cookieBase, maxAge: 60 * 60 });
 		cookies.set(REFRESH_TOKEN_COOKIE, data.session.refresh_token, { ...cookieBase, maxAge: 60 * 60 * 24 * 30 });
 
-		// FIX: CRIT-05 — Gunakan getClientAddress() sebagai primary source
-		// x-forwarded-for bisa dipalsukan oleh client tanpa trusted proxy configuration
-		const ip = getClientAddress();
-		const userAgent = request.headers.get("user-agent");
+		// Remove the recent pin cookie after successful login
+		cookies.delete(RECENT_PIN_COOKIE, { path: "/" });
 
-		await adminClient.from("auth_login_audits").upsert(
-			{
-				user_id: data.user.id,
-				email: data.user.email ?? "",
-				provider: "email_pin",
-				last_login_at: new Date().toISOString(),
-				ip_address: ip,
-				user_agent: userAgent
-			},
-			{ onConflict: "user_id" }
-		);
+		// Try to record login audit if table exists, ignore if not
+		try {
+			const forwardedFor = request.headers.get("x-forwarded-for");
+			const ip = forwardedFor?.split(",")[0]?.trim() || getClientAddress();
+			const userAgent = request.headers.get("user-agent");
+
+			await adminClient.from("auth_login_audits").upsert(
+				{
+					user_id: data.user.id,
+					email: data.user.email ?? "",
+					provider: "email_pin",
+					last_login_at: new Date().toISOString(),
+					ip_address: ip,
+					user_agent: userAgent
+				},
+				{ onConflict: "user_id" }
+			);
+		} catch (e) {
+			console.error("Failed to record audit login", e);
+		}
 
 		throw redirect(303, nextPath);
 	}

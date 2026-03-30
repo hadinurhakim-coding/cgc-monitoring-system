@@ -17,36 +17,17 @@
 	let {
 		class: className,
 		form = undefined,
+		recentEmail = undefined,
 		...restProps
-	}: HTMLFormAttributes & { class?: string; form?: LoginFormState } = $props();
+	}: HTMLFormAttributes & { class?: string; form?: LoginFormState; recentEmail?: string } = $props();
 
 	const id = $props.id();
 
-	// State untuk loading UI
-	let isSubmitting = $state(false);
-	let pinValue = $state("");
+	// State internal untuk mengatur tampilan UI PIN jika ada recentEmail
+	let forcePinStep = $state(false);
 
-	// Deteksi secara reaktif apakah pengguna sudah di tahap PIN
-	const isPinStep = $derived(form?.step === "pin");
-
-	$effect(() => {
-		if (!isPinStep) pinValue = "";
-	});
-
-	// Fungsi enhance untuk menangani loading state dan update komponen
-	const handleSubmit: SubmitFunction = () => {
-		isSubmitting = true;
-		return async ({ update }) => {
-			await update();
-			isSubmitting = false;
-		};
-	};
-
-	/** Hanya angka, max 8 digit — sinkron dengan bind:value komponen Input. */
-	function onPinInput(e: Event) {
-		const el = e.currentTarget as HTMLInputElement;
-		pinValue = el.value.replace(/\D/g, "").slice(0, 8);
-	}
+	// Menentukan apakah saat ini sedang dalam mode input PIN
+	const isPinStep = $derived(form?.step === "pin" || forcePinStep);
 </script>
 
 <form
@@ -95,8 +76,24 @@
 					{isSubmitting ? "Mengirim PIN..." : "Kirim PIN"}
 				</Button>
 			</Field>
+
+			{#if recentEmail && !form?.step}
+				<div class="rounded-md border border-blue-200 bg-blue-50 p-4 text-center mt-2">
+					<p class="text-sm text-blue-800 mb-2">
+						Anda sudah meminta PIN untuk <strong>{recentEmail}</strong> dalam 1 jam terakhir.
+					</p>
+					<Button
+						variant="outline"
+						type="button"
+						class="w-full bg-white hover:bg-blue-100 border-blue-200 text-blue-700"
+						onclick={() => forcePinStep = true}
+					>
+						Saya sudah punya PIN
+					</Button>
+				</div>
+			{/if}
 		{:else}
-			<input type="hidden" name="email" value={form?.email ?? ""} />
+			<input type="hidden" name="email" value={form?.email ?? recentEmail ?? ""} />
 
 			<Field>
 				<FieldLabel for="pin-{id}">PIN (8 Digit)</FieldLabel>
@@ -120,8 +117,7 @@
 					{isSubmitting ? "Memverifikasi..." : "Verifikasi & Masuk"}
 				</Button>
 			</Field>
-			
-			<div class="text-center text-sm">
+			<div class="flex flex-col gap-2 text-center text-sm">
 				<button
 					type="submit"
 					formaction="?/sendPin"
@@ -131,6 +127,15 @@
 				>
 					Kirim ulang PIN
 				</button>
+				{#if forcePinStep}
+					<button
+						type="button"
+						class="text-muted-foreground hover:underline"
+						onclick={() => forcePinStep = false}
+					>
+						Gunakan email lain
+					</button>
+				{/if}
 			</div>
 		{/if}
 	</FieldGroup>
