@@ -5,6 +5,8 @@
 	import SearchIcon from "@lucide/svelte/icons/search";
 	import PencilLineIcon from "@lucide/svelte/icons/pencil-line";
 	import EyeIcon from "@lucide/svelte/icons/eye";
+	import ImageIcon from "@lucide/svelte/icons/image";
+	import DownloadIcon from "@lucide/svelte/icons/download";
 	import { goto } from "$app/navigation";
 	import { navigating } from "$app/stores";
 	import { enhance } from "$app/forms";
@@ -15,6 +17,7 @@
 	import { Button } from "$lib/components/ui/button/index.js";
 	import { Input } from "$lib/components/ui/input/index.js";
 	import * as Sheet from "$lib/components/ui/sheet/index.js";
+	import * as Dialog from "$lib/components/ui/dialog/index.js";
 	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
 	import AppSidebar from "$lib/components/app-sidebar.svelte";
 
@@ -300,6 +303,24 @@
 		if (normalized.length <= 90) return normalized;
 		return `${normalized.slice(0, 90)}...`;
 	}
+
+	function parseEvidence(text: string) {
+		if (!text) return { note: "", files: [] };
+		const lines = text.split("\n");
+		const noteLines = [];
+		const files = [];
+		for (const line of lines) {
+			if (line.trim().startsWith("[FILE]")) {
+				files.push(line.replace("[FILE]", "").trim());
+			} else {
+				noteLines.push(line);
+			}
+		}
+		return {
+			note: noteLines.join("\n").trim(),
+			files
+		};
+	}
 </script>
 
 <Sidebar.Provider
@@ -371,7 +392,7 @@
 			</div>
 
 			<div class="overflow-x-auto rounded-md border">
-				<table class="w-full min-w-[980px] border-collapse text-sm">
+				<table class="w-full min-w-[980px] border-collapse text-xs">
 					<thead>
 						<tr class="bg-primary text-primary-foreground">
 							<th class="border border-slate-900 p-3 text-center font-semibold">ITEM</th>
@@ -461,7 +482,7 @@
 											<td class="border border-slate-900 p-1.5 align-top">
 												<button
 													type="button"
-													class="hover:bg-muted/40 flex min-h-14 w-full items-start rounded px-2 py-1 text-left text-sm"
+													class="hover:bg-muted/40 flex min-h-14 w-full items-start rounded px-2 py-1 text-left text-xs"
 													onclick={() =>
 														openDetail("IMPLEMENTASI", question.answer.implementation, question)}
 												>
@@ -473,18 +494,23 @@
 											<td class="border border-slate-900 p-1.5 align-top">
 												<button
 													type="button"
-													class="hover:bg-muted/40 flex min-h-14 w-full items-start rounded px-2 py-1 text-left text-sm break-all"
+													class="hover:bg-muted/40 flex min-h-14 w-full items-start rounded px-2 py-1 text-left text-xs break-all"
 													onclick={() => openDetail("EVIDENCE", question.answer.evidence, question)}
 												>
-													<span class="max-w-full overflow-hidden text-ellipsis whitespace-nowrap">
-														{shortText(question.answer.evidence)}
-													</span>
+													{#if question.answer.evidence}
+														<div class="flex items-center gap-1.5 font-medium text-blue-600">
+															<ImageIcon class="shrink-0 size-4" />
+															<span class="max-w-full overflow-hidden text-ellipsis whitespace-nowrap">Lihat Evidence</span>
+														</div>
+													{:else}
+														<span class="text-muted-foreground">-</span>
+													{/if}
 												</button>
 											</td>
 											<td class="border border-slate-900 p-1.5 align-top">
 												<button
 													type="button"
-													class="hover:bg-muted/40 flex min-h-14 w-full items-center rounded px-2 py-1 text-left text-sm font-medium"
+													class="hover:bg-muted/40 flex min-h-14 w-full items-center rounded px-2 py-1 text-left text-xs font-medium"
 													onclick={() =>
 														openDetail(
 															"STATUS YES OR NO",
@@ -498,7 +524,7 @@
 											<td class="border border-slate-900 p-1.5 align-top">
 												<button
 													type="button"
-													class="hover:bg-muted/40 flex min-h-14 w-full items-start rounded px-2 py-1 text-left text-sm"
+													class="hover:bg-muted/40 flex min-h-14 w-full items-start rounded px-2 py-1 text-left text-xs"
 													onclick={() =>
 														openDetail("REKOMENDASI", question.answer.recommendation, question)}
 												>
@@ -568,7 +594,32 @@
 			<Sheet.Description>{detailQuestion?.code ?? ""}</Sheet.Description>
 		</Sheet.Header>
 		<div class="max-h-[55vh] overflow-y-auto px-6 pb-4">
-			<pre class="bg-muted/40 text-foreground overflow-x-auto rounded-md p-3 text-sm whitespace-pre-wrap">{detailValue}</pre>
+			{#if detailTitle === "EVIDENCE" && detailValue}
+				{@const parts = parseEvidence(detailValue)}
+				<div class="space-y-4">
+					{#if parts.note}
+						<pre class="bg-muted/40 text-foreground overflow-x-auto rounded-md p-3 text-sm whitespace-pre-wrap">{parts.note}</pre>
+					{/if}
+					{#if parts.files.length > 0}
+						<div class="bg-muted/30 flex flex-col gap-2 rounded-md border p-3">
+							<span class="text-sm font-semibold">Lampiran File:</span>
+							{#each parts.files as file}
+								<a
+									href={`/api/evidence/download?path=${encodeURIComponent(file)}`}
+									target="_blank"
+									rel="noopener noreferrer"
+									class="hover:bg-background text-primary inline-flex md:w-max min-w-0 items-center gap-2 rounded-md border bg-white px-3 py-2 text-sm font-medium transition-colors"
+								>
+									<DownloadIcon class="shrink-0 size-4" /> 
+									<span class="truncate">Buka atau Unduh Lampiran</span>
+								</a>
+							{/each}
+						</div>
+					{/if}
+				</div>
+			{:else}
+				<pre class="bg-muted/40 text-foreground overflow-x-auto rounded-md p-3 text-sm whitespace-pre-wrap">{detailValue}</pre>
+			{/if}
 		</div>
 		<Sheet.Footer class="border-t px-6 py-4">
 			<div class="flex items-center justify-end gap-2">
@@ -589,37 +640,39 @@
 	</Sheet.Content>
 </Sheet.Root>
 
-<Sheet.Root bind:open={editorOpen}>
-	<Sheet.Content side="right" class="w-full sm:max-w-xl">
-		<Sheet.Header>
-			<div class="flex items-start justify-between gap-3">
+<Dialog.Root bind:open={editorOpen}>
+	<Dialog.Content class="w-full sm:max-w-2xl max-h-[90vh] overflow-hidden flex flex-col p-0 border-t-4 border-t-primary gap-0">
+		<Dialog.Header class="px-6 pt-4 pb-1 border-b bg-muted/20">
+			<div class="flex flex-col gap-1">
 				<div>
-					<Sheet.Title class="flex items-center gap-2">
-						<PencilLineIcon class="size-4" />
+					<Dialog.Title class="flex items-center gap-2 text-primary font-bold">
+						<PencilLineIcon class="size-4 shrink-0" />
 						Input Penilaian {editingQuestionCode}
-					</Sheet.Title>
+					</Dialog.Title>
 					{#if !questionTitleCollapsed}
-						<Sheet.Description>
-							<div class="text-black">{editingQuestionEn}</div>
-							<div class="mt-1 text-(--pln-light-cyan)">{editingQuestionId}</div>
-						</Sheet.Description>
+						<Dialog.Description class="mt-2 text-left">
+							<div class="text-black font-medium">{editingQuestionEn}</div>
+							<div class="mt-1 text-(--pln-light-cyan) text-xs">{editingQuestionId}</div>
+						</Dialog.Description>
 					{/if}
 				</div>
-				<Button
-					type="button"
-					variant="outline"
-					size="icon-sm"
-					onclick={() => (questionTitleCollapsed = !questionTitleCollapsed)}
-					aria-label={questionTitleCollapsed ? "Maximize judul pertanyaan" : "Minimize judul pertanyaan"}
-				>
-					{#if questionTitleCollapsed}
-						<ChevronDownIcon class="size-4" />
-					{:else}
-						<ChevronUpIcon class="size-4" />
-					{/if}
-				</Button>
+				<div class="flex w-full justify-center">
+					<Button
+						type="button"
+						variant="ghost"
+						class="h-6 px-4 py-1 text-muted-foreground"
+						onclick={() => (questionTitleCollapsed = !questionTitleCollapsed)}
+						aria-label={questionTitleCollapsed ? "Maximize judul pertanyaan" : "Minimize judul pertanyaan"}
+					>
+						{#if questionTitleCollapsed}
+							<ChevronDownIcon class="size-4 opacity-70" />
+						{:else}
+							<ChevronUpIcon class="size-4 opacity-70" />
+						{/if}
+					</Button>
+				</div>
 			</div>
-		</Sheet.Header>
+		</Dialog.Header>
 
 		<form
 			method="POST"
@@ -762,14 +815,14 @@
 				{/if}
 			</div>
 
-			<Sheet.Footer class="mt-0 border-t px-6 py-4">
+			<Dialog.Footer class="mt-0 border-t bg-muted/20 px-6 py-4">
 				<div class="flex items-center justify-end gap-2">
 					<Button type="button" variant="outline" onclick={() => (editorOpen = false)} disabled={isUploading}>Batal</Button>
 					<Button type="submit" disabled={isUploading}>
-						{isUploading ? "Mengunggah..." : "Simpan"}
+						{isUploading ? "Mengunggah..." : "Simpan Data"}
 					</Button>
 				</div>
-			</Sheet.Footer>
+			</Dialog.Footer>
 		</form>
-	</Sheet.Content>
-</Sheet.Root>
+	</Dialog.Content>
+</Dialog.Root>
