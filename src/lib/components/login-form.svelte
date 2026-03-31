@@ -23,11 +23,28 @@
 
 	const id = $props.id();
 
-	// State internal untuk mengatur tampilan UI PIN jika ada recentEmail
 	let forcePinStep = $state(false);
+	let isSubmitting = $state(false);
+	let pinValue = $state("");
 
-	// Menentukan apakah saat ini sedang dalam mode input PIN
 	const isPinStep = $derived(form?.step === "pin" || forcePinStep);
+
+	$effect(() => {
+		if (!isPinStep) pinValue = "";
+	});
+
+	const handleSubmit: SubmitFunction = () => {
+		isSubmitting = true;
+		return async ({ update }) => {
+			await update();
+			isSubmitting = false;
+		};
+	};
+
+	function onPinInput(e: Event) {
+		const el = e.currentTarget as HTMLInputElement;
+		pinValue = el.value.replace(/\D/g, "").slice(0, 8);
+	}
 </script>
 
 <form
@@ -78,15 +95,15 @@
 			</Field>
 
 			{#if recentEmail && !form?.step}
-				<div class="rounded-md border border-blue-200 bg-blue-50 p-4 text-center mt-2">
-					<p class="text-sm text-blue-800 mb-2">
+				<div class="mt-2 rounded-md border border-blue-200 bg-blue-50 p-4 text-center">
+					<p class="mb-2 text-sm text-blue-800">
 						Anda sudah meminta PIN untuk <strong>{recentEmail}</strong> dalam 1 jam terakhir.
 					</p>
 					<Button
 						variant="outline"
 						type="button"
-						class="w-full bg-white hover:bg-blue-100 border-blue-200 text-blue-700"
-						onclick={() => forcePinStep = true}
+						class="w-full border-blue-200 bg-white text-blue-700 hover:bg-blue-100"
+						onclick={() => (forcePinStep = true)}
 					>
 						Saya sudah punya PIN
 					</Button>
@@ -107,7 +124,7 @@
 					maxlength={8}
 					required
 					disabled={isSubmitting}
-					class="text-center text-2xl tracking-[0.35em] font-semibold"
+					class="text-center text-2xl font-semibold tracking-[0.35em]"
 					bind:value={pinValue}
 					oninput={onPinInput}
 				/>
@@ -131,7 +148,7 @@
 					<button
 						type="button"
 						class="text-muted-foreground hover:underline"
-						onclick={() => forcePinStep = false}
+						onclick={() => (forcePinStep = false)}
 					>
 						Gunakan email lain
 					</button>

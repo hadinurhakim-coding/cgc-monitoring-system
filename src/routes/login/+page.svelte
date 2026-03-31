@@ -5,7 +5,7 @@
 	import { onMount } from "svelte";
 	import { fade, fly } from "svelte/transition";
 
-	const { form } = $props();
+	const { form, data } = $props();
 
 	let LottieComponent =
 		$state<
@@ -48,7 +48,7 @@
 		</div>
 		<div class="flex flex-1 items-center justify-center">
 			<div class="w-full max-w-xs">
-				<LoginForm {form} />
+				<LoginForm {form} recentEmail={data.recentEmail ?? undefined} />
 			</div>
 		</div>
 	</div>
