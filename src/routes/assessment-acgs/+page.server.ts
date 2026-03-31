@@ -42,7 +42,6 @@ type AnswerView = {
 
 const MAX_EVIDENCE_BYTES = 15 * 1024 * 1024;
 const EVIDENCE_BUCKET = "gcg-evidence";
-const ALLOWED_FILETYPE_EXTS = new Set(["pdf", "png", "jpg", "jpeg", "webp"]);
 
 const MAX_IMPLEMENTATION_LEN = 12_000;
 const MAX_RECOMMENDATION_LEN = 12_000;
@@ -207,7 +206,7 @@ export const actions: Actions = {
 		const evidenceNote = String(formData.get("evidence_note") ?? "").trim();
 		const recommendation = String(formData.get("recommendation") ?? "").trim();
 		const rawStatus = String(formData.get("status") ?? "").trim().toLowerCase();
-		const file = formData.get("evidence_file");
+		const uploadedPath = String(formData.get("evidence_uploaded_path") ?? "").trim();
 
 		if (!questionCode) {
 			return fail(400, { error: "Kode pertanyaan tidak valid." });
@@ -230,41 +229,6 @@ export const actions: Actions = {
 
 		if (!implementation) {
 			return fail(400, { error: "Kolom implementasi wajib diisi." });
-		}
-
-		let uploadedPath = "";
-
-		if (file instanceof File && file.size > 0) {
-			if (file.size > MAX_EVIDENCE_BYTES) {
-				return fail(400, { error: "Ukuran file bukti maksimal 15 MB." });
-			}
-
-			const rawBuffer = await file.arrayBuffer();
-			const detected = await fileTypeFromBuffer(new Uint8Array(rawBuffer));
-			if (!detected || !ALLOWED_FILETYPE_EXTS.has(detected.ext)) {
-				return fail(400, {
-					error: "Format file tidak didukung. Unggah PDF, JPG, PNG, atau WEBP (diperiksa dari isi file)."
-				});
-			}
-
-			const ext =
-				detected.ext === "jpeg"
-					? "jpg"
-					: detected.ext.replace(/[^a-z0-9]/gi, "").toLowerCase() || "bin";
-			const objectPath = `assessment/${year}/${questionCode.replace(/[^a-zA-Z0-9_-]/g, "_")}/${randomUUID()}.${ext}`;
-			const buffer = Buffer.from(rawBuffer);
-
-			const { error: uploadError } = await db.storage.from(EVIDENCE_BUCKET).upload(objectPath, buffer, {
-				contentType: detected.mime,
-				upsert: false
-			});
-
-			if (uploadError) {
-				console.error("Evidence upload failed:", uploadError.message);
-				return fail(500, { error: "Gagal upload file evidence." });
-			}
-
-			uploadedPath = objectPath;
 		}
 
 		const { data: question, error: questionError } = await db

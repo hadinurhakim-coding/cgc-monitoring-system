@@ -7,6 +7,7 @@
 	import EyeIcon from "@lucide/svelte/icons/eye";
 	import { goto } from "$app/navigation";
 	import { navigating } from "$app/stores";
+	import { enhance } from "$app/forms";
 	import type { ActionData, PageData } from "./$types.js";
 	import { toastStore } from "$lib/stores/toast.svelte.js";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
@@ -32,6 +33,7 @@
 	let editorOpen = $state(false);
 	let detailOpen = $state(false);
 	let questionTitleCollapsed = $state(false);
+	let isUploading = $state(false);
 
 	let editingQuestionCode = $state("");
 	let editingQuestionEn = $state("");
@@ -619,7 +621,75 @@
 			</div>
 		</Sheet.Header>
 
-		<form method="POST" action="?/saveAnswer" enctype="multipart/form-data" class="flex h-full min-h-0 flex-col">
+		<form
+			method="POST"
+			action="?/saveAnswer"
+			enctype="multipart/form-data"
+			class="flex h-full min-h-0 flex-col"
+			use:enhance={async ({ formData, cancel }) => {
+				const file = formData.get("evidence_file");
+				if (file instanceof File && file.size > 0) {
+					if (file.size > 15 * 1024 * 1024) {
+						toastStore.pushToast("error", "Ukuran file bukti maksimal 15 MB.");
+						cancel();
+						return;
+					}
+
+					isUploading = true;
+					try {
+						const ext = file.name.split(".").pop() || "";
+						const res = await fetch("/api/evidence/upload-url", {
+							method: "POST",
+							headers: { "Content-Type": "application/json" },
+							body: JSON.stringify({
+								fileName: file.name,
+								fileSize: file.size,
+								fileType: file.type,
+								ext,
+								year: selectedYear,
+								questionCode: editingQuestionCode
+							})
+						});
+
+						if (!res.ok) {
+							const errData = await res.json().catch(() => ({}));
+							toastStore.pushToast("error", errData.message || "Gagal mendapatkan izin server untuk upload.");
+							isUploading = false;
+							cancel();
+							return;
+						}
+
+						const { signedUrl, path } = await res.json();
+
+						const uploadRes = await fetch(signedUrl, {
+							method: "PUT",
+							headers: { "Content-Type": file.type },
+							body: file
+						});
+
+						if (!uploadRes.ok) {
+							toastStore.pushToast("error", "Gagal mengunggah file ke storage server.");
+							isUploading = false;
+							cancel();
+							return;
+						}
+
+						formData.set("evidence_uploaded_path", path);
+						formData.delete("evidence_file"); // Prevent Vercel Payload Limit Error
+					} catch (e) {
+						toastStore.pushToast("error", "Terjadi kesalahan jaringan saat mengunggah.");
+						isUploading = false;
+						cancel();
+						return;
+					}
+				}
+
+				return async ({ update }) => {
+					isUploading = false;
+					await update();
+				};
+			}}
+		>
 			<input type="hidden" name="year" value={selectedYear} />
 			<input type="hidden" name="question_code" value={editingQuestionCode} />
 
@@ -654,9 +724,10 @@
 						type="file"
 						accept=".pdf,.png,.jpg,.jpeg,.webp"
 						class="border-input bg-background h-10 w-full rounded-md border px-3 py-2 text-sm"
+						disabled={isUploading}
 					/>
 					<p class="text-muted-foreground text-xs">
-						File akan disimpan di bucket <strong>gcg-evidence</strong>.
+						File akan langsung disimpan secara aman (direct-upload) setelah verifikasi API.
 					</p>
 				</div>
 
@@ -693,8 +764,10 @@
 
 			<Sheet.Footer class="mt-0 border-t px-6 py-4">
 				<div class="flex items-center justify-end gap-2">
-					<Button type="button" variant="outline" onclick={() => (editorOpen = false)}>Batal</Button>
-					<Button type="submit">Simpan</Button>
+					<Button type="button" variant="outline" onclick={() => (editorOpen = false)} disabled={isUploading}>Batal</Button>
+					<Button type="submit" disabled={isUploading}>
+						{isUploading ? "Mengunggah..." : "Simpan"}
+					</Button>
 				</div>
 			</Sheet.Footer>
 		</form>
