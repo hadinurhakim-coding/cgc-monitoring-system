@@ -17,6 +17,19 @@ export function createAnonServerClient() {
 	});
 }
 
+/** Client dengan JWT user saat ini — mematuhi RLS di Supabase (setelah policy diterapkan). */
+export function createUserServerClient(accessToken: string) {
+	return createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+		global: {
+			headers: { Authorization: `Bearer ${accessToken}` }
+		},
+		auth: {
+			autoRefreshToken: false,
+			persistSession: false
+		}
+	});
+}
+
 export function createAdminServerClient() {
 	return createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
 		auth: {

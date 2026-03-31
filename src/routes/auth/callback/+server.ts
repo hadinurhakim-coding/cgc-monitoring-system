@@ -9,25 +9,42 @@ import {
 import { isSafeRedirect } from "$lib/server/safe-redirect.js";
 import type { RequestHandler } from "./$types.js";
 
+const ALLOWED_OTP_TYPES = new Set(["email", "magiclink"]);
+
 export const GET: RequestHandler = async ({ url, getClientAddress, request, cookies }) => {
 	const tokenHash = url.searchParams.get("token_hash") ?? url.searchParams.get("token");
 	const type = url.searchParams.get("type");
 
-	// FIX: CRIT-04 — Validasi redirect yang ketat (whitelist prefix)
 	const next = isSafeRedirect(url.searchParams.get("next"));
 
-	if (!tokenHash || !type) {
-		throw redirect(303, "/login?error=Token+magic+link+tidak+valid");
+	if (!tokenHash || !type || !ALLOWED_OTP_TYPES.has(type)) {
+		throw redirect(303, "/login?error=Tautan+tidak+valid+atau+kedaluwarsa");
 	}
 
 	const anonClient = createAnonServerClient();
 	const { data, error } = await anonClient.auth.verifyOtp({
 		token_hash: tokenHash,
-		type: type as "magiclink" | "recovery" | "invite" | "email_change" | "email"
+		type: type as "email" | "magiclink"
 	});
 
 	if (error || !data.session || !data.user) {
 		throw redirect(303, "/login?error=Gagal+verifikasi+magic+link");
+	}
+
+	const adminClient = createAdminServerClient();
+	const { data: userRow, error: userLookupError } = await adminClient
+		.from("users")
+		.select("id")
+		.eq("id", data.user.id)
+		.maybeSingle();
+
+	if (userLookupError) {
+		console.error("auth/callback user lookup failed:", userLookupError.message);
+		throw redirect(303, "/login?error=Terjadi+gangguan+sistem");
+	}
+
+	if (!userRow) {
+		throw redirect(303, "/login?error=Akun+tidak+terdaftar+di+sistem+aplikasi");
 	}
 
 	const secure = !dev;
@@ -46,24 +63,24 @@ export const GET: RequestHandler = async ({ url, getClientAddress, request, cook
 		maxAge: 60 * 60 * 24 * 30
 	});
 
-	const adminClient = createAdminServerClient();
-
-	// FIX: CRIT-05 — Gunakan getClientAddress() sebagai primary source
-	// x-forwarded-for bisa dipalsukan oleh client tanpa trusted proxy configuration
 	const ip = getClientAddress();
 	const userAgent = request.headers.get("user-agent");
 
-	await adminClient.from("auth_login_audits").upsert(
-		{
-			user_id: data.user.id,
-			email: data.user.email ?? "",
-			provider: "magic_link",
-			last_login_at: new Date().toISOString(),
-			ip_address: ip,
-			user_agent: userAgent
-		},
-		{ onConflict: "user_id" }
-	);
+	try {
+		await adminClient.from("auth_login_audits").upsert(
+			{
+				user_id: data.user.id,
+				email: data.user.email ?? "",
+				provider: "magic_link",
+				last_login_at: new Date().toISOString(),
+				ip_address: ip,
+				user_agent: userAgent
+			},
+			{ onConflict: "user_id" }
+		);
+	} catch (e) {
+		console.error("Failed to record audit login", e);
+	}
 
 	throw redirect(303, next);
 };

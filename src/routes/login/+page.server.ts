@@ -13,19 +13,33 @@ import type { Actions, PageServerLoad } from "./$types.js";
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const RECENT_PIN_COOKIE = "gcg-recent-pin";
 
+/** Respons seragam untuk mengurangi enumerasi email (terdaftar vs tidak). */
+const SEND_PIN_GENERIC_SUCCESS =
+	"Jika email Anda terdaftar, Anda akan menerima PIN di kotak masuk. Periksa juga folder spam.";
+
 export const load: PageServerLoad = async ({ cookies }) => {
 	const recentEmail = cookies.get(RECENT_PIN_COOKIE) ?? null;
 	return { recentEmail };
 };
 
 export const actions: Actions = {
-	sendPin: async ({ request, cookies }) => {
+	sendPin: async ({ request, cookies, getClientAddress }) => {
 		const formData = await request.formData();
 		const rawEmail = formData.get("email");
 		const email = typeof rawEmail === "string" ? rawEmail.trim().toLowerCase() : "";
 
 		if (!email || !EMAIL_REGEX.test(email)) {
 			return fail(400, { error: "Format email tidak valid.", email, step: "email" as const });
+		}
+
+		const ip = getClientAddress();
+		const { allowed: ipAllowed } = checkRateLimit(`otp-send-ip:${ip}`, 30, 15 * 60 * 1000);
+		if (!ipAllowed) {
+			return fail(429, {
+				error: "Terlalu banyak permintaan dari jaringan ini. Coba lagi dalam 15 menit.",
+				email,
+				step: "email" as const
+			});
 		}
 
 		const { allowed: sendAllowed } = checkRateLimit(`otp-send:${email}`, 5, 15 * 60 * 1000);
@@ -56,11 +70,11 @@ export const actions: Actions = {
 		}
 
 		if (!registeredUser) {
-			return fail(404, {
-				error: "Email belum terdaftar. Hubungi administrator.",
+			return {
+				success: SEND_PIN_GENERIC_SUCCESS,
 				email,
 				step: "email" as const
-			});
+			};
 		}
 
 		const { error: otpError } = await authClient.auth.signInWithOtp({
@@ -72,7 +86,11 @@ export const actions: Actions = {
 
 		if (otpError) {
 			console.error("OTP send failed:", otpError.message);
-			return fail(400, { error: "Gagal mengirim PIN. Silakan coba lagi.", email, step: "email" as const });
+			return {
+				success: SEND_PIN_GENERIC_SUCCESS,
+				email,
+				step: "email" as const
+			};
 		}
 
 		const secure = !dev;
@@ -85,9 +103,9 @@ export const actions: Actions = {
 		});
 
 		return {
-			success: "PIN berhasil dikirim. Silakan cek email Anda.",
+			success: SEND_PIN_GENERIC_SUCCESS,
 			email,
-			step: "pin" as const
+			step: "email" as const
 		};
 	},
 

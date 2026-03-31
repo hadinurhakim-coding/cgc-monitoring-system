@@ -1,0 +1,6 @@
+User-agent: *
+Disallow: /dashboard
+Disallow: /assessment-acgs
+Disallow: /account
+Disallow: /logout
+Allow: /

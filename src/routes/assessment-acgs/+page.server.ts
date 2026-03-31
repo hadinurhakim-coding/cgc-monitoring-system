@@ -1,6 +1,10 @@
 import { randomUUID } from "node:crypto";
 import { fail, redirect } from "@sveltejs/kit";
-import { createAdminServerClient } from "$lib/server/auth.js";
+import { fileTypeFromBuffer } from "file-type";
+import {
+	ACCESS_TOKEN_COOKIE,
+	createUserServerClient
+} from "$lib/server/auth.js";
 import { hasPermission } from "$lib/server/rbac.js";
 import type { Actions, PageServerLoad } from "./$types.js";
 
@@ -38,28 +42,41 @@ type AnswerView = {
 
 const MAX_EVIDENCE_BYTES = 15 * 1024 * 1024;
 const EVIDENCE_BUCKET = "gcg-evidence";
-const ALLOWED_EVIDENCE_MIME = new Set(["application/pdf", "image/png", "image/jpeg", "image/jpg", "image/webp"]);
+const ALLOWED_FILETYPE_EXTS = new Set(["pdf", "png", "jpg", "jpeg", "webp"]);
+
+const MAX_IMPLEMENTATION_LEN = 12_000;
+const MAX_RECOMMENDATION_LEN = 12_000;
+const MAX_EVIDENCE_NOTE_LEN = 12_000;
 
 function getDivisionFilter(divisionId: string | null) {
 	if (divisionId) return { key: "eq", value: divisionId } as const;
 	return { key: "is", value: null } as const;
 }
 
-export const load: PageServerLoad = async ({ url, locals }) => {
-	const adminClient = createAdminServerClient();
+export const load: PageServerLoad = async ({ url, locals, cookies }) => {
+	const accessToken = cookies.get(ACCESS_TOKEN_COOKIE);
+	if (!accessToken) {
+		throw redirect(303, "/login");
+	}
+	const db = createUserServerClient(accessToken);
 
-	// FIX: ARCH-04 — Implementasi RBAC di level aplikasi
 	if (!hasPermission(locals.auth.role, "assessment:read")) {
 		throw redirect(303, "/dashboard");
 	}
 
-	const selectedYearParam = Number(url.searchParams.get("year"));
+	const rawYear = url.searchParams.get("year");
 	const currentYear = new Date().getFullYear();
-	const selectedYear = Number.isFinite(selectedYearParam) ? selectedYearParam : currentYear;
+	let selectedYear = currentYear;
+	if (rawYear && /^\d{4}$/.test(rawYear)) {
+		const yearVal = parseInt(rawYear, 10);
+		if (yearVal >= 2000 && yearVal <= currentYear + 5) {
+			selectedYear = yearVal;
+		}
+	}
 
 	const [{ data: parts, error: partsError }, { data: sections, error: sectionsError }] = await Promise.all([
-		adminClient.from("acgs_parts").select("code,title_en,title_id,sort_order").order("sort_order"),
-		adminClient
+		db.from("acgs_parts").select("code,title_en,title_id,sort_order").order("sort_order"),
+		db
 			.from("acgs_sections")
 			.select("id,part_code,code,title_en,title_id,sort_order")
 			.order("part_code")
@@ -78,7 +95,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 	let questions: QuestionRow[] = [];
 
 	if (sectionIds.length) {
-		const { data: questionRows, error: questionsError } = await adminClient
+		const { data: questionRows, error: questionsError } = await db
 			.from("acgs_questions")
 			.select("id,section_id,code,question_en,question_id,sort_order")
 			.in("section_id", sectionIds)
@@ -115,7 +132,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 
 	let answersByCode: Record<string, AnswerView> = {};
 	const divisionFilter = getDivisionFilter(locals.auth.divisionId);
-	let assessmentQuery = adminClient
+	let assessmentQuery = db
 		.from("acgs_assessments")
 		.select("id")
 		.eq("year", selectedYear)
@@ -128,7 +145,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 	const { data: assessment } = await assessmentQuery.maybeSingle();
 
 	if (assessment?.id) {
-		const { data: answers } = await adminClient
+		const { data: answers } = await db
 			.from("acgs_assessment_answers")
 			.select("implementation,evidence,status,recommendation,question_id")
 			.eq("assessment_id", assessment.id);
@@ -160,19 +177,31 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 	};
 };
 
-
-
 export const actions: Actions = {
-	saveAnswer: async ({ request, locals }) => {
-		const adminClient = createAdminServerClient();
+	saveAnswer: async ({ request, locals, cookies }) => {
+		const accessToken = cookies.get(ACCESS_TOKEN_COOKIE);
+		if (!accessToken) {
+			return fail(401, { error: "Sesi tidak valid. Silakan masuk kembali." });
+		}
+		const db = createUserServerClient(accessToken);
 
-		// FIX: ARCH-04 — Implementasi RBAC untuk mutasi data
 		if (!hasPermission(locals.auth.role, "assessment:write")) {
 			return fail(403, { error: "Anda tidak memiliki izin (role) untuk mengubah assessment." });
 		}
 
 		const formData = await request.formData();
-		const year = Number(formData.get("year"));
+		const rawYear = String(formData.get("year") ?? "").trim();
+		const currentYear = new Date().getFullYear();
+		let year = 0;
+		if (rawYear && /^\d{4}$/.test(rawYear)) {
+			year = parseInt(rawYear, 10);
+			if (year < 2000 || year > currentYear + 5) {
+				return fail(400, { error: "Tahun di luar batas yang diizinkan." });
+			}
+		} else {
+			return fail(400, { error: "Format tahun tidak valid." });
+		}
+
 		const questionCode = String(formData.get("question_code") ?? "").trim();
 		const implementation = String(formData.get("implementation") ?? "").trim();
 		const evidenceNote = String(formData.get("evidence_note") ?? "").trim();
@@ -180,12 +209,18 @@ export const actions: Actions = {
 		const rawStatus = String(formData.get("status") ?? "").trim().toLowerCase();
 		const file = formData.get("evidence_file");
 
-		if (!Number.isFinite(year)) {
-			return fail(400, { error: "Tahun tidak valid." });
-		}
-
 		if (!questionCode) {
 			return fail(400, { error: "Kode pertanyaan tidak valid." });
+		}
+
+		if (implementation.length > MAX_IMPLEMENTATION_LEN) {
+			return fail(400, { error: "Teks implementasi terlalu panjang." });
+		}
+		if (recommendation.length > MAX_RECOMMENDATION_LEN) {
+			return fail(400, { error: "Teks rekomendasi terlalu panjang." });
+		}
+		if (evidenceNote.length > MAX_EVIDENCE_NOTE_LEN) {
+			return fail(400, { error: "Catatan bukti terlalu panjang." });
 		}
 
 		const status = rawStatus === "yes" || rawStatus === "no" || rawStatus === "na" ? rawStatus : null;
@@ -203,22 +238,26 @@ export const actions: Actions = {
 			if (file.size > MAX_EVIDENCE_BYTES) {
 				return fail(400, { error: "Ukuran file bukti maksimal 15 MB." });
 			}
-			if (!file.type || !ALLOWED_EVIDENCE_MIME.has(file.type)) {
-				return fail(400, { error: "Format file tidak didukung. Gunakan PDF/JPG/PNG/WEBP." });
+
+			const rawBuffer = await file.arrayBuffer();
+			const detected = await fileTypeFromBuffer(new Uint8Array(rawBuffer));
+			if (!detected || !ALLOWED_FILETYPE_EXTS.has(detected.ext)) {
+				return fail(400, {
+					error: "Format file tidak didukung. Unggah PDF, JPG, PNG, atau WEBP (diperiksa dari isi file)."
+				});
 			}
 
+			const ext =
+				detected.ext === "jpeg"
+					? "jpg"
+					: detected.ext.replace(/[^a-z0-9]/gi, "").toLowerCase() || "bin";
+			const objectPath = `assessment/${year}/${questionCode.replace(/[^a-zA-Z0-9_-]/g, "_")}/${randomUUID()}.${ext}`;
+			const buffer = Buffer.from(rawBuffer);
 
-			const extension = file.name.includes(".") ? file.name.split(".").pop() : "bin";
-			const safeExt = extension ? extension.replace(/[^a-zA-Z0-9]/g, "").toLowerCase() : "bin";
-			const objectPath = `assessment/${year}/${questionCode}/${randomUUID()}.${safeExt || "bin"}`;
-			const buffer = Buffer.from(await file.arrayBuffer());
-
-			const { error: uploadError } = await adminClient.storage
-				.from(EVIDENCE_BUCKET)
-				.upload(objectPath, buffer, {
-					contentType: file.type || "application/octet-stream",
-					upsert: false
-				});
+			const { error: uploadError } = await db.storage.from(EVIDENCE_BUCKET).upload(objectPath, buffer, {
+				contentType: detected.mime,
+				upsert: false
+			});
 
 			if (uploadError) {
 				console.error("Evidence upload failed:", uploadError.message);
@@ -228,7 +267,7 @@ export const actions: Actions = {
 			uploadedPath = objectPath;
 		}
 
-		const { data: question, error: questionError } = await adminClient
+		const { data: question, error: questionError } = await db
 			.from("acgs_questions")
 			.select("id")
 			.eq("code", questionCode)
@@ -239,7 +278,7 @@ export const actions: Actions = {
 
 		let assessmentId = "";
 		const divisionFilter = getDivisionFilter(locals.auth.divisionId);
-		let existingAssessmentQuery = adminClient
+		let existingAssessmentQuery = db
 			.from("acgs_assessments")
 			.select("id")
 			.eq("year", year)
@@ -253,7 +292,7 @@ export const actions: Actions = {
 		if (existingAssessment?.id) {
 			assessmentId = existingAssessment.id;
 		} else {
-			const { data: newAssessment, error: createAssessmentError } = await adminClient
+			const { data: newAssessment, error: createAssessmentError } = await db
 				.from("acgs_assessments")
 				.insert({
 					year,
@@ -271,10 +310,9 @@ export const actions: Actions = {
 			assessmentId = newAssessment.id;
 		}
 
-		// FIX: CRIT-08 — Ambil existing evidence dari DB, bukan dari hidden field client
 		let existingEvidence = "";
 		if (existingAssessment?.id) {
-			const { data: currentAnswer } = await adminClient
+			const { data: currentAnswer } = await db
 				.from("acgs_assessment_answers")
 				.select("evidence")
 				.eq("assessment_id", assessmentId)
@@ -288,14 +326,14 @@ export const actions: Actions = {
 			finalEvidence = evidenceNote ? `${evidenceNote}\n[FILE] ${uploadedPath}` : `[FILE] ${uploadedPath}`;
 		}
 
-		const { data: existingAnswer } = await adminClient
+		const { data: existingAnswer } = await db
 			.from("acgs_assessment_answers")
 			.select("id")
 			.eq("assessment_id", assessmentId)
 			.eq("question_id", question.id)
 			.maybeSingle();
 
-		const { error: upsertError } = await adminClient.from("acgs_assessment_answers").upsert(
+		const { error: upsertError } = await db.from("acgs_assessment_answers").upsert(
 			{
 				assessment_id: assessmentId,
 				question_id: question.id,

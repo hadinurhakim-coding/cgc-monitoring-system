@@ -94,7 +94,20 @@
 				</Button>
 			</Field>
 
-			{#if recentEmail && !form?.step}
+			{#if form?.success}
+				<div class="mt-2">
+					<Button
+						type="button"
+						variant="secondary"
+						class="w-full"
+						onclick={() => (forcePinStep = true)}
+					>
+						Masukkan PIN
+					</Button>
+				</div>
+			{/if}
+
+			{#if recentEmail && !isPinStep}
 				<div class="mt-2 rounded-md border border-blue-200 bg-blue-50 p-4 text-center">
 					<p class="mb-2 text-sm text-blue-800">
 						Anda sudah meminta PIN untuk <strong>{recentEmail}</strong> dalam 1 jam terakhir.

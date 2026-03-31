@@ -6,6 +6,7 @@
 	import PencilLineIcon from "@lucide/svelte/icons/pencil-line";
 	import EyeIcon from "@lucide/svelte/icons/eye";
 	import { goto } from "$app/navigation";
+	import { navigating } from "$app/stores";
 	import type { ActionData, PageData } from "./$types.js";
 	import { toastStore } from "$lib/stores/toast.svelte.js";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
@@ -389,7 +390,21 @@
 								LEVEL 1
 							</td>
 						</tr>
-						{#if pagedPartRows.length}
+						{#if $navigating}
+							<tr>
+								<td colspan="6" class="border border-slate-900 p-6 text-center">
+									<div class="flex flex-col items-center gap-4 py-8">
+										<div class="text-muted-foreground text-sm font-medium">Memuat data assessment...</div>
+										<div class="flex w-full max-w-2xl flex-col gap-3">
+											<div class="bg-muted h-10 w-full animate-pulse rounded-md"></div>
+											<div class="bg-muted h-10 w-full animate-pulse rounded-md"></div>
+											<div class="bg-muted h-10 w-full animate-pulse rounded-md"></div>
+											<div class="bg-muted h-10 w-full animate-pulse rounded-md"></div>
+										</div>
+									</div>
+								</td>
+							</tr>
+						{:else if pagedPartRows.length}
 							{#each pagedPartRows as part (part.code)}
 								<tr>
 									<td class="text-primary w-16 border border-slate-900 p-2 font-semibold whitespace-pre-line">
