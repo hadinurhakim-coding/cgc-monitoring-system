@@ -339,7 +339,7 @@
 		<main class="flex flex-1 flex-col gap-4 p-4 md:gap-6 md:p-6">
 			<div class="flex flex-wrap items-start justify-between gap-3">
 				<h2 class="max-w-5xl text-sm leading-6 font-semibold md:text-base">
-					URAIAN HASIL ASSESSMENT ASEAN CORPORATE GOVERNANCE (ACGS) LEVEL 1 TAHUN BUKU
+					URAIAN HASIL ASSESSMENT ASEAN CORPORATE GOVERNANCE (ACGS) LEVEL 1&2 TAHUN BUKU
 					{selectedYear}
 				</h2>
 
@@ -408,11 +408,6 @@
 						</tr>
 					</thead>
 					<tbody class="align-top">
-						<tr>
-							<td colspan="6" class="border border-slate-900 bg-white p-1.5 text-left font-semibold">
-								LEVEL 1
-							</td>
-						</tr>
 						{#if $navigating}
 							<tr>
 								<td colspan="6" class="border border-slate-900 p-6 text-center">
@@ -428,31 +423,48 @@
 								</td>
 							</tr>
 						{:else if pagedPartRows.length}
-							{#each pagedPartRows as part (part.code)}
-								<tr>
-									<td class="text-primary w-16 border border-slate-900 p-2 font-semibold whitespace-pre-line">
-										PART {part.code}<br />BAGIAN {part.code}
+							{#each pagedPartRows as part, index (part.code)}
+								{@const currentLevel = ["A", "B", "C", "D", "E"].includes(part.code) ? "LEVEL 1" : "LEVEL 2"}
+								{@const prevLevel = index > 0 ? (["A", "B", "C", "D", "E"].includes(pagedPartRows[index-1].code) ? "LEVEL 1" : "LEVEL 2") : null}
+								
+								{#if currentLevel !== prevLevel}
+									<tr class="bg-[#dce6f1]">
+										<td colspan="6" class="border border-slate-900 p-2 font-bold text-black text-left">
+											{currentLevel}
+										</td>
+									</tr>
+								{/if}
+
+								<tr class="bg-[#f0f0f0]">
+									<td class="w-16 border border-slate-900 p-2 font-bold whitespace-pre-line align-top">
+										<span class="text-black">PART {part.code}</span><br />
+										<span class="text-[#0070c0]">BAGIAN {part.code}</span>
 									</td>
-									<td class="border border-slate-900 p-2 leading-6">
-										<div class="font-semibold text-black">{part.title_en}</div>
-											<div class="mt-0.5 text-(--pln-light-cyan)">{part.title_id}</div>
+									<td class="border border-slate-900 p-2 leading-6 align-top">
+										<div class="font-bold text-black uppercase">{part.title_en}</div>
+										<div class="mt-0.5 font-bold text-[#0070c0] uppercase">{part.title_id}</div>
 									</td>
-									<td class="border border-slate-900 p-2"></td>
-									<td class="border border-slate-900 p-2"></td>
-									<td class="border border-slate-900 p-2"></td>
-									<td class="border border-slate-900 p-2"></td>
+									<td class="border border-slate-900 p-2 border-b-2"></td>
+									<td class="border border-slate-900 p-2 border-b-2"></td>
+									<td class="border border-slate-900 p-2 border-b-2"></td>
+									<td class="border border-slate-900 p-2 border-b-2"></td>
 								</tr>
 
 								{#each part.sections as section (section.code)}
-									<tr>
-										<td class="text-primary border border-slate-900 p-2 align-top font-semibold">
-											<div class="flex items-center justify-between gap-1">
-												<span>{section.code}</span>
-											</div>
+									<tr class="bg-white">
+										<td class="border border-slate-900 p-2 align-top font-bold whitespace-pre-line">
+											{#if part.code === "BONUS" || part.code === "PENALTY"}
+												<span class="text-black">PART {section.code}</span><br />
+												<span class="text-[#0070c0]">BAGIAN {section.code}</span>
+											{:else}
+												<div class="flex items-center justify-between gap-1">
+													<span class="text-black">{section.code}</span>
+												</div>
+											{/if}
 										</td>
-										<td class="border border-slate-900 p-2 leading-6">
-											<div class="font-semibold text-black">{section.title_en}</div>
-											<div class="mt-0.5 text-(--pln-light-cyan)">{section.title_id}</div>
+										<td class="border border-slate-900 p-2 leading-6 align-top">
+											<div class="font-bold text-black">{section.title_en}</div>
+											<div class="mt-0.5 font-bold text-[#0070c0]">{section.title_id}</div>
 										</td>
 										<td class="border border-slate-900 p-2"></td>
 										<td class="border border-slate-900 p-2"></td>
@@ -460,8 +472,9 @@
 										<td class="border border-slate-900 p-2"></td>
 									</tr>
 
+
 									{#each section.questions as question (question.code)}
-										<tr>
+										<tr class={part.code === "PENALTY" ? "bg-red-50/20" : part.code === "BONUS" ? "bg-gray-50/50" : "bg-white"}>
 											<td class="text-primary border border-slate-900 p-2 font-semibold">
 												<div class="flex items-start justify-between gap-1">
 													<span>{question.code}</span>

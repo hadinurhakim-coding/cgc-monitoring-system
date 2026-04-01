@@ -1,6 +1,5 @@
 import { randomUUID } from "node:crypto";
 import { fail, redirect } from "@sveltejs/kit";
-import { fileTypeFromBuffer } from "file-type";
 import {
 	ACCESS_TOKEN_COOKIE,
 	createUserServerClient
@@ -98,7 +97,8 @@ export const load: PageServerLoad = async ({ url, locals, cookies }) => {
 			.from("acgs_questions")
 			.select("id,section_id,code,question_en,question_id,sort_order")
 			.in("section_id", sectionIds)
-			.order("code");
+			.order("sort_order", { ascending: true })
+			.order("code", { ascending: true });
 
 		if (questionsError) {
 			console.error("Failed to load ACGS questions:", questionsError.message);
