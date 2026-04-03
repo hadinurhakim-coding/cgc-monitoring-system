@@ -3163,13 +3163,11 @@
               <td class="border border-slate-900 p-2"></td>
             </tr>
 
-            <!-- QUESTION ROW D.2.4 (BOARD APPOINTMENT) -->
+            <!-- D.2 SUBTITLE — Board Structure & Composition -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2 font-bold"></td>
               <td class="border border-slate-900 p-2 font-bold leading-tight">
-                <div class="text-black italic">
-                  Board Structure & Composition
-                </div>
+                <div class="text-black italic">Board Structure &amp; Composition</div>
                 <div class="text-[#0070c0]">Struktur dan Komposisi Dewan</div>
               </td>
               <td class="border border-slate-900 p-2"></td>
@@ -3187,15 +3185,14 @@
                 <div
                   class="text-black mb-1 text-justify font-normal leading-snug"
                 >
-                  Do independent directors/ commissioners make up at least 50%
-                  of the board of directors/commissioners?
+                  Do independent directors/commissioners make up at least 50% of
+                  the board of directors/commissioners?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  the board of directors/commissioners? Apakah komposisi
-                  komisaris independen memenuhi setidaknya 50% dari total dewan
-                  komisaris?
+                  Apakah komposisi komisaris independen memenuhi setidaknya 50% dari
+                  total dewan komisaris?
                 </div>
               </td>
               <td class="border border-slate-900 p-2"></td>
@@ -3206,22 +3203,34 @@
 
             <!-- QUESTION ROW D.2.5 -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
+              <td class="border border-slate-900 p-2 align-top">
                 <span class="text-[#0070c0] font-normal">D.2.5</span>
               </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Does the company disclose the criteria used in selecting new
+              <td class="border border-slate-900 p-2 leading-snug align-top text-xs">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
+                  Does the company have a term limit of nine years or less or 2
+                  terms of five years<sup>1</sup> each for its independent
                   directors/commissioners?
                 </div>
+                <p class="text-black text-[10px] leading-tight text-justify mb-1">
+                  <sup>1</sup> The five years term must be required by legislation
+                  which pre-existed the introduction of the ASEAN Corporate
+                  Governance Scorecard in 2011
+                </p>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah perusahaan mengungkapkan kriteria yang digunakan dalam
-                  memilih direksi/dewan komisaris yang baru?
+                  Apakah perusahaan memiliki batasan jangka waktu sembilan tahun
+                  atau kurang atau 2 periode dalam jangka waktu lima tahun*
+                  masing-masing untuk para direktur/komisaris independen?
                 </div>
+                <p
+                  class="text-[#0070c0] text-[10px] leading-tight text-justify mt-1 italic"
+                >
+                  *Jangka waktu lima tahun harus diwajibkan oleh undang-undang yang
+                  sudah ada sebelum diperkenalkannya ASEAN Corporate Governance
+                  Scorecard pada tahun 2011
+                </p>
               </td>
               <td class="border border-slate-900 p-2"></td>
               <td class="border border-slate-900 p-2"></td>
@@ -3236,26 +3245,17 @@
               </td>
               <td class="border border-slate-900 p-2 leading-snug">
                 <div
-                  class="text-black mb-1 text-justify font-normal leading-snug font-bold"
+                  class="text-black mb-1 text-justify font-normal leading-snug"
                 >
-                  Board Diversity
+                  Has the company set a limit of five board seats that an individual
+                  independent/non-executive director/commissioner may hold
+                  simultaneously?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Diversitas Dewan
-                </div>
-                <div
-                  class="text-black mt-1 text-justify font-normal leading-snug"
-                >
-                  Does the company have a policy on board diversity (e.g.
-                  gender, skills, experience)?
-                </div>
-                <div
-                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
-                >
-                  Apakah perusahaan memiliki kebijakan tentang diversitas dewan
-                  (misalnya jenis kelamin, keterampilan, pengalaman)?
+                  Apakah perusahaan menetapkan batasan lima jabatan di perusahaan
+                  terbuka secara bersamaan bagi masing-masing direksi/komisaris?
                 </div>
               </td>
               <td class="border border-slate-900 p-2"></td>
@@ -3264,14 +3264,524 @@
               <td class="border border-slate-900 p-2"></td>
             </tr>
 
-            <!-- SECTION ROW D.3 -->
+            <!-- QUESTION ROW D.2.7 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2">
+                <span class="text-[#0070c0] font-normal">D.2.7</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug">
+                <div
+                  class="text-black mb-1 text-justify font-normal leading-snug"
+                >
+                  Does the company have any executive directors who serve on more
+                  than two boards of listed companies outside of the group?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah perusahaan memiliki direktur eksekutif yang menjabat lebih
+                  dari dua perusahaan yang terdaftar di luar grup perusahaan?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- D.2 SUBTITLE — Nominating Committee -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2 font-bold"></td>
+              <td class="border border-slate-900 p-2 font-bold leading-tight">
+                <div class="text-black font-bold">Nominating Committee</div>
+                <div class="text-[#0070c0] font-bold italic">Komite Nominasi</div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- QUESTION ROW D.2.8 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2">
+                <span class="text-[#0070c0] font-normal">D.2.8</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug">
+                <div
+                  class="text-black mb-1 text-justify font-normal leading-snug"
+                >
+                  Does the company have a Nominating Committee?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah perusahaan mempunyai Komite Nominasi?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- QUESTION ROW D.2.9 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2">
+                <span class="text-[#0070c0] font-normal">D.2.9</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug">
+                <div
+                  class="text-black mb-1 text-justify font-normal leading-snug"
+                >
+                  Is the Nominating Committee comprised of a majority of independent
+                  directors/ commissioners?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah Komite Nominasi sebagian besar terdiri dari komisaris
+                  independen?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- QUESTION ROW D.2.10 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2">
+                <span class="text-[#0070c0] font-normal">D.2.10</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug">
+                <div
+                  class="text-black mb-1 text-justify font-normal leading-snug"
+                >
+                  Is the chairman of the Nominating Committee an independent
+                  director/commissioner?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah ketua Komite Nominasi berasal dari komisaris independen?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- QUESTION ROW D.2.11 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2">
+                <span class="text-[#0070c0] font-normal">D.2.11</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug">
+                <div
+                  class="text-black mb-1 text-justify font-normal leading-snug"
+                >
+                  Does the company disclose the terms of reference/ governance
+                  structure/charter of the Nominating Committee?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah perusahaan mengungkapkan kerangka acuan/ struktur tata
+                  kelola/piagam Komite Nominasi?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- QUESTION ROW D.2.12 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2">
+                <span class="text-[#0070c0] font-normal">D.2.12</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug">
+                <div
+                  class="text-black mb-1 text-justify font-normal leading-snug"
+                >
+                  Is the meeting attendance of the Nominating Committee disclosed
+                  and if so, did the Nominating Committee meet at least twice during
+                  the year?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah tingkat kehadiran Komite Nominasi dalam rapat diungkapkan,
+                  dan jika iya apakah Komite Nominasi rapat setidaknya dua kali
+                  dalam satu tahun?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- D.2 SUBTITLE — Remuneration Committee -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2 font-bold"></td>
+              <td class="border border-slate-900 p-2 font-bold leading-tight">
+                <div class="text-black font-bold">
+                  Remuneration Committee/Compensation Committee
+                </div>
+                <div class="text-[#0070c0] font-bold italic">
+                  Komite Remunerasi/ Komite Kompensasi
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- QUESTION ROW D.2.13 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2">
+                <span class="text-[#0070c0] font-normal">D.2.13</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug">
+                <div
+                  class="text-black mb-1 text-justify font-normal leading-snug"
+                >
+                  Does the company have a Remuneration Committee?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah perusahaan mempunyai Komite Remunerasi?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- QUESTION ROW D.2.14 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2">
+                <span class="text-[#0070c0] font-normal">D.2.14</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug">
+                <div
+                  class="text-black mb-1 text-justify font-normal leading-snug"
+                >
+                  Is the Remuneration Committee comprised entirely of non-executive
+                  directors/ commissioners with a majority of independent
+                  directors/commissioners?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah Komite Remunerasi seluruhnya terdiri dari Dewan Komisaris
+                  dengan sebagian besar komisaris independen?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- QUESTION ROW D.2.15 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2">
+                <span class="text-[#0070c0] font-normal">D.2.15</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug">
+                <div
+                  class="text-black mb-1 text-justify font-normal leading-snug"
+                >
+                  Is the chairman of the Remuneration Committee an independent
+                  director/ commissioner?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah ketua Komite Remunerasi berasal dari komisaris independen?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- QUESTION ROW D.2.16 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2">
+                <span class="text-[#0070c0] font-normal">D.2.16</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug">
+                <div
+                  class="text-black mb-1 text-justify font-normal leading-snug"
+                >
+                  Does the company disclose the terms of reference/governance
+                  structure/charter of the Remuneration Committee?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah Komite Remunerasi mengungkapkan kerangka acuan/struktur tata
+                  kelola/piagam Komite Remunerasi?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- QUESTION ROW D.2.17 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2">
+                <span class="text-[#0070c0] font-normal">D.2.17</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug">
+                <div
+                  class="text-black mb-1 text-justify font-normal leading-snug"
+                >
+                  Is the meeting attendance of the Remuneration Committee disclosed
+                  and, if so, did the Remuneration Committee at least twice during
+                  the year?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah Komite Remunerasi mengungkapkan tingkat kehadiran dalam
+                  rapat yang diadakan sekurang-kurangnya 2 (dua) kali dalam setahun?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- D.2 SUBTITLE — Audit Committee -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2 font-bold"></td>
+              <td class="border border-slate-900 p-2 font-bold leading-tight">
+                <div class="text-black font-bold italic">Audit Committee</div>
+                <div class="text-[#0070c0] font-bold italic">Komite Audit</div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- QUESTION ROW D.2.18 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2">
+                <span class="text-[#0070c0] font-normal">D.2.18</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug">
+                <div
+                  class="text-black mb-1 text-justify font-normal leading-snug"
+                >
+                  Does the company have an Audit Committee?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah perusahaan mempunyai Komite Audit?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- QUESTION ROW D.2.19 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2">
+                <span class="text-[#0070c0] font-normal">D.2.19</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug">
+                <div
+                  class="text-black mb-1 text-justify font-normal leading-snug"
+                >
+                  Is the Audit Committee comprised entirely of non-executive
+                  directors/commissioners with a majority of independent
+                  directors/commissioners?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah Komite Audit seluruhnya terdiri dari Dewan Komisaris dengan
+                  sebagian besar merupakan komisaris independen?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- QUESTION ROW D.2.20 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2">
+                <span class="text-[#0070c0] font-normal">D.2.20</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug">
+                <div
+                  class="text-black mb-1 text-justify font-normal leading-snug"
+                >
+                  Is the chairman of the Audit Committee an independent
+                  director/commissioner?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah ketua Komite Audit berasal dari komisaris independen?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- QUESTION ROW D.2.21 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2">
+                <span class="text-[#0070c0] font-normal">D.2.21</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug">
+                <div
+                  class="text-black mb-1 text-justify font-normal leading-snug"
+                >
+                  Does the company disclose the terms of reference/ governance
+                  structure/charter of the Audit Committee?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah perusahaan mengungkapkan kerangka acuan/ struktur tata
+                  kelola/ piagam Komite Audit?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- QUESTION ROW D.2.22 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2">
+                <span class="text-[#0070c0] font-normal">D.2.22</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug">
+                <div
+                  class="text-black mb-1 text-justify font-normal leading-snug"
+                >
+                  Does at least one of the independent directors/ commissioners of
+                  the committee have accounting expertise (accounting qualification
+                  or experience)?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah salah satu komisaris independen pada komite setidaknya
+                  memiliki keahlian akuntansi (kualifikasi atau pengalaman
+                  akuntansi)?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- QUESTION ROW D.2.23 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2">
+                <span class="text-[#0070c0] font-normal">D.2.23</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug">
+                <div
+                  class="text-black mb-1 text-justify font-normal leading-snug"
+                >
+                  Is the meeting attendance of the Audit Committee disclosed and,
+                  if so, did the Audit Committee meet at least four times during the
+                  year?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah tingkat kehadiran anggota pada rapat Komite Audit
+                  diungkapkan dan, jika demikian, apakah Komite Audit mengadakan
+                  rapat paling sedikit empat kali dalam setahun?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- QUESTION ROW D.2.24 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2">
+                <span class="text-[#0070c0] font-normal">D.2.24</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug">
+                <div
+                  class="text-black mb-1 text-justify font-normal leading-snug"
+                >
+                  Does the Audit Committee have primary responsibility for
+                  recommendation on the appointment, and removal of the external
+                  auditor?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah Komite Audit memiliki tanggung jawab utama untuk memberikan
+                  rekomendasi mengenai penunjukan, dan pemberhentian auditor
+                  eksternal?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- SECTION ROW D.3 — Board Processes -->
             <tr class="bg-white">
               <td class="border border-slate-900 p-2 font-bold text-black">
                 D.3
               </td>
               <td class="border border-slate-900 p-2 font-bold leading-tight">
-                <div class="text-black">Board Independence</div>
-                <div class="text-[#0070c0]">Independensi Dewan</div>
+                <div class="text-black">Board Processes</div>
+                <div class="text-[#0070c0]">Proses Dewan</div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- D.3 SUBTITLE — Board meetings and attendance -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2 font-bold"></td>
+              <td class="border border-slate-900 p-2 font-bold leading-tight">
+                <div class="text-black font-bold">Board meetings and attendance</div>
+                <div class="text-[#0070c0] font-normal italic">
+                  Rapat dan tingkat kehadiran Dewan
+                </div>
               </td>
               <td class="border border-slate-900 p-2"></td>
               <td class="border border-slate-900 p-2"></td>
@@ -3288,14 +3798,13 @@
                 <div
                   class="text-black mb-1 text-justify font-normal leading-snug"
                 >
-                  Do independent directors/commissioners make up at least 50% of
-                  the board of directors/commissioners?
+                  Are the board of directors meetings scheduled before the start of
+                  financial year?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah komposisi komisaris independen memenuhi setidaknya 50%
-                  dari total dewan komisaris?
+                  Apakah rapat direksi dijadwalkan sebelum tahun anggaran dimulai?
                 </div>
               </td>
               <td class="border border-slate-900 p-2"></td>
@@ -3313,14 +3822,14 @@
                 <div
                   class="text-black mb-1 text-justify font-normal leading-snug"
                 >
-                  Does the company have a term limit for independent
-                  directors/commissioners?
+                  Does the board of directors/commissioners meet at least six
+                  times per year?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah perusahaan memiliki batas waktu masa jabatan untuk
-                  direktur/komisaris independen?
+                  Apakah direksi/dewan komisaris mengadakan rapat minimal enam kali
+                  dalam satu tahun?
                 </div>
               </td>
               <td class="border border-slate-900 p-2"></td>
@@ -3338,16 +3847,15 @@
                 <div
                   class="text-black mb-1 text-justify font-normal leading-snug"
                 >
-                  Has the board of directors/commissioners set a policy that
-                  limits the term of independent directors/commissioners to nine
-                  years or less?
+                  Has each of the directors/commissioners attended at least 75% of
+                  all the board meetings held during the year?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah direksi/dewan komisaris menetapkan kebijakan yang
-                  membatasi masa jabatan direktur/komisaris independen selama
-                  sembilan tahun atau kurang?
+                  Apakah masing-masing direktur/komisaris menghadiri setidaknya 75%
+                  dari total rapat direksi/dewan komisaris yang diadakan dalam
+                  setahun?
                 </div>
               </td>
               <td class="border border-slate-900 p-2"></td>
@@ -3356,14 +3864,24 @@
               <td class="border border-slate-900 p-2"></td>
             </tr>
 
-            <!-- SECTION ROW D.4 -->
+            <!-- QUESTION ROW D.3.4 -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold text-black">
-                D.4
+              <td class="border border-slate-900 p-2">
+                <span class="text-[#0070c0] font-normal">D.3.4</span>
               </td>
-              <td class="border border-slate-900 p-2 font-bold leading-tight">
-                <div class="text-black">Board Performance</div>
-                <div class="text-[#0070c0]">Kinerja Dewan</div>
+              <td class="border border-slate-900 p-2 leading-snug">
+                <div
+                  class="text-black mb-1 text-justify font-normal leading-snug"
+                >
+                  Does the company require a minimum quorum of at least 2/3 for
+                  board decisions?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah perusahaan menetapkan minimal kuorum 2/3 dalam menentukan
+                  keputusan dewan?
+                </div>
               </td>
               <td class="border border-slate-900 p-2"></td>
               <td class="border border-slate-900 p-2"></td>
@@ -3371,16 +3889,38 @@
               <td class="border border-slate-900 p-2"></td>
             </tr>
 
-            <!-- D.4 SUBTITLE ROW (ORIENTATION) -->
+            <!-- QUESTION ROW D.3.5 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2">
+                <span class="text-[#0070c0] font-normal">D.3.5</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug">
+                <div
+                  class="text-black mb-1 text-justify font-normal leading-snug"
+                >
+                  Did the non-executive directors/commissioners of the company meet
+                  separately at least once during the year without any executives
+                  present?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah dewan komisaris perusahaan mengadakan rapat secara terpisah
+                  setidaknya sekali selama setahun tanpa dihadiri pihak eksekutif?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- D.3 SUBTITLE — Access to Information -->
             <tr class="bg-white">
               <td class="border border-slate-900 p-2 font-bold"></td>
               <td class="border border-slate-900 p-2 font-bold leading-tight">
-                <div class="text-black italic">
-                  Orientation Program for New Directors/Commissioners
-                </div>
-                <div class="text-[#0070c0]">
-                  Program Orientasi untuk Direktur/Komisaris Baru
-                </div>
+                <div class="text-black font-bold italic">Access to Information</div>
+                <div class="text-[#0070c0] font-bold italic">Akses Informasi</div>
               </td>
               <td class="border border-slate-900 p-2"></td>
               <td class="border border-slate-900 p-2"></td>
@@ -3388,706 +3928,25 @@
               <td class="border border-slate-900 p-2"></td>
             </tr>
 
-            <!-- QUESTION ROW D.4.1 -->
+            <!-- QUESTION ROW D.3.6 -->
             <tr class="bg-white">
               <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">D.4.1</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Does the company have an orientation program for new
-                  directors/commissioners?
-                </div>
-                <div
-                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
-                >
-                  Apakah perusahaan memiliki program orientasi untuk
-                  direktur/komisaris baru?
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- D.4 SUBTITLE ROW (BOARD TRAINING) -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold"></td>
-              <td class="border border-slate-900 p-2 font-bold leading-tight">
-                <div class="text-black italic">
-                  Director/Commissioner Training
-                </div>
-                <div class="text-[#0070c0]">Pelatihan Direktur/Komisaris</div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- QUESTION ROW D.4.2 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">D.4.2</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Does the company have a policy that encourages
-                  directors/commissioners to attend professional training?
-                </div>
-                <div
-                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
-                >
-                  Apakah perusahaan memiliki kebijakan yang mendorong
-                  direktur/komisaris untuk mengikuti pelatihan profesional?
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- QUESTION ROW D.4.3 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">D.4.3</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Does the company disclose the training/continuing education
-                  programs attended by each director/commissioner?
-                </div>
-                <div
-                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
-                >
-                  Apakah perusahaan mengungkapkan program pelatihan/pendidikan
-                  berkelanjutan yang diikuti oleh masing-masing
-                  direktur/komisaris?
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- D.4 SUBTITLE ROW (BOARD EVALUATION) -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold"></td>
-              <td class="border border-slate-900 p-2 font-bold leading-tight">
-                <div class="text-black italic">Board Evaluation</div>
-                <div class="text-[#0070c0]">Evaluasi Dewan</div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- QUESTION ROW D.4.4 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">D.4.4</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Does the board of directors/commissioners conduct an annual
-                  performance assessment of the board as a whole?
-                </div>
-                <div
-                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
-                >
-                  Apakah direksi/dewan komisaris melakukan penilaian kinerja
-                  tahunan dewan secara keseluruhan?
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- QUESTION ROW D.4.5 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">D.4.5</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Does the company disclose the process and criteria used in the
-                  performance assessment of the board of
-                  directors/commissioners?
-                </div>
-                <div
-                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
-                >
-                  Apakah perusahaan mengungkapkan proses dan kriteria yang
-                  digunakan dalam penilaian kinerja direksi/dewan komisaris?
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- D.4 SUBTITLE ROW (DIRECTOR APPRAISAL) -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold"></td>
-              <td class="border border-slate-900 p-2 font-bold leading-tight">
-                <div class="text-black italic">Director Appraisal</div>
-                <div class="text-[#0070c0]">Penilaian Direktur/Komisaris</div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- QUESTION ROW D.4.6 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">D.4.6</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Did the company conduct an annual performance assessment of
-                  the individual directors/commissioners and disclose the
-                  criteria and process followed for the assessment?
-                </div>
-                <div
-                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
-                >
-                  Apakah perusahaan melakukan penilaian kinerja tahunan terhadap
-                  masing-masing direktur/komisaris dan mengungkapkan kriteria
-                  serta proses yang diikuti dalam penilaian tersebut?
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- D.4 SUBTITLE ROW (COMMITTEE APPRAISAL) -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold"></td>
-              <td class="border border-slate-900 p-2 font-bold leading-tight">
-                <div class="text-black italic">Committee Appraisal</div>
-                <div class="text-[#0070c0]">Penilaian Komite Dewan</div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- QUESTION ROW D.4.7 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">D.4.7</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Did the company conduct an annual performance assessment of
-                  the board committees and disclose the criteria and process
-                  followed for the assessment?
-                </div>
-                <div
-                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
-                >
-                  Apakah perusahaan melakukan penilaian kinerja tahunan terhadap
-                  komite dewan dan mengungkapkan kriteria serta proses yang
-                  diikuti dalam penilaian tersebut?
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- D.4 SUBTITLE ROW (CEO / KEY MANAGEMENT) -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold"></td>
-              <td class="border border-slate-900 p-2 font-bold leading-tight">
-                <div class="text-black italic">
-                  CEO/Executive Management Appointments and Performance
-                </div>
-                <div class="text-[#0070c0]">
-                  Pengangkatan dan Kinerja CEO/Manajemen Eksekutif
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- QUESTION ROW D.4.8 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">D.4.8</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Does the company disclose the process on how the board of
-                  directors/commissioners plans for the succession of the
-                  CEO/Managing Director/President and key management?
-                </div>
-                <div
-                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
-                >
-                  Apakah perusahaan mengungkapkan proses perencanaan suksesi
-                  Direktur Utama/Presiden Direktur/Presiden dan manajemen kunci
-                  oleh direksi/dewan komisaris?
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- QUESTION ROW D.4.9 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">D.4.9</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Does the board of directors/commissioners conduct an annual
-                  performance assessment of the CEO/Managing
-                  Director/President?
-                </div>
-                <div
-                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
-                >
-                  Apakah direksi/dewan komisaris melakukan penilaian kinerja
-                  tahunan terhadap Direktur Utama/Presiden Direktur/Presiden?
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- SECTION ROW D.5 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold text-black">
-                D.5
-              </td>
-              <td class="border border-slate-900 p-2 font-bold leading-tight">
-                <div class="text-black">People on the Board</div>
-                <div class="text-[#0070c0]">Pihak dalam Dewan</div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- D.5 SUBTITLE ROW (BOARD CHAIRMAN) -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold"></td>
-              <td class="border border-slate-900 p-2 font-bold leading-tight">
-                <div class="text-black italic">Board Chairman</div>
-                <div class="text-[#0070c0]">Ketua Dewan</div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- QUESTION ROW D.5.1 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">D.5.1</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Do different persons assume the roles of chairman of the board
-                  of directors/commissioners and chief executive officer (CEO)
-                  (or the President in a two-tier board)?
-                </div>
-                <div
-                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
-                >
-                  Apakah orang yang berbeda memegang peran ketua dewan
-                  direksi/dewan komisaris dan chief executive officer (CEO)
-                  (atau Presiden dalam struktur dewan dua tingkat)?
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- QUESTION ROW D.5.2 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">D.5.2</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Is the chairman an independent director/commissioner?
-                </div>
-                <div
-                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
-                >
-                  Apakah ketua dewan merupakan direktur/komisaris independen?
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- QUESTION ROW D.5.3 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">D.5.3</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Is any of the directors/commissioners a former CEO of the
-                  company in the past two years?
-                </div>
-                <div
-                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
-                >
-                  Apakah ada direktur/komisaris yang merupakan mantan CEO
-                  perusahaan dalam dua tahun terakhir?
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- QUESTION ROW D.5.4 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">D.5.4</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Are the roles and responsibilities of the chairman disclosed?
-                </div>
-                <div
-                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
-                >
-                  Apakah peran dan tanggung jawab ketua dewan diungkapkan?
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- D.5 SUBTITLE ROW (LEAD INDEPENDENT DIRECTOR) -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold"></td>
-              <td class="border border-slate-900 p-2 font-bold leading-tight">
-                <div class="text-black italic">Lead Independent Director</div>
-                <div class="text-[#0070c0]">Direktur Independen Utama</div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- QUESTION ROW D.5.5 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">D.5.5</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  If the chairman is not independent, has the board of
-                  directors/commissioners appointed a lead independent
-                  director/senior independent director and has his/her role
-                  been defined?
-                </div>
-                <div
-                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
-                >
-                  Apabila ketua dewan bukan independen, apakah
-                  direksi/dewan komisaris telah menunjuk direktur independen
-                  utama/senior independen dan apakah perannya telah ditetapkan?
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- D.5 SUBTITLE ROW (SKILLS AND COMPETENCIES) -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold"></td>
-              <td class="border border-slate-900 p-2 font-bold leading-tight">
-                <div class="text-black italic">Skills and Competencies</div>
-                <div class="text-[#0070c0]">Keterampilan dan Kompetensi</div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- QUESTION ROW D.5.6 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">D.5.6</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Does at least one member of the board of
-                  directors/commissioners have prior working experience in the
-                  major sector that the company is operating in?
-                </div>
-                <div
-                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
-                >
-                  Apakah setidaknya satu anggota direksi/dewan komisaris memiliki
-                  pengalaman kerja di sektor utama yang menjadi bidang usaha
-                  perusahaan?
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- SECTION ROW D.6 — Tahap 5 (Board Processes, bagian 1) -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold text-black">
-                D.6
-              </td>
-              <td class="border border-slate-900 p-2 font-bold leading-tight">
-                <div class="text-black">Board Processes</div>
-                <div class="text-[#0070c0]">Proses Dewan</div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- D.6 SUBTITLE (BOARD MEETINGS) -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold"></td>
-              <td class="border border-slate-900 p-2 font-bold leading-tight">
-                <div class="text-black italic">
-                  Board Meetings and Attendance
-                </div>
-                <div class="text-[#0070c0]">Rapat Dewan dan Kehadiran</div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- QUESTION ROW D.6.1 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">D.6.1</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Are the board of directors/commissioners meetings scheduled
-                  before the start of the financial year?
-                </div>
-                <div
-                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
-                >
-                  Apakah rapat direksi/dewan komisaris dijadwalkan sebelum dimulai
-                  tahun buku?
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- QUESTION ROW D.6.2 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">D.6.2</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Does the board of directors/commissioners meet at least six
-                  times during the year?
-                </div>
-                <div
-                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
-                >
-                  Apakah direksi/dewan komisaris mengadakan rapat setidaknya enam
-                  kali dalam setahun?
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- QUESTION ROW D.6.3 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">D.6.3</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Has each of the directors/commissioners attended at least 75%
-                  of all the board meetings held during the year?
-                </div>
-                <div
-                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
-                >
-                  Apakah masing-masing direktur/komisaris hadir setidaknya pada
-                  75% dari seluruh rapat dewan yang diselenggarakan dalam tahun
-                  tersebut?
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- QUESTION ROW D.6.4 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">D.6.4</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Does the company require a minimum quorum of at least two-thirds
-                  for board decisions?
-                </div>
-                <div
-                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
-                >
-                  Apakah perusahaan mensyaratkan kuorum minimum setidaknya dua
-                  pertiga untuk keputusan dewan?
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- QUESTION ROW D.6.5 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">D.6.5</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Did the non-executive directors/commissioners meet separately
-                  at least once during the year without any executives present?
-                </div>
-                <div
-                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
-                >
-                  Apakah direktur/komisaris non-eksekutif mengadakan pertemuan
-                  terpisah setidaknya satu kali dalam tahun tersebut tanpa
-                  kehadiran eksekutif?
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- D.6 SUBTITLE (ACCESS TO INFORMATION) -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold"></td>
-              <td class="border border-slate-900 p-2 font-bold leading-tight">
-                <div class="text-black italic">Access to Information</div>
-                <div class="text-[#0070c0]">Akses terhadap Informasi</div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- QUESTION ROW D.6.6 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">D.6.6</span>
+                <span class="text-[#0070c0] font-normal">D.3.6</span>
               </td>
               <td class="border border-slate-900 p-2 leading-snug">
                 <div
                   class="text-black mb-1 text-justify font-normal leading-snug"
                 >
                   Are board papers for board of directors/commissioners meetings
-                  provided to the board at least five business days in advance of
-                  the board meeting?
+                  provided to the board at least five business days in advance of the
+                  board meeting?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah materi rapat direksi/dewan komisaris disampaikan kepada
-                  dewan setidaknya lima hari kerja sebelum rapat dewan?
+                  Apakah surat undangan rapat direksi/dewan komisaris diberikan
+                  kepada direksi/dewan komisaris paling lambat lima hari kerja
+                  sebelum rapat diadakan?
                 </div>
               </td>
               <td class="border border-slate-900 p-2"></td>
@@ -4096,23 +3955,23 @@
               <td class="border border-slate-900 p-2"></td>
             </tr>
 
-            <!-- QUESTION ROW D.6.7 -->
+            <!-- QUESTION ROW D.3.7 -->
             <tr class="bg-white">
               <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">D.6.7</span>
+                <span class="text-[#0070c0] font-normal">D.3.7</span>
               </td>
               <td class="border border-slate-900 p-2 leading-snug">
                 <div
                   class="text-black mb-1 text-justify font-normal leading-snug"
                 >
                   Does the company secretary play a significant role in supporting
-                  the board in discharging the board's responsibilities?
+                  the board in discharging its responsibilities?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah sekretaris perusahaan memiliki peran penting dalam
-                  mendukung dewan menjalankan tanggung jawab dewan?
+                  Apakah sekretaris perusahaan memiliki peran yang signifikan dalam
+                  mendukung dewan menjalankan tanggung jawabnya?
                 </div>
               </td>
               <td class="border border-slate-900 p-2"></td>
@@ -4121,25 +3980,25 @@
               <td class="border border-slate-900 p-2"></td>
             </tr>
 
-            <!-- QUESTION ROW D.6.8 -->
+            <!-- QUESTION ROW D.3.8 -->
             <tr class="bg-white">
               <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">D.6.8</span>
+                <span class="text-[#0070c0] font-normal">D.3.8</span>
               </td>
               <td class="border border-slate-900 p-2 leading-snug">
                 <div
                   class="text-black mb-1 text-justify font-normal leading-snug"
                 >
-                  Is the company secretary trained in legal, accountancy or
-                  company secretarial practices and kept abreast of relevant
+                  Is the company secretary trained in legal, accountancy or company
+                  secretarial practices and has kept abreast on relevant
                   developments?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah sekretaris perusahaan berpendidikan di bidang hukum,
-                  akuntansi atau praktik sekretaris perusahaan dan mengikuti
-                  perkembangan terkait?
+                  Apakah sekretaris perusahaan diberikan pelatihan mengenai hukum
+                  (legal), akuntansi atau pelaksanaan kesekretariatan perusahaan dan
+                  terus mengikuti perkembangan pengetahuan terkini?
                 </div>
               </td>
               <td class="border border-slate-900 p-2"></td>
@@ -4148,15 +4007,13 @@
               <td class="border border-slate-900 p-2"></td>
             </tr>
 
-            <!-- D.6 SUBTITLE (BOARD APPOINTMENT) -->
+            <!-- D.3 SUBTITLE — Board Appointments and Re-election -->
             <tr class="bg-white">
               <td class="border border-slate-900 p-2 font-bold"></td>
               <td class="border border-slate-900 p-2 font-bold leading-tight">
-                <div class="text-black italic">
-                  Board Appointment and Re-Election
-                </div>
-                <div class="text-[#0070c0]">
-                  Pengangkatan dan Pemilihan Kembali Anggota Dewan
+                <div class="text-black font-bold">Board Appointments and Re-election</div>
+                <div class="text-[#0070c0] font-bold italic">
+                  Penunjukkan Dewan dan Pemilihan Kembali
                 </div>
               </td>
               <td class="border border-slate-900 p-2"></td>
@@ -4165,10 +4022,10 @@
               <td class="border border-slate-900 p-2"></td>
             </tr>
 
-            <!-- QUESTION ROW D.6.9 -->
+            <!-- QUESTION ROW D.3.9 -->
             <tr class="bg-white">
               <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">D.6.9</span>
+                <span class="text-[#0070c0] font-normal">D.3.9</span>
               </td>
               <td class="border border-slate-900 p-2 leading-snug">
                 <div
@@ -4190,10 +4047,10 @@
               <td class="border border-slate-900 p-2"></td>
             </tr>
 
-            <!-- QUESTION ROW D.6.10 -->
+            <!-- QUESTION ROW D.3.10 -->
             <tr class="bg-white">
               <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">D.6.10</span>
+                <span class="text-[#0070c0] font-normal">D.3.10</span>
               </td>
               <td class="border border-slate-900 p-2 leading-snug">
                 <div
@@ -4205,8 +4062,8 @@
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah perusahaan menjelaskan proses yang diikuti dalam
-                  mengangkat direktur/komisaris baru?
+                  Apakah perusahaan mengungkapkan alur proses penunjukan
+                  direktur/komisioner?
                 </div>
               </td>
               <td class="border border-slate-900 p-2"></td>
@@ -4215,31 +4072,36 @@
               <td class="border border-slate-900 p-2"></td>
             </tr>
 
-            <!-- QUESTION ROW D.6.11 -->
+            <!-- QUESTION ROW D.3.11 -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">D.6.11</span>
+              <td class="border border-slate-900 p-2 align-top">
+                <span class="text-[#0070c0] font-normal">D.3.11</span>
               </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Are all directors/commissioners subject to re-election every
-                  three years; or five years for listed companies in countries
-                  whose legislation prescribes a term of five years each (the five
-                  years term must be required by legislation which pre-existed the
-                  introduction of the ASEAN Corporate Governance Scorecard in
-                  2011)?
+              <td class="border border-slate-900 p-2 leading-snug align-top text-xs">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
+                  Are all directors/commissioners subject to re-election every 3
+                  years; or 5 years for listed companies in countries whose
+                  legislation prescribes a term of 5 years<sup>2</sup> each?
                 </div>
+                <p class="text-black text-[10px] leading-tight text-justify mb-1">
+                  <sup>2</sup> The five years term must be required by legislation
+                  which pre-existed the introduction of the ASEAN Corporate
+                  Governance Scorecard in 2011
+                </p>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah seluruh direktur/komisaris wajib dipilih kembali setiap
-                  tiga tahun; atau lima tahun bagi emiten di yurisdiksi yang
-                  mengatur masa jabatan lima tahun (ketentuan lima tahun harus
-                  telah ada sebelum penerapan ASEAN Corporate Governance Scorecard
-                  tahun 2011)?
+                  Apakah semua direktur/komisioner dipilih kembali setiap 3 tahun;
+                  atau 5 tahun untuk perusahaan terdaftar di negara yang memiliki
+                  undang-undang yang mengatur masa jabatan masing-masing 5 tahun?
                 </div>
+                <p
+                  class="text-[#0070c0] text-[10px] leading-tight text-justify mt-1 italic"
+                >
+                  Masa jabatan lima tahun harus diwajibkan oleh undang-undang yang
+                  sudah ada sebelum diperkenalkannya ASEAN CG Scorecard pada tahun
+                  2011
+                </p>
               </td>
               <td class="border border-slate-900 p-2"></td>
               <td class="border border-slate-900 p-2"></td>
@@ -4247,12 +4109,12 @@
               <td class="border border-slate-900 p-2"></td>
             </tr>
 
-            <!-- D.6 SUBTITLE (REMUNERATION MATTERS) -->
+            <!-- D.3 SUBTITLE — Remuneration Matters -->
             <tr class="bg-white">
               <td class="border border-slate-900 p-2 font-bold"></td>
               <td class="border border-slate-900 p-2 font-bold leading-tight">
-                <div class="text-black italic">Remuneration Matters</div>
-                <div class="text-[#0070c0]">Hal-Hal Remunerasi</div>
+                <div class="text-black font-bold">Remuneration Matters</div>
+                <div class="text-[#0070c0] font-bold italic">Masalah Remunerasi</div>
               </td>
               <td class="border border-slate-900 p-2"></td>
               <td class="border border-slate-900 p-2"></td>
@@ -4260,23 +4122,23 @@
               <td class="border border-slate-900 p-2"></td>
             </tr>
 
-            <!-- QUESTION ROW D.6.12 -->
+            <!-- QUESTION ROW D.3.12 -->
             <tr class="bg-white">
               <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">D.6.12</span>
+                <span class="text-[#0070c0] font-normal">D.3.12</span>
               </td>
               <td class="border border-slate-900 p-2 leading-snug">
                 <div
                   class="text-black mb-1 text-justify font-normal leading-snug"
                 >
-                  Do the shareholders or the board of directors approve the
+                  Do the shareholders or the Board of Directors approve the
                   remuneration of the executive directors and/or the senior
                   executives?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah pemegang saham atau direksi menyetujui remunerasi
+                  Apakah Pemegang Saham atau Dewan Direksi menyetujui remunerasi
                   direktur eksekutif dan/atau eksekutif senior?
                 </div>
               </td>
@@ -4286,27 +4148,30 @@
               <td class="border border-slate-900 p-2"></td>
             </tr>
 
-            <!-- QUESTION ROW D.6.13 -->
+            <!-- QUESTION ROW D.3.13 -->
             <tr class="bg-white">
               <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">D.6.13</span>
+                <span class="text-[#0070c0] font-normal">D.3.13</span>
               </td>
               <td class="border border-slate-900 p-2 leading-snug">
                 <div
                   class="text-black mb-1 text-justify font-normal leading-snug"
                 >
                   Does the company have measurable standards to align the
-                  performance-based remuneration of the executive directors and
-                  senior executives with the long-term interests of the company,
-                  such as claw back provisions and deferred bonuses?
+                  performance-based remuneration of the executive directors and senior
+                  executives with long-term interests of the company, such as
+                  <span class="font-bold">claw back provision</span> and deferred
+                  bonuses?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah perusahaan memiliki standar terukur untuk menyelaraskan
-                  remunerasi berbasis kinerja direktur eksekutif dan eksekutif
-                  senior dengan kepentingan jangka panjang perusahaan, seperti
-                  ketentuan claw back dan bonus tangguhan?
+                  Apakah perusahaan mempunyai standar yang terukur untuk
+                  menyelaraskan remunerasi berbasis kinerja bagi direktur eksekutif
+                  dan eksekutif senior dengan kepentingan jangka panjang perusahaan,
+                  seperti (penerapan pengambilan kembali dana/keuntungan kepada
+                  individu jika penerima tidak memenuhi syarat yang
+                  disepakati/melanggar kontrak) dan bonus yang ditangguhkan?
                 </div>
               </td>
               <td class="border border-slate-900 p-2"></td>
@@ -4315,12 +4180,12 @@
               <td class="border border-slate-900 p-2"></td>
             </tr>
 
-            <!-- D.6 SUBTITLE (INTERNAL AUDIT) — Tahap 6 -->
+            <!-- D.3 SUBTITLE — Internal Audit -->
             <tr class="bg-white">
               <td class="border border-slate-900 p-2 font-bold"></td>
               <td class="border border-slate-900 p-2 font-bold leading-tight">
-                <div class="text-black italic">Internal Audit</div>
-                <div class="text-[#0070c0]">Audit Internal</div>
+                <div class="text-black font-bold italic">Internal Audit</div>
+                <div class="text-[#0070c0] font-bold italic">Audit Internal</div>
               </td>
               <td class="border border-slate-900 p-2"></td>
               <td class="border border-slate-900 p-2"></td>
@@ -4328,21 +4193,21 @@
               <td class="border border-slate-900 p-2"></td>
             </tr>
 
-            <!-- QUESTION ROW D.6.14 -->
+            <!-- QUESTION ROW D.3.14 -->
             <tr class="bg-white">
               <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">D.6.14</span>
+                <span class="text-[#0070c0] font-normal">D.3.14</span>
               </td>
               <td class="border border-slate-900 p-2 leading-snug">
                 <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
+                  class="text-black mb-1 text-justify font-bold leading-snug"
                 >
                   Does the company have a separate internal audit function?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah perusahaan memiliki fungsi audit internal yang terpisah?
+                  Apakah perusahaan memiliki fungsi auditor internal yang terpisah?
                 </div>
               </td>
               <td class="border border-slate-900 p-2"></td>
@@ -4351,23 +4216,48 @@
               <td class="border border-slate-900 p-2"></td>
             </tr>
 
-            <!-- QUESTION ROW D.6.15 -->
+            <!-- QUESTION ROW D.3.15 -->
             <tr class="bg-white">
               <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">D.6.15</span>
+                <span class="text-[#0070c0] font-normal">D.3.15</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug">
+                <div
+                  class="text-black mb-1 text-justify font-bold leading-snug"
+                >
+                  Is the head of internal audit identified or, if outsourced, is the
+                  name of the external firm disclosed?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah kepala auditor internal diidentifikasikan atau jika
+                  outsourcing, nama perusahaan eksternal diungkapkan?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- QUESTION ROW D.3.16 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2">
+                <span class="text-[#0070c0] font-normal">D.3.16</span>
               </td>
               <td class="border border-slate-900 p-2 leading-snug">
                 <div
                   class="text-black mb-1 text-justify font-normal leading-snug"
                 >
-                  Is the head of internal audit identified or, if outsourced, is
-                  the name of the external firm disclosed?
+                  Does the appointment and removal of the internal auditor require
+                  the approval of the Audit Committee?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah kepala audit internal diidentifikasi atau, jika
-                  dialihdayakan, apakah nama firma eksternal diungkapkan?
+                  Apakah pengangkatan dan pemberhentian auditor internal memerlukan
+                  persetujuan dari Komite Audit?
                 </div>
               </td>
               <td class="border border-slate-900 p-2"></td>
@@ -4376,37 +4266,12 @@
               <td class="border border-slate-900 p-2"></td>
             </tr>
 
-            <!-- QUESTION ROW D.6.16 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">D.6.16</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Does the appointment and removal of the internal auditor
-                  require the approval of the Audit Committee?
-                </div>
-                <div
-                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
-                >
-                  Apakah pengangkatan dan pemberhentian auditor internal
-                  memerlukan persetujuan Komite Audit?
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- D.6 SUBTITLE (RISK OVERSIGHT) -->
+            <!-- D.3 SUBTITLE — Risk Oversight -->
             <tr class="bg-white">
               <td class="border border-slate-900 p-2 font-bold"></td>
               <td class="border border-slate-900 p-2 font-bold leading-tight">
-                <div class="text-black italic">Risk Oversight</div>
-                <div class="text-[#0070c0]">Pengawasan Risiko</div>
+                <div class="text-black font-bold">Risk Oversight</div>
+                <div class="text-[#0070c0] font-bold italic">Pemantauan Risiko</div>
               </td>
               <td class="border border-slate-900 p-2"></td>
               <td class="border border-slate-900 p-2"></td>
@@ -4414,25 +4279,25 @@
               <td class="border border-slate-900 p-2"></td>
             </tr>
 
-            <!-- QUESTION ROW D.6.17 -->
+            <!-- QUESTION ROW D.3.17 -->
             <tr class="bg-white">
               <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">D.6.17</span>
+                <span class="text-[#0070c0] font-normal">D.3.17</span>
               </td>
               <td class="border border-slate-900 p-2 leading-snug">
                 <div
                   class="text-black mb-1 text-justify font-normal leading-snug"
                 >
-                  Does the company establish sound internal control procedures
-                  and a risk management framework and periodically review the
+                  Does the company establish a sound internal control
+                  procedures/risk management framework and periodically review the
                   effectiveness of that framework?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah perusahaan menetapkan prosedur pengendalian intern yang
-                  baik dan kerangka manajemen risiko serta meninjau efektivitasnya
-                  secara berkala?
+                  Apakah perusahaan menetapkan prosedur pengendalian internal yang
+                  baik/kerangka kerja manajemen risiko dan secara berkala mereview
+                  keefektifan kerangka tersebut?
                 </div>
               </td>
               <td class="border border-slate-900 p-2"></td>
@@ -4441,26 +4306,81 @@
               <td class="border border-slate-900 p-2"></td>
             </tr>
 
-            <!-- QUESTION ROW D.6.18 -->
+            <!-- QUESTION ROW D.3.18 -->
             <tr class="bg-white">
               <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">D.6.18</span>
+                <span class="text-[#0070c0] font-normal">D.3.18</span>
               </td>
               <td class="border border-slate-900 p-2 leading-snug">
                 <div
                   class="text-black mb-1 text-justify font-normal leading-snug"
                 >
-                  Does the Annual Report/Annual CG Report disclose that the board
-                  of directors/commissioners has conducted a review of the
-                  company's material controls (including operational, financial
-                  and compliance controls) and risk management systems?
+                  Does the Annual Report disclose that the board of
+                  directors/commissioners has conducted a review of the company's
+                  material controls (including operational, financial and compliance
+                  controls) and risk management systems?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah Laporan Tahunan/Laporan TK mengungkapkan bahwa
-                  direksi/dewan komisaris telah meninjau pengendalian material
-                  perusahaan (termasuk operasional, keuangan, dan kepatuhan) serta
+                  Apakah laporan tahunan mengungkapkan bahwa direksi/komisaris telah
+                  melakukan review terhadap pengendalian perusahaan (termasuk
+                  pengendalian operasional, keuangan dan kepatuhan) dan sistem
+                  manajemen risiko?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- QUESTION ROW D.3.19 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2">
+                <span class="text-[#0070c0] font-normal">D.3.19</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug">
+                <div
+                  class="text-black mb-1 text-justify font-normal leading-snug"
+                >
+                  Does the company disclose the key risks to which the company is
+                  materially exposed to (i.e. financial, operational including IT,
+                  environmental, social, economic)?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah perusahaan mengungkapkan risiko utama yang dihadapi
+                  perusahaan secara material (yaitu keuangan, operasional termasuk
+                  TI, lingkungan, sosial, ekonomi)?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- QUESTION ROW D.3.20 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2">
+                <span class="text-[#0070c0] font-normal">D.3.20</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug">
+                <div
+                  class="text-black mb-1 text-justify font-normal leading-snug"
+                >
+                  Does the Annual Report contain a statement from the board of
+                  directors/commissioners or Audit Committee commenting on the
+                  adequacy of the company's internal controls/risk management
+                  systems?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah laporan tahunan memuat pernyataan dari Dewan Komisaris atau
+                  Komite Audit terkait kecukupan pengendalian internal perusahaan/
                   sistem manajemen risiko?
                 </div>
               </td>
@@ -4470,25 +4390,50 @@
               <td class="border border-slate-900 p-2"></td>
             </tr>
 
-            <!-- QUESTION ROW D.6.19 -->
+            <!-- SECTION ROW D.4 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2 font-bold text-black">
+                D.4
+              </td>
+              <td class="border border-slate-900 p-2 font-bold leading-tight">
+                <div class="text-black">People on the Board</div>
+                <div class="text-[#0070c0] font-bold">Posisi Dewan</div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- D.4 SUBTITLE — Board Chairman -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2 font-bold"></td>
+              <td class="border border-slate-900 p-2 font-bold leading-tight">
+                <div class="text-black font-bold italic">Board Chairman</div>
+                <div class="text-[#0070c0] font-bold italic">Komisaris Utama</div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- QUESTION ROW D.4.1 -->
             <tr class="bg-white">
               <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">D.6.19</span>
+                <span class="text-[#0070c0] font-normal">D.4.1</span>
               </td>
               <td class="border border-slate-900 p-2 leading-snug">
                 <div
                   class="text-black mb-1 text-justify font-normal leading-snug"
                 >
-                  Does the company disclose the key risks to which the company is
-                  materially exposed (i.e. financial, operational including IT,
-                  environmental, social, economic)?
+                  Do different persons assume the roles of chairman and CEO?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah perusahaan mengungkapkan risiko utama yang secara
-                  material menimpa perusahaan (misalnya keuangan, operasional
-                  termasuk TI, lingkungan, sosial, ekonomi)?
+                  Apakah yang menjabat sebagai komisaris utama dan direktur utama
+                  adalah orang yang berbeda?
                 </div>
               </td>
               <td class="border border-slate-900 p-2"></td>
@@ -4497,26 +4442,424 @@
               <td class="border border-slate-900 p-2"></td>
             </tr>
 
-            <!-- QUESTION ROW D.6.20 -->
+            <!-- QUESTION ROW D.4.2 -->
             <tr class="bg-white">
               <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">D.6.20</span>
+                <span class="text-[#0070c0] font-normal">D.4.2</span>
               </td>
               <td class="border border-slate-900 p-2 leading-snug">
                 <div
                   class="text-black mb-1 text-justify font-normal leading-snug"
                 >
-                  Does the Annual Report/Annual CG Report contain a statement from
-                  the board of directors/commissioners or Audit Committee
-                  commenting on the adequacy of the company's internal controls
-                  and risk management systems?
+                  Is the chairman an independent director/ commissioner?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah Laporan Tahunan/Laporan TK memuat pernyataan dari
-                  direksi/dewan komisaris atau Komite Audit mengenai kecukupan
-                  pengendalian intern dan sistem manajemen risiko perusahaan?
+                  Apakah komisaris utama adalah seorang komisaris independen?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- QUESTION ROW D.4.3 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2">
+                <span class="text-[#0070c0] font-normal">D.4.3</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug">
+                <div
+                  class="text-black mb-1 text-justify font-normal leading-snug"
+                >
+                  Is any of the directors a former CEO of the company in the past 2
+                  years?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah terdapat salah satu Direktur yang merupakan mantan Direktur
+                  Utama perusahaan dalam 2 tahun terakhir?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- QUESTION ROW D.4.4 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2">
+                <span class="text-[#0070c0] font-normal">D.4.4</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug">
+                <div
+                  class="text-black mb-1 text-justify font-normal leading-snug"
+                >
+                  Are the role and responsibilities of the chairman disclosed?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah tugas dan tanggung jawab komisaris utama diungkapkan?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- D.4 SUBTITLE — Lead Independent Director -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2 font-bold"></td>
+              <td class="border border-slate-900 p-2 font-bold leading-tight">
+                <div class="text-black font-bold">Lead Independent Director</div>
+                <div class="text-[#0070c0] font-bold italic">
+                  Direktur Independen Senior
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- QUESTION ROW D.4.5 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2">
+                <span class="text-[#0070c0] font-normal">D.4.5</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug">
+                <div
+                  class="text-black mb-1 text-justify font-normal leading-snug"
+                >
+                  If the Chairman is not independent, has the Board appointed a
+                  Lead/Senior Independent Director and has his/her role been
+                  defined?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Jika komisaris utama tidak independen, apakah direksi dan dewan
+                  komisaris mengangkat seorang komisaris independen senior dan apakah
+                  perannya telah ditetapkan?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- D.4 SUBTITLE — Skills and Competencies -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2 font-bold"></td>
+              <td class="border border-slate-900 p-2 font-bold leading-tight">
+                <div class="text-black font-bold">Skills and Competencies</div>
+                <div class="text-[#0070c0] font-bold italic">
+                  Keahlian dan Kompetensi
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- QUESTION ROW D.4.6 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2">
+                <span class="text-[#0070c0] font-normal">D.4.6</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug">
+                <div
+                  class="text-black mb-1 text-justify font-normal leading-snug"
+                >
+                  Does at least one non-executive director/commissioner have prior
+                  working experience in the major sector that the company is
+                  operating in?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah terdapat setidaknya satu komisaris yang memiliki pengalaman
+                  kerja pada sebagian besar sektor di mana perusahaan beroperasi?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- SECTION ROW D.5 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2 font-bold text-black">
+                D.5
+              </td>
+              <td class="border border-slate-900 p-2 font-bold leading-tight">
+                <div class="text-black">Board Performance</div>
+                <div class="text-[#0070c0]">Kinerja Dewan</div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- D.5 SUBTITLE — Directors Development -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2 font-bold"></td>
+              <td class="border border-slate-900 p-2 font-bold leading-tight">
+                <div class="text-black font-bold">Directors Development</div>
+                <div class="text-[#0070c0] font-bold">Pengembangan Anggota Direksi</div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- QUESTION ROW D.5.1 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2">
+                <span class="text-[#0070c0] font-normal">D.5.1</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug">
+                <div
+                  class="text-black mb-1 text-justify font-normal leading-snug"
+                >
+                  Does the company have orientation programmes for new directors/
+                  commissioners?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah perusahaan memiliki program pengenalan bagi direksi/
+                  komisaris baru?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- QUESTION ROW D.5.2 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2">
+                <span class="text-[#0070c0] font-normal">D.5.2</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug">
+                <div
+                  class="text-black mb-1 text-justify font-normal leading-snug"
+                >
+                  Does the company have a policy and actual practice and programs
+                  that encourages directors/commissioners to attend on-going or
+                  continuous professional education programmes?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah perusahaan memiliki kebijakan dan praktik serta program
+                  aktual yang mendorong direksi/komisaris untuk mengikuti program
+                  pendidikan profesional yang sedang berjalan atau berkelanjutan?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- D.5 SUBTITLE — CEO/Executive Management -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2 font-bold"></td>
+              <td class="border border-slate-900 p-2 font-bold leading-tight">
+                <div class="text-black font-bold">
+                  CEO/Executive Management Appointments and Performance
+                </div>
+                <div class="text-[#0070c0] font-bold">
+                  Kinerja dan Kontrak Manajemen Eksekutif/Direktur Utama
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- QUESTION ROW D.5.3 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2">
+                <span class="text-[#0070c0] font-normal">D.5.3</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug">
+                <div
+                  class="text-black mb-1 text-justify font-normal leading-snug"
+                >
+                  Does the company disclose how the board of directors/commissioners
+                  plans for the succession of the CEO/Managing Director/President
+                  and key management?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah perusahaan mengungkapkan bagaimana Direksi/komisaris
+                  menyusun rencana suksesi direktur utama dan manajemen utama?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- QUESTION ROW D.5.4 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2">
+                <span class="text-[#0070c0] font-normal">D.5.4</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug">
+                <div
+                  class="text-black mb-1 text-justify font-normal leading-snug"
+                >
+                  Does the board of directors/commissioners conduct an annual
+                  performance assessment of the CEO/Managing Director/President?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah direksi/dewan komisaris melakukan penilaian kinerja tahunan
+                  direktur utama?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- D.5 SUBTITLE — Board Appraisal -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2 font-bold"></td>
+              <td class="border border-slate-900 p-2 font-bold leading-tight">
+                <div class="text-black font-bold italic">Board Appraisal</div>
+                <div class="text-[#0070c0] font-bold italic">
+                  Penilaian Dewan (secara kolegial)
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- QUESTION ROW D.5.5 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2">
+                <span class="text-[#0070c0] font-normal">D.5.5</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug">
+                <div
+                  class="text-black mb-1 text-justify font-normal leading-snug"
+                >
+                  Did the company conduct an annual performance assessment of the
+                  board of directors/commissioners and disclose the criteria and
+                  process followed for the assessment?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah perusahaan melakukan penilaian kinerja tahunan
+                  direksi/dewan komisaris serta mengungkapkan kriteria dan proses
+                  penilaian?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- D.5 SUBTITLE — Director Appraisal -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2 font-bold"></td>
+              <td class="border border-slate-900 p-2 font-bold leading-tight">
+                <div class="text-black font-bold italic">Director Appraisal</div>
+                <div class="text-[#0070c0] font-bold italic">
+                  Penilaian Direktur/Komisaris (Individu)
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- QUESTION ROW D.5.6 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2">
+                <span class="text-[#0070c0] font-normal">D.5.6</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug">
+                <div
+                  class="text-black mb-1 text-justify font-normal leading-snug"
+                >
+                  Did the company conduct an annual performance assessment of
+                  individual director/commissioner and disclose the criteria and
+                  process followed for the assessment?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah perusahaan melakukan penilaian kinerja tahunan masing-masing
+                  direktur/komisaris serta mengungkapkan kriteria dan proses
+                  penilaian?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- D.5 SUBTITLE — Committee Appraisal -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2 font-bold"></td>
+              <td class="border border-slate-900 p-2 font-bold leading-tight">
+                <div class="text-black font-bold italic">Committee Appraisal</div>
+                <div class="text-[#0070c0] font-bold italic">Penilaian Komite</div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- QUESTION ROW D.5.7 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2">
+                <span class="text-[#0070c0] font-normal">D.5.7</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug">
+                <div
+                  class="text-black mb-1 text-justify font-normal leading-snug"
+                >
+                  Did the company conduct an annual performance assessment of the
+                  board committees and disclose the criteria and process followed for
+                  the assessment?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah perusahaan melakukan penilaian kinerja tahunan komite di
+                  bawah direksi dan dewan komisaris serta mengungkapkan kriteria dan
+                  proses penilaian?
                 </div>
               </td>
               <td class="border border-slate-900 p-2"></td>
@@ -4598,33 +4941,44 @@
               <td class="border border-slate-900 p-2"></td>
             </tr>
 
-            <!-- QUESTION (B)A.1.1 -->
+            <!-- QUESTION (B)A.1.1 — mockup PLN -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
+              <td class="border border-slate-900 p-2 align-top">
                 <span class="text-[#0070c0] font-normal">(B)A.1.1</span>
               </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Does the company practice real
-time secure electronic voting in
-absentia at general meetings of
-shareholders?
-
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
+                  Does the company practice real time secure electronic voting in
+                  absentia at general meetings of shareholders?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah perusahaan menyediakan
-dan menerapkan mekanisme
-pemungutan suara secara
-elektronik, yang aman dan realtime, bagi Pemegang Saham yang
-tidak dapat hadir secara fisik dalam
-Rapat Umum Pemegang Saham
-(RUPS)?
-
+                  Apakah perusahaan menyediakan dan menerapkan mekanisme
+                  pemungutan suara secara elektronik, yang aman dan real-time,
+                  bagi Pemegang Saham yang tidak dapat hadir secara fisik dalam
+                  Rapat Umum Pemegang Saham (RUPS)?
                 </div>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                • Pemegang Saham PT PLN (Persero) 100% dimiliki oleh Pemerintah RI
+                sehingga tidak diperlukan pemungutan suara(voting)
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >N/A</td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
+            </tr>
+
+            <!-- SUBSECTION (B)A.2 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2 font-bold text-black align-top">
+                (B)A.2
+              </td>
+              <td class="border border-slate-900 p-2 font-bold leading-tight align-top">
+                <div class="text-black">Notice of AGM</div>
+                <div class="text-[#0070c0]">Panggilan RUPS</div>
               </td>
               <td class="border border-slate-900 p-2"></td>
               <td class="border border-slate-900 p-2"></td>
@@ -4632,17 +4986,54 @@ Rapat Umum Pemegang Saham
               <td class="border border-slate-900 p-2"></td>
             </tr>
 
-            <!-- PART ROW (B)B -->
+            <!-- QUESTION (B)A.2.1 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2 align-top">
+                <span class="text-[#0070c0] font-normal">(B)A.2.1</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
+                  Does the company release its notice of AGM (with detailed
+                  agendas and explanatory circulars), as announced to the
+                  Exchange, at least 28 days before the date of the meeting?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah perusahaan menerbitkan panggilan RUPS (dengan rincian
+                  agenda dan penjelasannya) yang diumumkan pada Pemegang Saham,
+                  paling lambat 28 hari sebelum tanggal rapat (RUPS)?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                • Perusahaan <span class="font-bold underline">belum</span>
+                menerbitkan panggilan RUPS (dengan rincian agenda dan penjelasannya)
+                yang diumumkan pada Pemegang Saham, paling lambat 28 hari sebelum
+                tanggal rapat (RUPS)
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >NO</td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                Perusahaan menerbitkan panggilan RUPS (dengan rincian agenda dan
+                penjelasannya) yang diumumkan pada Pemegang Saham, paling lambat
+                28 hari sebelum tanggal rapat (RUPS)
+              </td>
+            </tr>
+
+            <!-- PART ROW (B)B — Sustainability (mockup PLN) -->
             <tr class="bg-white">
               <td class="border border-slate-900 p-2 font-bold">
-                <div class="text-black uppercase">(B)B</div>
+                <div class="text-black uppercase">PART (B)B</div>
+                <div class="text-[#0070c0] uppercase">BAGIAN (B)B</div>
               </td>
               <td class="border border-slate-900 p-2 font-bold leading-tight">
                 <div class="text-black uppercase">
-                  EQUITABLE TREATMENT OF SHAREHOLDERS
+                  SUSTAINABILITY AND RESILIENCE
                 </div>
                 <div class="text-[#0070c0] uppercase">
-                  PERLAKUAN SETARA TERHADAP PEMEGANG SAHAM
+                  KEBERLANJUTAN DAN KETAHANAN
                 </div>
               </td>
               <td class="border border-slate-900 p-2"></td>
@@ -4651,13 +5042,13 @@ Rapat Umum Pemegang Saham
               <td class="border border-slate-900 p-2"></td>
             </tr>
 
+            <!-- SUBSECTION (B)B.1 -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold text-black">
+              <td
+                colspan="2"
+                class="border border-slate-900 p-2 font-bold text-black align-top"
+              >
                 (B)B.1
-              </td>
-              <td class="border border-slate-900 p-2 font-bold leading-tight">
-                <div class="text-black">Notice of AGM</div>
-                <div class="text-[#0070c0]">Pemberitahuan RUPS</div>
               </td>
               <td class="border border-slate-900 p-2"></td>
               <td class="border border-slate-900 p-2"></td>
@@ -4667,23 +5058,293 @@ Rapat Umum Pemegang Saham
 
             <!-- QUESTION (B)B.1.1 -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
+              <td class="border border-slate-900 p-2 align-top">
                 <span class="text-[#0070c0] font-normal">(B)B.1.1</span>
               </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Does the company release its notice of AGM (with detailed
-                  agendas and explanatory circulars), as announced to the
-                  Exchange, at least 28 days before the date of the meeting?
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
+                  Does the company disclose how it manages climate-related risks
+                  and opportunities?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah perusahaan menerbitkan pemberitahuan RUPS (dengan acara
-                  rinci dan penjelasan), sebagaimana diumumkan ke Bursa,
-                  setidaknya 28 hari sebelum tanggal rapat?
+                  Apakah perusahaan mengungkapkan cara mereka mengelola risiko dan
+                  peluang terkait perubahan iklim?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                • Perusahaan <span class="font-bold underline">telah</span>
+                mengungkapkan cara mereka mengelola risiko dan peluang terkait
+                perubahan iklim. <sup>(1)(2)</sup>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug">
+                <ol class="list-decimal ps-4 space-y-1">
+                  <li>Laporan Keberlanjutan Perusahaan 2023</li>
+                  <li>
+                    <a
+                      href="https://web.pln.co.id/stakeholder/laporan-keberlanjutan"
+                      class="text-[#0563c1] underline break-all"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >https://web.pln.co.id/stakeholder/laporan-keberlanjutan</a>
+                  </li>
+                </ol>
+              </td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >YES</td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
+            </tr>
+
+            <!-- QUESTION (B)B.1.2 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2 align-top">
+                <span class="text-[#0070c0] font-normal">(B)B.1.2</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
+                  Does the company disclose that its Sustainability Report /
+                  Sustainability Reporting is externally assured?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah perusahaan mengungkapkan Laporan
+                  keberlanjutan/Sustainability Reporting miliknya yang terjamin
+                  secara eksternal?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                • Perusahaan <span class="font-bold underline">telah</span>
+                mengungkapkan Laporan keberlanjutan/Sustainability Reporting
+                miliknya yang terjamin secara eksternal. <sup>(1)(2)</sup>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug">
+                <ol class="list-decimal ps-4 space-y-1">
+                  <li>Keberlanjutan Perusahaan 2023 hal.213</li>
+                  <li>
+                    <a
+                      href="https://web.pln.co.id/stakeholder/laporan-keberlanjutan"
+                      class="text-[#0563c1] underline break-all"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >https://web.pln.co.id/stakeholder/laporan-keberlanjutan</a>
+                  </li>
+                </ol>
+              </td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >YES</td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
+            </tr>
+
+            <!-- QUESTION (B)B.1.3 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2 align-top">
+                <span class="text-[#0070c0] font-normal">(B)B.1.3</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
+                  Does the company disclose the engagement channel with stakeholder
+                  group and how the company responds to stakeholders' ESG concerns?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah perusahaan mengungkapkan saluran keterlibatan dengan
+                  kelompok pemangku kepentingan dan bagaimana perusahaan merespons
+                  perhatian ESG pemangku kepentingan?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                • Perusahaan <span class="font-bold underline">telah</span>
+                mengungkapkan saluran keterlibatan dengan kelompok pemangku
+                kepentingan dan bagaimana perusahaan merespons perhatian ESG
+                pemangku kepentingan. <sup>(1)(2)</sup>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug">
+                <ol class="list-decimal ps-4 space-y-1">
+                  <li>Keberlanjutan Perusahaan 2023 hal. 37 dan 62, 76-80</li>
+                  <li>
+                    <a
+                      href="https://web.pln.co.id/stakeholder/laporan-keberlanjutan"
+                      class="text-[#0563c1] underline break-all"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >https://web.pln.co.id/stakeholder/laporan-keberlanjutan</a>
+                  </li>
+                </ol>
+              </td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >YES</td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
+            </tr>
+
+            <!-- QUESTION (B)B.1.4 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2 align-top">
+                <span class="text-[#0070c0] font-normal">(B)B.1.4</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
+                  Does the company have a unit / division / committee who is
+                  specifically responsible to manage the sustainability matters?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah perusahaan mempunyai unit/divisi/komite yang secara
+                  khusus bertanggung jawab mengelola urusan keberlanjutan?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                • Perusahaan <span class="font-bold underline">telah</span>
+                mempunyai unit/divisi/komite yang secara khusus bertanggung jawab
+                mengelola urusan keberlanjutan. <sup>(1)(2)</sup>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug">
+                <ol class="list-decimal ps-4 space-y-1">
+                  <li>Keberlanjutan Perusahaan 2023 hal. 49-50</li>
+                  <li>
+                    <a
+                      href="https://web.pln.co.id/stakeholder/laporan-keberlanjutan"
+                      class="text-[#0563c1] underline break-all"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >https://web.pln.co.id/stakeholder/laporan-keberlanjutan</a>
+                  </li>
+                </ol>
+              </td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >YES</td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
+            </tr>
+
+            <!-- QUESTION (B)B.1.5 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2 align-top">
+                <span class="text-[#0070c0] font-normal">(B)B.1.5</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
+                  Does the company disclose board of directors/commissioners'
+                  oversight of sustainability-related risks and opportunities?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah perusahaan mengungkapkan pengawasan Direksi/Komisaris
+                  terhadap risiko dan peluang terkait keberlanjutan?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                • Perusahaan <span class="font-bold underline">telah</span>
+                mengungkapkan pengawasan Direksi/Komisaris terhadap risiko dan
+                peluang terkait keberlanjutan <sup>(1)(2)</sup>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug">
+                <ol class="list-decimal ps-4 space-y-1">
+                  <li>Keberlanjutan Perusahaan 2023 hal. 54</li>
+                  <li>
+                    <a
+                      href="https://web.pln.co.id/stakeholder/laporan-keberlanjutan"
+                      class="text-[#0563c1] underline break-all"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >https://web.pln.co.id/stakeholder/laporan-keberlanjutan</a>
+                  </li>
+                </ol>
+              </td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >YES</td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
+            </tr>
+
+            <!-- QUESTION (B)B.1.6 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2 align-top">
+                <span class="text-[#0070c0] font-normal">(B)B.1.6</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
+                  Does the company disclose the linkage between executive directors
+                  and senior management remuneration and sustainability performance
+                  for the previous year?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah perusahaan mengungkapkan bagaimana pencapaian atau hasil
+                  keberlanjutan tahun sebelumnya mempengaruhi jumlah remunerasi
+                  yang diterima oleh direktur eksekutif dan manajemen senior?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                • Perusahaan <span class="font-bold underline">belum</span>
+                mengungkapkan bagaimana pencapaian atau hasil keberlanjutan tahun
+                sebelumnya mempengaruhi jumlah remunerasi yang diterima oleh
+                direktur eksekutif dan manajemen senior
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >NO</td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                Perusahaan mengungkapkan hubungan antara remunerasi Direksi dan
+                pejabat satu level di bawah Direksi dengan kinerja keberlanjutan
+                pada tahun sebelumnya. (Pada Laporan Tahunan /Sustainability Report
+                yang dipublikasikan dalam website Perusahaan)
+              </td>
+            </tr>
+
+            <!-- QUESTION (B)B.1.7 — mockup PLN -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2 align-top">
+                <span class="text-[#0070c0] font-normal">(B)B.1.7</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
+                  Is the company's Whistle Blowing System managed by independent
+                  parties / institutions?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah Whistle Blowing System perusahaan dikelola oleh pihak /
+                  institusi independen?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                • Whistle Blowing System Perusahaan
+                <span class="font-bold underline">belum</span> dikelola oleh
+                pihak / institusi independen
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >NO</td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                Whistle Blowing System Perusahaan dikelola oleh pihak/institusi
+                independen
+              </td>
+            </tr>
+
+            <!-- PART ROW (B)C — Disclosure (mockup PLN) -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2 font-bold">
+                <div class="text-black uppercase">PART (B)C</div>
+                <div class="text-[#0070c0] uppercase">BAGIAN (B)C</div>
+              </td>
+              <td class="border border-slate-900 p-2 font-bold leading-tight">
+                <div class="text-black uppercase">
+                  DISCLOSURE AND TRANSPARENCY
+                </div>
+                <div class="text-[#0070c0] uppercase">
+                  TRANSPARANSI DAN PENGUNGKAPAN
                 </div>
               </td>
               <td class="border border-slate-900 p-2"></td>
@@ -4692,14 +5353,14 @@ Rapat Umum Pemegang Saham
               <td class="border border-slate-900 p-2"></td>
             </tr>
 
-            <!-- PART ROW (B)C -->
+            <!-- (B)C.1 -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold">
-                <div class="text-black uppercase">(B)C</div>
+              <td class="border border-slate-900 p-2 font-bold text-black align-top">
+                (B)C.1
               </td>
-              <td class="border border-slate-900 p-2 font-bold leading-tight">
-                <div class="text-black uppercase">ROLE OF STAKEHOLDERS</div>
-                <div class="text-[#0070c0] uppercase">PERAN PEMANGKU KEPENTINGAN</div>
+              <td class="border border-slate-900 p-2 font-bold leading-tight align-top">
+                <div class="text-black">Quality of Annual Report</div>
+                <div class="text-[#0070c0]">Kualitas Laporan Tahunan</div>
               </td>
               <td class="border border-slate-900 p-2"></td>
               <td class="border border-slate-900 p-2"></td>
@@ -4709,247 +5370,41 @@ Rapat Umum Pemegang Saham
 
             <!-- QUESTION (B)C.1.1 -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
+              <td class="border border-slate-900 p-2 align-top">
                 <span class="text-[#0070c0] font-normal">(B)C.1.1</span>
               </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Does the company adopt an internationally recognized reporting
-                  framework for sustainability (i.e. GRI, Integrated Reporting,
-                  SASB)?
-                </div>
-                <div
-                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
-                >
-                  Apakah perusahaan mengadopsi kerangka pelaporan keberlanjutan
-                  yang diakui secara internasional (mis. GRI, Integrated
-                  Reporting, SASB)?
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- QUESTION (B)C.1.2 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">(B)C.1.2</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Does the company disclose that its Sustainability Report /
-                  Sustainability Reporting is externally assured?
-                </div>
-                <div
-                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
-                >
-                  Apakah perusahaan mengungkapkan bahwa Laporan Keberlanjutan /
-                  pelaporan keberlanjutannya dijamin secara eksternal?
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- QUESTION (B)C.1.3 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">(B)C.1.3</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Does the company disclose the engagement channel with
-                  stakeholder groups and how the company responds to
-                  stakeholders' ESG concerns?
-                </div>
-                <div
-                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
-                >
-                  Apakah perusahaan mengungkapkan saluran keterlibatan dengan
-                  kelompok pemangku kepentingan dan bagaimana perusahaan
-                  menanggapi kekhawatiran ESG mereka?
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- QUESTION (B)C.1.4 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">(B)C.1.4</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Does the company have a unit/division/committee specifically
-                  responsible for managing sustainability matters?
-                </div>
-                <div
-                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
-                >
-                  Apakah perusahaan memiliki unit/divisi/komite yang secara
-                  khusus bertanggung jawab mengelola hal-hal keberlanjutan?
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- QUESTION (B)C.1.5 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">(B)C.1.5</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Does the company disclose board of directors/commissioners'
-                  oversight of sustainability-related risks and opportunities?
-                </div>
-                <div
-                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
-                >
-                  Apakah perusahaan mengungkapkan pengawasan direksi/dewan
-                  komisaris atas risiko dan peluang terkait keberlanjutan?
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- QUESTION (B)C.1.6 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">(B)C.1.6</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Does the company disclose the linkage between executive
-                  directors' and senior management remuneration and sustainability
-                  performance for the previous year?
-                </div>
-                <div
-                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
-                >
-                  Apakah perusahaan mengungkapkan hubungan antara remunerasi
-                  direktur eksekutif dan manajemen senior dengan kinerja
-                  keberlanjutan pada tahun sebelumnya?
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- QUESTION (B)C.1.7 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">(B)C.1.7</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Is the company's whistle-blowing system managed by independent
-                  parties or institutions?
-                </div>
-                <div
-                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
-                >
-                  Apakah sistem pelaporan pelanggaran (whistle-blowing) perusahaan
-                  dikelola oleh pihak atau lembaga independen?
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- PART ROW (B)D -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold">
-                <div class="text-black uppercase">(B)D</div>
-              </td>
-              <td class="border border-slate-900 p-2 font-bold leading-tight">
-                <div class="text-black uppercase">
-                  DISCLOSURE AND TRANSPARENCY
-                </div>
-                <div class="text-[#0070c0] uppercase">
-                  PENGUNGKAPAN DAN TRANSPARANSI
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold text-black">
-                (B)D.1
-              </td>
-              <td class="border border-slate-900 p-2 font-bold leading-tight">
-                <div class="text-black">Quality of Annual Report</div>
-                <div class="text-[#0070c0]">Mutu Laporan Tahunan</div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- QUESTION (B)D.1.1 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">(B)D.1.1</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Are the audited annual financial report/statements released
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
+                  Are the audited annual financial report/statement released
                   within 60 days from the financial year end?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah laporan keuangan tahunan yang diaudit diterbitkan dalam
-                  waktu 60 hari sejak akhir tahun buku?
+                  Apakah laporan keuangan tahunan audited dirilis dalam waktu 60
+                  hari dari akhir tahun keuangan ?
                 </div>
               </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                • Laporan Keuangan Tahunan <em>audited</em>
+                <span class="font-bold underline">belum</span> dirilis dalam
+                waktu 60 hari dari akhir tahun keuangan
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >NO</td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                Perusahaan merilis atau menerbitkan Laporan Keuangan Tahunan
+                <em>Audited</em> dalam waktu 60 hari sejak tahun buku berakhir.
+              </td>
             </tr>
 
-            <!-- PART ROW (B)E -->
+            <!-- PART ROW (B)D — Tanggung jawab dewan (mockup PLN) -->
             <tr class="bg-white">
               <td class="border border-slate-900 p-2 font-bold">
-                <div class="text-black uppercase">(B)E</div>
+                <div class="text-black uppercase">PART (B)D</div>
+                <div class="text-[#0070c0] uppercase">BAGIAN (B)D</div>
               </td>
               <td class="border border-slate-900 p-2 font-bold leading-tight">
                 <div class="text-black uppercase">
@@ -4964,12 +5419,12 @@ Rapat Umum Pemegang Saham
             </tr>
 
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold text-black">
-                (B)E.1
+              <td class="border border-slate-900 p-2 font-bold text-black align-top">
+                (B)D.1
               </td>
-              <td class="border border-slate-900 p-2 font-bold leading-tight">
+              <td class="border border-slate-900 p-2 font-bold leading-tight align-top">
                 <div class="text-black">Board Competencies and Diversity</div>
-                <div class="text-[#0070c0]">Kompetensi dan Diversitas Dewan</div>
+                <div class="text-[#0070c0]">Kompetensi dan Keberagaman Dewan</div>
               </td>
               <td class="border border-slate-900 p-2"></td>
               <td class="border border-slate-900 p-2"></td>
@@ -4977,40 +5432,45 @@ Rapat Umum Pemegang Saham
               <td class="border border-slate-900 p-2"></td>
             </tr>
 
-            <!-- QUESTION (B)E.1.1 -->
+            <!-- QUESTION (B)D.1.1 -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">(B)E.1.1</span>
+              <td class="border border-slate-900 p-2 align-top">
+                <span class="text-[#0070c0] font-normal">(B)D.1.1</span>
               </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
                   Does the company have at least one female independent
                   director/commissioner?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah perusahaan memiliki setidaknya satu direktur/komisaris
-                  independen perempuan?
+                  Apakah perusahaan memiliki setidaknya satu orang
+                  Direksi/Komisaris Independen yang perempuan?
                 </div>
               </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                • Perusahaan
+                <span class="font-bold underline">belum</span> memiliki setidaknya
+                satu orang Direksi/Komisaris Independen yang perempuan
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >NO</td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                Perusahaan memiliki setidaknya satu orang Komisaris Independen dari
+                unsur gender perempuan.
+              </td>
             </tr>
 
-            <!-- QUESTION (B)E.1.2 -->
+            <!-- QUESTION (B)D.1.2 -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">(B)E.1.2</span>
+              <td class="border border-slate-900 p-2 align-top">
+                <span class="text-[#0070c0] font-normal">(B)D.1.2</span>
               </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
                   Does the company have a policy and disclose measurable
                   objectives for implementing its board diversity and report on
                   progress in achieving its objectives?
@@ -5018,22 +5478,35 @@ Rapat Umum Pemegang Saham
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah perusahaan memiliki kebijakan dan mengungkapkan sasaran
-                  terukur untuk menerapkan diversitas dewan serta melaporkan
-                  kemajuan pencapaiannya?
+                  Apakah perusahaan memiliki kebijakan dan mengungkapkan indikator
+                  tujuan atas implementasi keberagaman Direksi dan Dewan Komisaris
+                  termasuk laporan perkembangan atas pencapaian tujuan tersebut?
                 </div>
               </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                • Perusahaan
+                <span class="font-bold underline">belum</span> memiliki kebijakan
+                dan mengungkapkan indikator tujuan atas implementasi keberagaman
+                Direksi dan Dewan Komisaris termasuk laporan perkembangan atas
+                pencapaian tujuan tersebut
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >NO</td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                Perusahaan menyusun kebijakan dan mengungkapkan indikator tujuan
+                atas implementasi keberagaman Direksi dan Dewan Komisaris termasuk
+                laporan perkembangan atas pencapaian tujuan tersebut (Pada Laporan
+                Tahunan yang dipublikasikan dalam website Perusahaan)
+              </td>
             </tr>
 
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold text-black">
-                (B)E.2
+              <td class="border border-slate-900 p-2 font-bold text-black align-top">
+                (B)D.2
               </td>
-              <td class="border border-slate-900 p-2 font-bold leading-tight">
+              <td class="border border-slate-900 p-2 font-bold leading-tight align-top">
                 <div class="text-black">Board Structure</div>
                 <div class="text-[#0070c0]">Struktur Dewan</div>
               </td>
@@ -5043,62 +5516,81 @@ Rapat Umum Pemegang Saham
               <td class="border border-slate-900 p-2"></td>
             </tr>
 
-            <!-- QUESTION (B)E.2.1 -->
+            <!-- QUESTION (B)D.2.1 -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">(B)E.2.1</span>
+              <td class="border border-slate-900 p-2 align-top">
+                <span class="text-[#0070c0] font-normal">(B)D.2.1</span>
               </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Is the Nominating Committee comprised entirely of independent
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
+                  Is the Nominating Committee comprise entirely of independent
                   directors/commissioners?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
                   Apakah Komite Nominasi seluruhnya terdiri dari
-                  direktur/komisaris independen?
+                  Direksi/Komisaris independen?
                 </div>
               </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                • Bertentangan dengan Peraturan Menteri BUMN No.PER-3/MBU/03/2023
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >N/A</td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
             </tr>
 
-            <!-- QUESTION (B)E.2.2 -->
+            <!-- QUESTION (B)D.2.2 -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">(B)E.2.2</span>
+              <td class="border border-slate-900 p-2 align-top">
+                <span class="text-[#0070c0] font-normal">(B)D.2.2</span>
               </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
                   Does the Nominating Committee undertake the process of
-                  identifying the quality of directors aligned with the company's
+                  identifying the quality of directors aligned with the company'
                   strategic directions?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah Komite Nominasi melaksanakan proses mengidentifikasi
-                  kualitas direktur yang selaras dengan arah strategis perusahaan?
+                  Apakah Komite Nominasi melakukan proses identifikasi kandidat
+                  Direktur sejalan dengan arahan strategi Perusahaan?
                 </div>
               </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                • Komite Nominasi
+                <span class="font-bold underline">telah</span> melakukan proses
+                identifikasi kandidat Direktur sejalan dengan arahan strategi
+                Perusahaan. <sup>(1)(2)</sup>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug">
+                <ol class="list-decimal ps-4 space-y-1">
+                  <li>Laporan Tahunan Perusahaan 2023 hal.357</li>
+                  <li>
+                    <a
+                      href="https://web.pln.co.id/stakeholder/laporan-tahunan"
+                      class="text-[#0563c1] underline break-all"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >https://web.pln.co.id/stakeholder/laporan-tahunan</a>
+                  </li>
+                </ol>
+              </td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >YES</td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
             </tr>
 
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold text-black">
-                (B)E.3
+              <td class="border border-slate-900 p-2 font-bold text-black align-top">
+                (B)D.3
               </td>
-              <td class="border border-slate-900 p-2 font-bold leading-tight">
+              <td class="border border-slate-900 p-2 font-bold leading-tight align-top">
                 <div class="text-black">Board Appointments and Re-Election</div>
                 <div class="text-[#0070c0]">
                   Pengangkatan dan Pemilihan Kembali Dewan
@@ -5110,38 +5602,43 @@ Rapat Umum Pemegang Saham
               <td class="border border-slate-900 p-2"></td>
             </tr>
 
-            <!-- QUESTION (B)E.3.1 -->
+            <!-- QUESTION (B)D.3.1 -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">(B)E.3.1</span>
+              <td class="border border-slate-900 p-2 align-top">
+                <span class="text-[#0070c0] font-normal">(B)D.3.1</span>
               </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Does the company use professional search firms or other
-                  external sources of candidates when searching for candidates to
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
+                  Does the company use professional search firms or other external
+                  sources of candidates (such as director databases set up by
+                  director or shareholder bodies) when searching for candidates to
                   the board of directors/commissioners?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah perusahaan menggunakan firma pencarian profesional atau
-                  sumber eksternal lain untuk calon anggota direksi/dewan
-                  komisaris?
+                  Apakah perusahaan menggunakan jasa profesional dalam mencari
+                  kandidat Direksi/Dewan Komisaris (berdasarkan database Direksi
+                  maupun dari usulan pemegang saham)?
                 </div>
               </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                Pada tahun 2024 tidak terdapat Pengangkatan Direksi, Adapun
+                pengangkatan Dewan Komisaris tahun 2024 berdasarkan calon dari
+                Kementerian BUMN
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >N/A</td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
             </tr>
 
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold text-black">
-                (B)E.4
+              <td class="border border-slate-900 p-2 font-bold text-black align-top">
+                (B)D.4
               </td>
-              <td class="border border-slate-900 p-2 font-bold leading-tight">
+              <td class="border border-slate-900 p-2 font-bold leading-tight align-top">
                 <div class="text-black">Board Structure &amp; Composition</div>
                 <div class="text-[#0070c0]">Struktur dan Komposisi Dewan</div>
               </td>
@@ -5151,40 +5648,46 @@ Rapat Umum Pemegang Saham
               <td class="border border-slate-900 p-2"></td>
             </tr>
 
-            <!-- QUESTION (B)E.4.1 -->
+            <!-- QUESTION (B)D.4.1 -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">(B)E.4.1</span>
+              <td class="border border-slate-900 p-2 align-top">
+                <span class="text-[#0070c0] font-normal">(B)D.4.1</span>
               </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Do independent non-executive directors/commissioners make up
-                  more than 50% of the board for a company with an independent
-                  chairman?
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
+                  Do independent non-executive directors/commissioners make up more
+                  than 50% of the board of directors/commissioners for a company
+                  with independent chairman?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah direktur/komisaris independen non-eksekutif membentuk
-                  lebih dari 50% dewan bagi perusahaan dengan ketua dewan yang
-                  independen?
+                  Apakah komposisi Komisaris Independen lebih dari 50% dari jumlah
+                  keseluruhan anggota Direksi/Dewan Komisaris?
                 </div>
               </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                • Komposisi Komisaris Independen
+                <span class="font-bold underline">belum</span> mencapai lebih dari 50% dari
+                jumlah keseluruhan anggota Direksi/Dewan Komisaris
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >NO</td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                Komposisi Komisaris Independen lebih dari 50% dari jumlah
+                keseluruhan anggota Dewan Komisaris
+              </td>
             </tr>
 
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold text-black">
-                (B)E.5
+              <td class="border border-slate-900 p-2 font-bold text-black align-top">
+                (B)D.5
               </td>
-              <td class="border border-slate-900 p-2 font-bold leading-tight">
+              <td class="border border-slate-900 p-2 font-bold leading-tight align-top">
                 <div class="text-black">Risk Oversight</div>
-                <div class="text-[#0070c0]">Pengawasan Risiko</div>
+                <div class="text-[#0070c0]">Pemantauan Risiko</div>
               </td>
               <td class="border border-slate-900 p-2"></td>
               <td class="border border-slate-900 p-2"></td>
@@ -5192,42 +5695,62 @@ Rapat Umum Pemegang Saham
               <td class="border border-slate-900 p-2"></td>
             </tr>
 
-            <!-- QUESTION (B)E.5.1 -->
+            <!-- QUESTION (B)D.5.1 -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">(B)E.5.1</span>
+              <td class="border border-slate-900 p-2 align-top">
+                <span class="text-[#0070c0] font-normal">(B)D.5.1</span>
               </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Does the company disclose that its board identified key risks
-                  relating to information technology including disruption,
-                  cybersecurity, and disaster recovery, and that such risks are
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
+                  Does the company disclose that its Board identified key risk in
+                  relation to information technology including disruption, cyber
+                  security, and disaster recovery, to ensure that such risks are
                   managed and integrated into the overall risk management
                   framework?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah perusahaan mengungkapkan bahwa dewan mengidentifikasi
-                  risiko utama terkait teknologi informasi termasuk gangguan,
-                  keamanan siber, dan pemulihan bencana, serta risiko tersebut
-                  dikelola dan diintegrasikan ke dalam kerangka manajemen risiko
-                  secara menyeluruh?
+                  Apakah perusahaan mengungkapkan bahwa Dewannya mengidentifikasi
+                  risiko utama terkait dengan teknologi informasi termasuk gangguan,
+                  keamanan siber, dan pemulihan bencana, untuk memastikan bahwa
+                  risiko tersebut dikelola dan diintegrasikan ke dalam kerangka
+                  manajemen risiko secara keseluruhan?
                 </div>
               </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                • Perusahaan <span class="font-bold underline">telah</span>
+                mengungkapkan bahwa Dewannya mengidentifikasi risiko utama terkait
+                dengan teknologi informasi termasuk gangguan, keamanan siber, dan
+                pemulihan bencana, untuk memastikan bahwa risiko tersebut dikelola
+                dan diintegrasikan ke dalam kerangka manajemen risiko secara
+                keseluruhan. <sup>(1)(2)</sup>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug">
+                <ol class="list-decimal ps-4 space-y-1">
+                  <li>Laporan Tahunan Perusahaan 2023</li>
+                  <li>
+                    <a
+                      href="https://web.pln.co.id/stakeholder/laporan-tahunan"
+                      class="text-[#0563c1] underline break-all"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >https://web.pln.co.id/stakeholder/laporan-tahunan</a>
+                  </li>
+                </ol>
+              </td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >YES</td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
             </tr>
 
+            <!-- (B)D.6 Board Performance — mockup PLN -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold text-black">
-                (B)E.6
+              <td class="border border-slate-900 p-2 font-bold text-black align-top">
+                (B)D.6
               </td>
-              <td class="border border-slate-900 p-2 font-bold leading-tight">
+              <td class="border border-slate-900 p-2 font-bold leading-tight align-top">
                 <div class="text-black">Board Performance</div>
                 <div class="text-[#0070c0]">Kinerja Dewan</div>
               </td>
@@ -5237,28 +5760,42 @@ Rapat Umum Pemegang Saham
               <td class="border border-slate-900 p-2"></td>
             </tr>
 
-            <!-- QUESTION (B)E.6.1 -->
+            <!-- QUESTION (B)D.6.1 -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">(B)E.6.1</span>
+              <td class="border border-slate-900 p-2 align-top">
+                <span class="text-[#0070c0] font-normal">(B)D.6.1</span>
               </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Does the company have a separate board-level Risk Committee?
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
+                  Does the company have a separate board level Risk Committee?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah perusahaan memiliki Komite Risiko terpisah di tingkat
-                  dewan?
+                  Apakah Perusahaan memiliki Komite Risiko secara terpisah?
                 </div>
               </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                Perusahaan <span class="font-bold underline">telah</span> memiliki
+                Komite Risiko secara terpisah
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug">
+                <ol class="list-decimal ps-4 space-y-1">
+                  <li>Lapran Tahunan Perusahaan 2023</li>
+                  <li>
+                    <a
+                      href="https://web.pln.co.id/stakeholder/laporan-tahunan"
+                      class="text-[#0563c1] underline break-all"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >https://web.pln.co.id/stakeholder/laporan-tahunan</a>
+                  </li>
+                </ol>
+              </td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >YES</td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
             </tr>
 
             <!-- LEVEL 2 sebelum PENALTY (pola sama seperti BONUS) -->
@@ -5275,13 +5812,13 @@ Rapat Umum Pemegang Saham
               <td class="border border-slate-900 p-1.5 bg-[#dce6f1]"></td>
             </tr>
 
-            <!-- LEVEL 2 (PENALTY ITEMS) -->
+            <!-- LEVEL 2 (PENALTY PENALTI) — sesuai dokumen sumber -->
             <tr class="bg-white">
               <td
                 colspan="2"
                 class="border border-slate-900 p-1.5 align-top font-bold text-black uppercase leading-tight"
               >
-                LEVEL 2 (PENALTY ITEMS)
+                LEVEL 2 (PENALTY PENALTI)
               </td>
               <td class="border border-slate-900 p-1.5"></td>
               <td class="border border-slate-900 p-1.5"></td>
@@ -5289,7 +5826,7 @@ Rapat Umum Pemegang Saham
               <td class="border border-slate-900 p-1.5"></td>
             </tr>
 
-            <!-- PART ROW (P)A -->
+            <!-- PART ROW (P)A — mockup PLN (Penalty) -->
             <tr class="bg-white">
               <td class="border border-slate-900 p-2 font-bold">
                 <div class="text-black uppercase">PART (P)A</div>
@@ -5300,7 +5837,7 @@ Rapat Umum Pemegang Saham
                   RIGHTS AND EQUITABLE TREATMENT OF SHAREHOLDERS
                 </div>
                 <div class="text-[#0070c0] uppercase">
-                  HAK-HAK DAN PERLAKUAN SETARA TERHADAP PEMEGANG SAHAM
+                  HAK PEMEGANG SAHAM DAN PERLAKUAN SETARA TERHADAP PEMEGANG SAHAM
                 </div>
               </td>
               <td class="border border-slate-900 p-2"></td>
@@ -5310,12 +5847,12 @@ Rapat Umum Pemegang Saham
             </tr>
 
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold text-black">
+              <td class="border border-slate-900 p-2 font-bold text-black align-top">
                 (P)A.1
               </td>
-              <td class="border border-slate-900 p-2 font-bold leading-tight">
-                <div class="text-black">Basic shareholder rights</div>
-                <div class="text-[#0070c0]">Hak dasar pemegang saham</div>
+              <td class="border border-slate-900 p-2 font-bold leading-tight align-top">
+                <div class="text-black">Basic Shareholder Rights</div>
+                <div class="text-[#0070c0]">Hak Dasar Pemegang Saham</div>
               </td>
               <td class="border border-slate-900 p-2"></td>
               <td class="border border-slate-900 p-2"></td>
@@ -5325,45 +5862,52 @@ Rapat Umum Pemegang Saham
 
             <!-- QUESTION (P)A.1.1 -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
+              <td class="border border-slate-900 p-2 align-top">
                 <span class="text-[#0070c0] font-normal">(P)A.1.1</span>
               </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
                   Did the company fail or neglect to offer equal treatment for
                   share repurchases to all shareholders?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah perusahaan gagal atau mengabaikan memberikan perlakuan
-                  setara bagi pembelian kembali saham kepada seluruh pemegang
-                  saham?
+                  Apakah perusahaan gagal atau lalai untuk menawarkan secara adil
+                  terkait pembelian kembali saham kepada para pemegang saham?
                 </div>
               </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                Perusahaan bukan merupakan perusahaan <em>listed</em> (tidak
+                melakukan perdagangan saham).
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >N/A</td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
             </tr>
 
             <!-- DESCRIPTOR (P)A.2 -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold text-black">
+              <td class="border border-slate-900 p-2 font-bold text-black align-top">
                 (P)A.2
               </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div class="text-black mb-1 text-justify font-normal text-sm">
-                  Shareholders should be allowed to consult with each other on
-                  issues concerning their basic shareholder rights, subject to
-                  exceptions to prevent abuse.
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-bold leading-snug">
+                  Shareholders, including institutional shareholders, should be
+                  allowed to consult with each other on issues concerning their
+                  basic shareholder rights as defined in the Principles, subject
+                  to exceptions to prevent abuse.
                 </div>
-                <div class="text-[#0070c0] text-justify italic text-sm">
-                  Pemegang saham diperbolehkan berkonsultasi satu sama lain
-                  mengenai hak dasar pemegang saham, dengan pengecualian untuk
-                  mencegah penyalahgunaan.
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Pemegang Saham, termasuk pemegang saham institusional, harus
+                  diizinkan untuk berkonsultasi dengan satu sama lain pada isu-isu
+                  tentang hak-hak dasar pemegang saham seperti yang didefinisikan
+                  dalam Prinsip, tunduk pada pengecualian untuk mencegah
+                  penyalahgunaan.
                 </div>
               </td>
               <td class="border border-slate-900 p-2"></td>
@@ -5374,44 +5918,58 @@ Rapat Umum Pemegang Saham
 
             <!-- QUESTION (P)A.2.1 -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
+              <td class="border border-slate-900 p-2 align-top">
                 <span class="text-[#0070c0] font-normal">(P)A.2.1</span>
               </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
                   Is there evidence of barriers that prevent shareholders from
                   communicating or consulting with other shareholders?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah terdapat bukti hambatan yang menghalangi pemegang saham
-                  berkomunikasi atau berkonsultasi dengan pemegang saham lain?
+                  Apakah ada bukti hambatan yang mencegah pemegang saham saling
+                  berkomunikasi atau konsultasi dengan pemegang saham lainnya?
                 </div>
               </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                • Tidak terdapat hambatan yang menghalangi pemegang saham untuk
+                berkomunikasi atau berkonsultasi dengan pemegang saham lainnya.
+                <sup>(1)(2)(3)</sup>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug">
+                <ol class="list-decimal ps-4 space-y-1">
+                  <li>Laporan Tahunan Perusahaan 2023</li>
+                  <li>Laporan Keberlanjutan Perusahaan 2023</li>
+                  <li>Website Perusahaan</li>
+                </ol>
+              </td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >NO</td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
             </tr>
 
             <!-- DESCRIPTOR (P)A.3 -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold text-black">
+              <td class="border border-slate-900 p-2 font-bold text-black align-top">
                 (P)A.3
               </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div class="text-black mb-1 text-justify font-normal text-sm">
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-bold leading-snug">
                   Right to participate effectively in and vote in general
-                  shareholders meetings and be informed of the rules, including
-                  voting procedures, that govern general shareholders meetings.
+                  shareholders meeting and should be informed of the rules,
+                  including voting procedures, that govern general shareholders
+                  meeting.
                 </div>
-                <div class="text-[#0070c0] text-justify italic text-sm">
-                  Hak berpartisipasi efektif dan memberikan suara dalam RUPS serta
-                  mengetahui aturan, termasuk prosedur pemungutan suara, yang
-                  mengatur RUPS.
+                <div
+                  class="text-[#0070c0] text-justify font-bold italic leading-snug"
+                >
+                  Hak untuk berpartisipasi secara efektif dan memberikan suara
+                  dalam Rapat Umum Pemegang Saham dan harus diberitahu tentang
+                  aturan, termasuk prosedur pemungutan suara, yang mengatur rapat
+                  umum pemegang saham.
                 </div>
               </td>
               <td class="border border-slate-900 p-2"></td>
@@ -5422,46 +5980,97 @@ Rapat Umum Pemegang Saham
 
             <!-- QUESTION (P)A.3.1 -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
+              <td class="border border-slate-900 p-2 align-top">
                 <span class="text-[#0070c0] font-normal">(P)A.3.1</span>
               </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
                   Did the company include any additional and unannounced agenda
-                  item in the notice of AGM/EGM?
+                  item into the notice of AGM/EGM?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah perusahaan memasukkan mata acara tambahan yang tidak
-                  diumumkan dalam pemberitahuan RUPS/RUPSLB?
+                  Apakah perusahaan memasukkan item agenda tambahan dan mendadak
+                  (darurat) ke dalam pemberitahuan RUPST/RUPSLB?
                 </div>
               </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                Perusahaan tidak memasukkan item agenda tambahan dan mendadak
+                (darurat) ke dalam pemberitahuan RUPS/RUPSLB. <sup>(1)(2)</sup>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug">
+                <ol class="list-decimal ps-4 space-y-1">
+                  <li>Undangan RUPS Tahunan Tahunan 2024</li>
+                  <li>Risalah RUPS Tahunan 2024</li>
+                </ol>
+              </td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >NO</td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
             </tr>
 
             <!-- QUESTION (P)A.3.2 -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
+              <td class="border border-slate-900 p-2 align-top">
                 <span class="text-[#0070c0] font-normal">(P)A.3.2</span>
               </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Did the Chairman of the Board, Audit Committee Chairman and CEO
-                  attend the most recent AGM?
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
+                  Was the Chairman of the Board and the Chairmen of all Board
+                  Committees and the CEO absent from the most recent General
+                  Meeting?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah Ketua Dewan, Ketua Komite Audit, dan CEO hadir pada RUPS
-                  terakhir?
+                  Apakah Komisaris Utama, Ketua Komite Audit dan direktur utama
+                  menghadiri RUPS terakhir?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                Ketua Dewan dan Ketua seluruh Komite Dewan serta CEO
+                <span class="font-bold underline">telah</span> hadir pada Rapat
+                Umum terakhir. <sup>(1)(2)(3)</sup>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug">
+                <ol class="list-decimal ps-4 space-y-1">
+                  <li>Risalah RUPST RKAP 2024</li>
+                  <li>Risalah RUPST LPT tahun buku 2023</li>
+                  <li>
+                    <a
+                      href="https://web.pln.co.id/stakeholder/rapat-umum-pemegang-saham"
+                      class="text-[#0563c1] underline break-all"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >https://web.pln.co.id/stakeholder/rapat-umum-pemegang-saham</a>
+                  </li>
+                </ol>
+              </td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >NO</td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
+            </tr>
+
+            <!-- (P)A.4 prinsip pengungkapan -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2 font-bold text-black align-top">
+                (P)A.4
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-bold leading-snug">
+                  Capital structures and arrangements that enable certain
+                  shareholders to obtain a degree of control disproportionate to
+                  their equity ownership should be disclosed.
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Struktur modal dan pengaturan yang memungkinkan pemegang saham
+                  tertentu melakukan pengendalian yang tidak proporsional dengan
+                  kepemilikan sahamnya, harus diungkapkan.
                 </div>
               </td>
               <td class="border border-slate-900 p-2"></td>
@@ -5471,17 +6080,15 @@ Rapat Umum Pemegang Saham
             </tr>
 
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold text-black">
-                (P)A.4
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div class="text-black mb-1 text-justify font-normal text-sm">
-                  Did the company fail to disclose the existence of: shareholders
-                  agreement, voting cap, or multiple voting rights?
+              <td class="border border-slate-900 p-2 align-top"></td>
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-bold leading-snug">
+                  Did the company fail to disclose the existence of:
                 </div>
-                <div class="text-[#0070c0] text-justify italic text-sm">
-                  Apakah perusahaan gagal mengungkapkan keberadaan: perjanjian
-                  pemegang saham, batas pemungutan suara, atau hak suara ganda?
+                <div
+                  class="text-[#0070c0] text-justify font-bold italic leading-snug"
+                >
+                  Apakah perusahaan lalai untuk mengungkapkan adanya:
                 </div>
               </td>
               <td class="border border-slate-900 p-2"></td>
@@ -5492,59 +6099,64 @@ Rapat Umum Pemegang Saham
 
             <!-- QUESTION (P)A.4.1 -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
+              <td class="border border-slate-900 p-2 align-top">
                 <span class="text-[#0070c0] font-normal">(P)A.4.1</span>
               </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
                   Shareholders agreement?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Perjanjian pemegang saham?
+                  Kesepakatan dengan Pemegang Saham?
                 </div>
               </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                • Pemegang Saham Perusahaan, 100% dimiliki oleh Pemerintah RI
+                sehingga tidak diperlukan pemungutan suara (<em>voting</em>)
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >N/A</td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
             </tr>
 
             <!-- QUESTION (P)A.4.2 -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
+              <td class="border border-slate-900 p-2 align-top">
                 <span class="text-[#0070c0] font-normal">(P)A.4.2</span>
               </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
                   Voting cap?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Batas pemungutan suara?
+                  Kekuatan lebih yang dimiliki Pemegang Saham dalam mempengaruhi
+                  Perusahaan melalui voting?
                 </div>
               </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                • Pemegang Saham Perusahaan, 100% dimiliki oleh Pemerintah RI
+                sehingga tidak diperlukan pemungutan suara (voting)
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >N/A</td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
             </tr>
 
             <!-- QUESTION (P)A.4.3 -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
+              <td class="border border-slate-900 p-2 align-top">
                 <span class="text-[#0070c0] font-normal">(P)A.4.3</span>
               </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
                   Multiple voting rights?
                 </div>
                 <div
@@ -5553,22 +6165,34 @@ Rapat Umum Pemegang Saham
                   Hak suara ganda?
                 </div>
               </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                • Pemegang Saham Perusahaan, 100% dimiliki oleh Pemerintah RI
+                sehingga tidak diperlukan pemungutan suara (voting)
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >N/A</td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
             </tr>
 
+            <!-- (P)A.5 prinsip (dokumen sumber) -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold text-black">
+              <td class="border border-slate-900 p-2 font-bold text-black align-top">
                 (P)A.5
               </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div class="text-black mb-1 text-justify font-normal text-sm">
-                  Pyramid ownership structure and/or cross-holding structure.
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-bold leading-snug">
+                  Capital structures and arrangements that enable certain
+                  shareholders to obtain a degree of control disproportionate to
+                  their equity ownership should be disclosed.
                 </div>
-                <div class="text-[#0070c0] text-justify italic text-sm">
-                  Struktur kepemilikan piramida dan/atau saling kepemilikan silang.
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Struktur modal dan pengaturan yang memungkinkan pemegang saham
+                  tertentu untuk mendapatkan tingkat kontrol yang tidak
+                  proporsional dengan kepemilikan saham mereka harus diungkapkan.
                 </div>
               </td>
               <td class="border border-slate-900 p-2"></td>
@@ -5579,73 +6203,74 @@ Rapat Umum Pemegang Saham
 
             <!-- QUESTION (P)A.5.1 -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
+              <td class="border border-slate-900 p-2 align-top">
                 <span class="text-[#0070c0] font-normal">(P)A.5.1</span>
               </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Is a pyramid ownership structure and/or cross-holding structure
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
+                  Is a pyramid ownership structure and/or cross holding structure
                   apparent?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah struktur kepemilikan piramida dan/atau saling kepemilikan
-                  silang tampak nyata?
+                  Adakah struktur kepemilikan saham Perusahaan berbentuk piramid
+                  dan/atau kepemilikan saham secara silang, jelas terlihat?
                 </div>
               </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                • Tidak terdapat struktur kepemilikan saham Perusahaan berbentuk
+                piramid dan/atau kepemilikan saham secara silang, jelas terlihat.
+                <sup>(1)(2)</sup>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug">
+                <ol class="list-decimal ps-4 space-y-1">
+                  <li>Laporan Tahunan Perusahaan 2023 Hal.126</li>
+                  <li>
+                    <a
+                      href="https://web.pln.co.id/stakeholder/laporan-tahunan"
+                      class="text-[#0563c1] underline break-all"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >https://web.pln.co.id/stakeholder/laporan-tahunan</a>
+                  </li>
+                </ol>
+              </td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >NO</td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
             </tr>
 
-            <!-- PART (P)B -->
+            <!-- (P)A.6 Insider trading -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold">
-                <div class="text-black uppercase">(P)B</div>
+              <td class="border border-slate-900 p-2 font-bold text-black align-top">
+                (P)A.6
               </td>
-              <td class="border border-slate-900 p-2 font-bold leading-tight">
-                <div class="text-black uppercase">
-                  EQUITABLE TREATMENT OF SHAREHOLDERS
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-bold leading-snug">
+                  Insider trading and abusive self-dealing should be prohibited.
                 </div>
-                <div class="text-[#0070c0] uppercase">
-                  PERLAKUAN SETARA TERHADAP PEMEGANG SAHAM
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold text-black">
-                (P)B.1
-              </td>
-              <td class="border border-slate-900 p-2 font-bold leading-tight">
-                <div class="text-black">Insider trading and abusive self-dealing</div>
-                <div class="text-[#0070c0]">
-                  Perdagangan orang dalam dan penyalahgunaan kepentingan diri
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- QUESTION (P)B.1.1 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">(P)B.1.1</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
                 <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
+                  class="text-[#0070c0] text-justify font-bold italic leading-snug"
                 >
+                  Perdagangan orang dalam (insider trading) dan penyalahgunaan
+                  transaksi sendiri harus dilarang.
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- QUESTION (P)A.6.1 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2 align-top">
+                <span class="text-[#0070c0] font-normal">(P)A.6.1</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
                   Has there been any conviction of insider trading involving
                   directors/commissioners, management and employees in the past
                   three years?
@@ -5653,9 +6278,33 @@ Rapat Umum Pemegang Saham
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah terdapat hukuman atas perdagangan orang dalam yang
-                  melibatkan direktur/komisaris, manajemen, dan karyawan dalam tiga
-                  tahun terakhir?
+                  Pernahkah ada hukuman terhadap insider trading yang melibatkan
+                  Direksi/Dewan Komisaris, manajemen dan karyawan dalam tiga tahun
+                  terakhir?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                Perusahaan bukan merupakan perusahaan <em>listed</em> (tidak
+                melakukan perdagangan saham).
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >N/A</td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
+            </tr>
+
+            <!-- (P)A.7 Perlindungan minoritas -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2 font-bold text-black align-top">
+                (P)A.7
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-bold leading-snug">
+                  Protecting minority shareholders from abusive action.
+                </div>
+                <div class="text-[#0070c0] text-justify font-normal italic leading-snug">
+                  Melindungi pemegang saham minoritas dari tindakan tidak adil.
                 </div>
               </td>
               <td class="border border-slate-900 p-2"></td>
@@ -5664,78 +6313,86 @@ Rapat Umum Pemegang Saham
               <td class="border border-slate-900 p-2"></td>
             </tr>
 
+            <!-- QUESTION (P)A.7.1 -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold text-black">
-                (P)B.2
+              <td class="border border-slate-900 p-2 align-top">
+                <span class="text-[#0070c0] font-normal">(P)A.7.1</span>
               </td>
-              <td class="border border-slate-900 p-2 font-bold leading-tight">
-                <div class="text-black">Protecting minority shareholders</div>
-                <div class="text-[#0070c0]">Perlindungan pemegang saham minoritas</div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- QUESTION (P)B.2.1 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">(P)B.2.1</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Have there been any cases of non-compliance with laws, rules
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
+                  Has there been any cases of non-compliance with the laws, rules
                   and regulations pertaining to material related party
                   transactions in the past three years?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah terdapat kasus ketidakpatuhan terhadap hukum dan
-                  peraturan terkait transaksi pihak berelasi material dalam tiga
-                  tahun terakhir?
+                  Apakah ada kasus ketidakpatuhan terhadap hukum, peraturan dan
+                  regulasi yang berkaitan dengan transaksi pihak berelasi yang
+                  material dalam tiga tahun terakhir?
                 </div>
               </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                • Tidak terdapat kasus ketidakpatuhan dengan hukum, aturan dan
+                peraturan yang berkaitan dengan transaksi pihak berelasi yang
+                material dalam tiga tahun terakhir. <sup>(1)(2)(3)</sup>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug">
+                <ul class="list-disc ps-4 space-y-1">
+                  <li>Konfirmasi</li>
+                  <li>Laporan Tahunan Perusahaan 2023</li>
+                  <li>Review dokumen</li>
+                </ul>
+              </td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >NO</td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
             </tr>
 
-            <!-- QUESTION (P)B.2.2 -->
+            <!-- QUESTION (P)A.7.2 -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">(P)B.2.2</span>
+              <td class="border border-slate-900 p-2 align-top">
+                <span class="text-[#0070c0] font-normal">(P)A.7.2</span>
               </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
                   Were there any RPTs that can be classified as financial
-                  assistance (i.e. not conducted at arm's length) to entities
-                  other than wholly-owned subsidiaries?
+                  assistance (i.e. not conducted at arm's length) to entities other
+                  than wholly-owned subsidiary companies?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah terdapat transaksi PBR yang dapat diklasifikasikan sebagai
-                  bantuan keuangan (bukan pada harga wajar) kepada pihak selain
-                  anak perusahaan yang sepenuhnya dimiliki?
+                  Apakah ada transaksi pihak berelasi yang dapat digolongkan
+                  sebagai bantuan keuangan (yang tidak dilakukan secara wajar)
+                  untuk entitas selain anak perusahaan yang dimiliki secara penuh?
                 </div>
               </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                • Tidak terdapat transaksi pihak berelasi yang dapat digolongkan
+                sebagai bantuan keuangan (yang tidak dilakukan secara wajar)
+                untuk entitas selain anak perusahaan yang dimiliki secara penuh.
+                <sup>(1)(2)(3)</sup>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug">
+                <ul class="list-disc ps-4 space-y-1">
+                  <li>Konfirmasi</li>
+                  <li>Laporan Tahunan Perusahaan 2023</li>
+                  <li>Review dokumen</li>
+                </ul>
+              </td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >NO</td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
             </tr>
 
-            <!-- PART (P)C -->
+            <!-- PART ROW (P)B — Role of Stakeholders -->
             <tr class="bg-white">
               <td class="border border-slate-900 p-2 font-bold">
-                <div class="text-black uppercase">(P)C</div>
+                <div class="text-black uppercase">PART (P)B</div>
+                <div class="text-[#0070c0] uppercase">BAGIAN (P)B</div>
               </td>
               <td class="border border-slate-900 p-2 font-bold leading-tight">
                 <div class="text-black uppercase">ROLE OF STAKEHOLDERS</div>
@@ -5748,12 +6405,183 @@ Rapat Umum Pemegang Saham
             </tr>
 
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold text-black">
-                (P)C.1
+              <td class="border border-slate-900 p-2 font-bold text-black align-top">
+                (P)B.1
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-bold leading-snug">
+                  The rights of stakeholders that are established by law or
+                  through mutual agreements are to be respected.
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Hak-hak pemangku kepentingan yang ditetapkan oleh undang-undang
+                  atau melalui kesepakatan bersama harus dihormati.
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- QUESTION (P)B.1.1 — mockup PLN -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2 align-top">
+                <span class="text-[#0070c0] font-normal">(P)B.1.1</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
+                  Have there been any violations of any laws pertaining to
+                  labour/employment/consumer/insolvency/commercial/ competition or
+                  environmental issues?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Pernahkah ada pelanggaran hukum yang berkaitan dengan perburuhan
+                  (berserikat)/ketenagakerjaan/konsumen/ kepailitan/komersial/
+                  kompetisi atau isu-isu lingkungan?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                • Terdapat pelanggaran hukum yang berkaitan dengan komersial
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug">
+                <ol class="list-decimal ps-4 space-y-1">
+                  <li>
+                    <a
+                      href="https://eppid.pln.co.id/wp-content/uploads/2024/07/Kasus%20Hukum.pdf"
+                      class="text-[#0563c1] underline break-all"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >https://eppid.pln.co.id/wp-content/uploads/2024/07/Kasus%20Hukum.pdf</a>
+                  </li>
+                </ol>
+              </td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >YES</td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                Menghindari pelanggaran hukum yang berkaitan dengan komersial
+              </td>
+            </tr>
+
+            <!-- (P)B.2 prinsip partisipasi & akses informasi -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2 font-bold text-black align-top">
+                (P)B.2
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-bold leading-snug">
+                  Where stakeholders participate in the corporate governance
+                  process, they should have access to relevant, sufficient and
+                  reliable information on a timely and regular basis.
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Stakeholder berpartisipasi dalam proses tata kelola perusahaan,
+                  mereka harus memiliki akses ke informasi yang relevan, memadai
+                  dan handal secara tepat waktu dan teratur.
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <!-- QUESTION (P)B.2.1 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2 align-top">
+                <span class="text-[#0070c0] font-normal">(P)B.2.1</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
+                  Has the company faced any sanctions by regulators for failure to
+                  make announcements within the requisite time period for material
+                  events?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah Perusahaan telah mendapatkan sanksi dari regulator terkait
+                  kelalaian dalam membuat pengumuman sesuai periode waktu?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                • Perusahaan tidak mendapatkan sanksi dari regulator terkait
+                kelalaian dalam membuat pengumuman sesuai periode waktu atas
+                Laporan Keuangan triwulanan Perusahaan
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >YES</td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
+            </tr>
+
+            <!-- QUESTION (P)B.2.2 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2 align-top">
+                <span class="text-[#0070c0] font-normal">(P)B.2.2</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
+                  Is there any evidence that the company is engaging in
+                  greenwashing activities?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah terdapat bukti bahwa perusahaan melakukan kegiatan
+                  greenwashing (informasi palsu/menyesatkan terkait produk yang
+                  ramah lingkungan)?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                • Tidak terdapat bukti bahwa perusahaan melakukan kegiatan
+                greenwashing (informasi palsu/menyesatkan terkait produk yang ramah
+                lingkungan)
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >NO</td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
+            </tr>
+
+            <!-- PART (P)C — Disclosure and Transparency -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2 font-bold">
+                <div class="text-black uppercase">PART (P)C</div>
+                <div class="text-[#0070c0] uppercase">BAGIAN (P)C</div>
               </td>
               <td class="border border-slate-900 p-2 font-bold leading-tight">
-                <div class="text-black">Stakeholder rights established by law</div>
-                <div class="text-[#0070c0]">Hak pemangku kepentingan menurut hukum</div>
+                <div class="text-black uppercase">
+                  DISCLOSURE AND TRANSPARENCY
+                </div>
+                <div class="text-[#0070c0] uppercase font-bold">
+                  TRANSPARANSI DAN PENGUNGKAPAN
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2"></td>
+            </tr>
+
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2 font-bold text-black align-top">
+                (P)C.1
+              </td>
+              <td class="border border-slate-900 p-2 font-bold leading-tight align-top">
+                <div class="text-black">Sanctions from regulator on financial reports</div>
+                <div class="text-[#0070c0] font-bold">
+                  Sanksi dari Regulator pada Laporan Keuangan
+                </div>
               </td>
               <td class="border border-slate-900 p-2"></td>
               <td class="border border-slate-900 p-2"></td>
@@ -5763,107 +6591,177 @@ Rapat Umum Pemegang Saham
 
             <!-- QUESTION (P)C.1.1 -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
+              <td class="border border-slate-900 p-2 align-top">
                 <span class="text-[#0070c0] font-normal">(P)C.1.1</span>
               </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Have there been any violations of laws pertaining to
-                  labour/employment, consumer, insolvency, commercial, competition
-                  or environmental issues?
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
+                  Did the company receive a "qualified opinion" in its external
+                  audit report?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah terdapat pelanggaran hukum terkait ketenagakerjaan,
-                  konsumen, kepailitan, komersial, persaingan, atau lingkungan?
+                  Apakah laporan keuangan perusahaan mendapatkan "pendapat wajar
+                  dengan pengecualian" dari auditor eksternal?
                 </div>
               </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                Laporan Keuangan tahun buku 2023 mendapatkan Opini Wajar, dalam
+                semua hal yang material. <sup>(1)(2)</sup>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug">
+                <ol class="list-decimal ps-4 space-y-1">
+                  <li>Laporan Tahunan Perusahaan 2023 Hal.443</li>
+                  <li>
+                    <a
+                      href="https://web.pln.co.id/stakeholder/laporan-tahunan"
+                      class="text-[#0563c1] underline break-all"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >https://web.pln.co.id/stakeholder/laporan-tahunan</a>
+                  </li>
+                </ol>
+              </td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >NO</td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
             </tr>
 
+            <!-- QUESTION (P)C.1.2 -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold text-black">
-                (P)C.2
+              <td class="border border-slate-900 p-2 align-top">
+                <span class="text-[#0070c0] font-normal">(P)C.1.2</span>
               </td>
-              <td class="border border-slate-900 p-2 font-bold leading-tight">
-                <div class="text-black">Stakeholder participation in governance</div>
-                <div class="text-[#0070c0]">
-                  Partisipasi pemangku kepentingan dalam tata kelola
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- QUESTION (P)C.2.1 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">(P)C.2.1</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Has the company faced sanctions by regulators for failure to
-                  make announcements within the requisite time period for
-                  material events?
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
+                  Did the company receive a "adverse opinion" in its external
+                  audit report?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah perusahaan dikenai sanksi regulator karena gagal
-                  mengumumkan peristiwa material dalam jangka waktu yang ditetapkan?
+                  Apakah laporan keuangan perusahaan mendapatkan "pendapat tidak
+                  wajar" dari auditor eksternal?
                 </div>
               </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                Laporan Keuangan tahun buku 2023 mendapatkan Opini Wajar, dalam
+                semua hal yang material. <sup>(1)(2)</sup>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug">
+                <ol class="list-decimal ps-4 space-y-1">
+                  <li>Laporan Tahunan Perusahaan 2023 Hal.443</li>
+                  <li>
+                    <a
+                      href="https://web.pln.co.id/stakeholder/laporan-tahunan"
+                      class="text-[#0563c1] underline break-all"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >https://web.pln.co.id/stakeholder/laporan-tahunan</a>
+                  </li>
+                </ol>
+              </td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >NO</td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
             </tr>
 
-            <!-- QUESTION (P)C.2.2 -->
+            <!-- QUESTION (P)C.1.3 -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">(P)C.2.2</span>
+              <td class="border border-slate-900 p-2 align-top">
+                <span class="text-[#0070c0] font-normal">(P)C.1.3</span>
               </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Is there any evidence that the company is engaging in
-                  greenwashing activities?
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
+                  Did the company receive a "disclaimer opinion" in its external
+                  audit report?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah terdapat bukti perusahaan melakukan aktivitas greenwashing?
+                  Apakah laporan keuangan perusahaan mendapatkan opini "menolak
+                  memberi pendapat" dari auditor eksternal?
                 </div>
               </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                Laporan Keuangan tahun buku 2023 mendapatkan Opini Wajar, dalam
+                semua hal yang material. <sup>(1)(2)</sup>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug">
+                <ol class="list-decimal ps-4 space-y-1">
+                  <li>Laporan Tahunan Perusahaan 2023 Hal.443</li>
+                  <li>
+                    <a
+                      href="https://web.pln.co.id/stakeholder/laporan-tahunan"
+                      class="text-[#0563c1] underline break-all"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >https://web.pln.co.id/stakeholder/laporan-tahunan</a>
+                  </li>
+                </ol>
+              </td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >NO</td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
             </tr>
 
-            <!-- PART (P)D -->
+            <!-- QUESTION (P)C.1.4 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2 align-top">
+                <span class="text-[#0070c0] font-normal">(P)C.1.4</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
+                  Has the company in the past year revised its financial
+                  statements for reasons other than changes in accounting
+                  policies?
+                </div>
+                <div
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
+                >
+                  Apakah perusahaan telah merevisi laporan keuangan tahun lalu di
+                  luar alasan perubahan kebijakan akuntansi?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                • Laporan Keuangan tahun buku 2023 mendapatkan Opini Wajar, dalam
+                semua hal yang material. <sup>(1)(2)</sup>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug">
+                <ol class="list-decimal ps-4 space-y-1">
+                  <li>Laporan Tahunan Perusahaan 2023 Hal.443</li>
+                  <li>
+                    <a
+                      href="https://web.pln.co.id/stakeholder/laporan-tahunan"
+                      class="text-[#0563c1] underline break-all"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >https://web.pln.co.id/stakeholder/laporan-tahunan</a>
+                  </li>
+                </ol>
+              </td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >NO</td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
+            </tr>
+
+            <!-- PART (P)D — Responsibilities of the Board -->
             <tr class="bg-white">
               <td class="border border-slate-900 p-2 font-bold">
-                <div class="text-black uppercase">(P)D</div>
+                <div class="text-black uppercase">PART (P)D</div>
+                <div class="text-[#0070c0] uppercase">BAGIAN (P)D</div>
               </td>
               <td class="border border-slate-900 p-2 font-bold leading-tight">
                 <div class="text-black uppercase">
-                  DISCLOSURE AND TRANSPARENCY
+                  RESPONSIBILITIES OF THE BOARD
                 </div>
-                <div class="text-[#0070c0] uppercase">
-                  PENGUNGKAPAN DAN TRANSPARANSI
+                <div class="text-[#0070c0] uppercase font-bold">
+                  TANGGUNG JAWAB DEWAN
                 </div>
               </td>
               <td class="border border-slate-900 p-2"></td>
@@ -5873,12 +6771,17 @@ Rapat Umum Pemegang Saham
             </tr>
 
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold text-black">
+              <td class="border border-slate-900 p-2 font-bold text-black align-top">
                 (P)D.1
               </td>
-              <td class="border border-slate-900 p-2 font-bold leading-tight">
-                <div class="text-black">Sanctions from regulator on financial reports</div>
-                <div class="text-[#0070c0]">Sanksi regulator atas laporan keuangan</div>
+              <td class="border border-slate-900 p-2 font-bold leading-tight align-top">
+                <div class="text-black">
+                  Compliance with listing rules, regulations and applicable laws.
+                </div>
+                <div class="text-[#0070c0] font-bold">
+                  Kepatuhan terhadap aturan listing, peraturan dan hukum yang
+                  berlaku.
+                </div>
               </td>
               <td class="border border-slate-900 p-2"></td>
               <td class="border border-slate-900 p-2"></td>
@@ -5888,248 +6791,230 @@ Rapat Umum Pemegang Saham
 
             <!-- QUESTION (P)D.1.1 -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
+              <td class="border border-slate-900 p-2 align-top">
                 <span class="text-[#0070c0] font-normal">(P)D.1.1</span>
               </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Did the company receive a qualified opinion in its external
-                  audit report?
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
+                  Is there any evidence that the company has not complied with any
+                  listing rules and regulations apart from disclosure rules over
+                  the past year?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah perusahaan memperoleh opini wajar dengan pengecualian
-                  dalam laporan audit eksternal?
+                  Apakah ada bukti bahwa perusahaan tidak mematuhi peraturan dan
+                  ketentuan pencatatan selain peraturan pengungkapan selama setahun
+                  terakhir?
                 </div>
               </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                • Tidak terdapat bukti bahwa perusahaan tidak mematuhi peraturan dan
+                ketentuan pencatatan selain peraturan pengungkapan selama setahun
+                terakhir
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >NO</td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
             </tr>
 
             <!-- QUESTION (P)D.1.2 -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
+              <td class="border border-slate-900 p-2 align-top">
                 <span class="text-[#0070c0] font-normal">(P)D.1.2</span>
               </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Did the company receive an adverse opinion in its external
-                  audit report?
-                </div>
-                <div
-                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
-                >
-                  Apakah perusahaan memperoleh opini tidak wajar dalam laporan
-                  audit eksternal?
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- QUESTION (P)D.1.3 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">(P)D.1.3</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Did the company receive a disclaimer of opinion in its external
-                  audit report?
-                </div>
-                <div
-                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
-                >
-                  Apakah perusahaan memperoleh opini menolak memberikan pendapat
-                  dalam laporan audit eksternal?
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- QUESTION (P)D.1.4 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">(P)D.1.4</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Has the company in the past year revised its financial
-                  statements for reasons other than changes in accounting
-                  policies?
-                </div>
-                <div
-                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
-                >
-                  Apakah perusahaan dalam tahun terakhir merevisi laporan
-                  keuangannya karena alasan selain perubahan kebijakan akuntansi?
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- PART (P)E -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold">
-                <div class="text-black uppercase">(P)E</div>
-              </td>
-              <td class="border border-slate-900 p-2 font-bold leading-tight">
-                <div class="text-black uppercase">
-                  RESPONSIBILITIES OF THE BOARD
-                </div>
-                <div class="text-[#0070c0] uppercase">TANGGUNG JAWAB DEWAN</div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold text-black">
-                (P)E.1
-              </td>
-              <td class="border border-slate-900 p-2 font-bold leading-tight">
-                <div class="text-black">Compliance with listing rules and laws</div>
-                <div class="text-[#0070c0]">Kepatuhan aturan pencatatan dan hukum</div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- QUESTION (P)E.1.1 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">(P)E.1.1</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Is there any evidence that the company has not complied with any
-                  listing rules and regulations over the past year apart from
-                  disclosure rules?
-                </div>
-                <div
-                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
-                >
-                  Apakah terdapat bukti perusahaan tidak mematuhi aturan
-                  pencatatan dan peraturan dalam setahun terakhir selain aturan
-                  pengungkapan?
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- QUESTION (P)E.1.2 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">(P)E.1.2</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
                   Have there been any instances where non-executive
-                  directors/commissioners have resigned and raised governance-related
-                  concerns?
+                  directors/commissioner have resigned and raised any issues of
+                  governance-related concerns?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah terdapat kasus direktur/komisaris non-eksekutif mengundurkan
-                  diri sambil mengangkat isu terkait tata kelola?
+                  Apakah pernah terjadi kasus dimana Direksi/ Dewan Komisaris non
+                  eksekutif mengundurkan diri dan mengangkat isu-isu yang berkaitan
+                  dengan tata kelola?
                 </div>
               </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                • Tidak pernah terjadi kasus dimana Direksi/ Dewan Komisaris non
+                eksekutif mengundurkan diri dan mengangkat isu-isu yang berkaitan
+                dengan tata kelola.
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >NO</td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
+            </tr>
+
+            <!-- (P)D.2 Board Structure -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2 font-bold text-black align-top">
+                (P)D.2
+              </td>
+              <td class="border border-slate-900 p-2 font-bold leading-tight align-top">
+                <div class="text-black">Board Structure</div>
+                <div class="text-[#0070c0] font-bold">Struktur Dewan</div>
+              </td>
               <td class="border border-slate-900 p-2"></td>
               <td class="border border-slate-900 p-2"></td>
               <td class="border border-slate-900 p-2"></td>
               <td class="border border-slate-900 p-2"></td>
             </tr>
 
+            <!-- QUESTION (P)D.2.1 -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold text-black">
-                (P)E.2
+              <td class="border border-slate-900 p-2 align-top">
+                <span class="text-[#0070c0] font-normal">(P)D.2.1</span>
               </td>
-              <td class="border border-slate-900 p-2 font-bold leading-tight">
-                <div class="text-black">Board structure</div>
-                <div class="text-[#0070c0]">Struktur dewan</div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- QUESTION (P)E.2.1 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">(P)E.2.1</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
+              <td class="border border-slate-900 p-2 leading-snug align-top text-xs">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
+                  Does the Company have any independent directors/commissioners
+                  who have served for more than nine years or two terms of five
+                  years* each (whichever is higher) in the same capacity?
+                </div>
                 <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
+                  class="text-[#0070c0] text-justify font-normal italic leading-snug mb-1"
                 >
-                  Does the company have any independent directors/commissioners
-                  who have served more than nine years or two terms of five years
-                  each (whichever is higher) in the same capacity?
+                  Apakah perusahaan mempunyai direktur/komisaris independen yang
+                  telah menjabat lebih dari sembilan tahun atau dua periode
+                  masing-masing lima tahun* (mana yang lebih tinggi) dalam
+                  kapasitas yang sama?
+                </div>
+                <p class="text-black text-[10px] leading-tight text-justify">
+                  *The five years term must be required by legislation which
+                  pre-existed before the introduction of the ASEAN Corporate
+                  Governance Scorecard in 2011
+                </p>
+                <p
+                  class="text-[#0070c0] text-[10px] leading-tight text-justify mt-1"
+                >
+                  *Jangka waktu lima tahun harus diwajibkan oleh undang-undang yang
+                  sudah ada sebelum diperkenalkannya ASEAN Corporate Governance
+                  Scorecard pada tahun 2011
+                </p>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                • Perusahaan tidak mempunyai komisaris independen yang telah
+                menjabat lebih dari sembilan tahun atau dua periode masing-masing
+                lima tahun* (mana yang lebih tinggi) dalam kapasitas yang sama.
+                <sup>(1)(2)</sup>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug">
+                <ol class="list-decimal ps-4 space-y-1">
+                  <li>Laporan tahunan Perusahaan 2023</li>
+                  <li>
+                    <a
+                      href="https://web.pln.co.id/tentang-kami/dewan-komisaris"
+                      class="text-[#0563c1] underline break-all"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >https://web.pln.co.id/tentang-kami/dewan-komisaris</a>
+                  </li>
+                </ol>
+              </td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >NO</td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
+            </tr>
+
+            <!-- QUESTION (P)D.2.2 -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2 align-top">
+                <span class="text-[#0070c0] font-normal">(P)D.2.2</span>
+              </td>
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
+                  Did the company fail to correctly identify the description of
+                  all their directors as independent, non-executive, and executive?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah perusahaan memiliki direktur/komisaris independen yang
-                  menjabat lebih dari sembilan tahun atau dua periode lima tahun
-                  (mana yang lebih tinggi) dalam kapasitas yang sama?
+                  Apakah perusahaan gagal mengidentifikasi dengan tepat gambaran
+                  seluruh direkturnya sebagai independen, non-eksekutif, dan
+                  eksekutif?
                 </div>
               </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                • Perusahaan <span class="font-bold underline">telah</span> dengan
+                tepat mengidentifikasi seluruh direkturnya sebagai independen,
+                non-eksekutif, dan eksekutif. <sup>(1)(2)</sup>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug">
+                <ol class="list-decimal ps-4 space-y-1">
+                  <li>Laporan tahunan Perusahaan 2023</li>
+                  <li>
+                    <a
+                      href="https://web.pln.co.id/tentang-kami/dewan-komisaris"
+                      class="text-[#0563c1] underline break-all"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >https://web.pln.co.id/tentang-kami/dewan-komisaris</a>
+                  </li>
+                </ol>
+              </td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >NO</td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
             </tr>
 
-            <!-- QUESTION (P)E.2.2 -->
+            <!-- QUESTION (P)D.2.3 -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">(P)E.2.2</span>
+              <td class="border border-slate-900 p-2 align-top">
+                <span class="text-[#0070c0] font-normal">(P)D.2.3</span>
               </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Did the company fail to identify who the independent
-                  director(s)/commissioner(s) are?
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
+                  Does the company have any independent directors/non-executive/commissioners
+                  who serve on a total of more than five boards of publicly-listed
+                  companies?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah perusahaan gagal mengidentifikasi siapa
-                  direktur/komisaris independennya?
+                  Apakah perusahaan mempunyai direktur /komisaris independen yang
+                  menjabat di lebih dari lima dewan di perusahaan publik?
                 </div>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                • Perusahaan tidak mempunyai Dewan Komisaris independen yang
+                menjabat di lebih dari lima Dewan perusahaan publik.
+                <sup>(1)(2)</sup>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug">
+                <ol class="list-decimal ps-4 space-y-1">
+                  <li>Laporan tahunan Perusahaan 2023</li>
+                  <li>
+                    <a
+                      href="https://web.pln.co.id/tentang-kami/dewan-komisaris"
+                      class="text-[#0563c1] underline break-all"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >https://web.pln.co.id/tentang-kami/dewan-komisaris</a>
+                  </li>
+                </ol>
+              </td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >NO</td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
+            </tr>
+
+            <!-- (P)D.3 External Audit -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2 font-bold text-black align-top">
+                (P)D.3
+              </td>
+              <td class="border border-slate-900 p-2 font-bold leading-tight align-top">
+                <div class="text-black">External Audit</div>
+                <div class="text-[#0070c0] font-bold">Audit Eksternal</div>
               </td>
               <td class="border border-slate-900 p-2"></td>
               <td class="border border-slate-900 p-2"></td>
@@ -6137,64 +7022,57 @@ Rapat Umum Pemegang Saham
               <td class="border border-slate-900 p-2"></td>
             </tr>
 
-            <!-- QUESTION (P)E.2.3 -->
+            <!-- QUESTION (P)D.3.1 -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">(P)E.2.3</span>
+              <td class="border border-slate-900 p-2 align-top">
+                <span class="text-[#0070c0] font-normal">(P)D.3.1</span>
               </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Does the company have any independent non-executive
-                  directors/commissioners who serve on more than five boards of
-                  publicly listed companies?
-                </div>
-                <div
-                  class="text-[#0070c0] text-justify font-normal italic leading-snug"
-                >
-                  Apakah perusahaan memiliki direktur/komisaris independen
-                  non-eksekutif yang duduk di lebih dari lima dewan emiten publik?
-                </div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold text-black">
-                (P)E.3
-              </td>
-              <td class="border border-slate-900 p-2 font-bold leading-tight">
-                <div class="text-black">External audit</div>
-                <div class="text-[#0070c0]">Audit eksternal</div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- QUESTION (P)E.3.1 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">(P)E.3.1</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
                   Is any of the directors or senior management a former employee or
-                  partner of the current external auditor in the past two years?
+                  partner of the current external auditor (in the past 2 years)?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah ada direktur atau manajemen senior yang merupakan mantan
-                  karyawan atau mitra auditor eksternal saat ini dalam dua tahun
-                  terakhir?
+                  Apakah ada di antara direktur atau manajemen senior yang
+                  merupakan mantan karyawan atau mitra auditor eksternal saat ini
+                  (dalam 2 tahun terakhir)?
+                </div>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                • Tidak terdapat anggota Direksi atau Manajemen Senior yang
+                sebelumnya merupakan karyawan atau partner dari Kantor Akuntan
+                Publik saat ini (dalam 2 tahun terakhir). <sup>(1)(2)</sup>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug">
+                <ol class="list-decimal ps-4 space-y-1">
+                  <li>Laporan tahunan Perusahaan 2023</li>
+                  <li>
+                    <a
+                      href="https://web.pln.co.id/tentang-kami/direksi"
+                      class="text-[#0563c1] underline break-all"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >https://web.pln.co.id/tentang-kami/direksi</a>
+                  </li>
+                </ol>
+              </td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >NO</td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
+            </tr>
+
+            <!-- (P)D.4 Board Structure and Composition -->
+            <tr class="bg-white">
+              <td class="border border-slate-900 p-2 font-bold text-black align-top">
+                (P)D.4
+              </td>
+              <td class="border border-slate-900 p-2 font-bold leading-tight align-top">
+                <div class="text-black">Board Structure and Composition</div>
+                <div class="text-[#0070c0] font-bold">
+                  Struktur dan Komposisi Dewan
                 </div>
               </td>
               <td class="border border-slate-900 p-2"></td>
@@ -6203,67 +7081,75 @@ Rapat Umum Pemegang Saham
               <td class="border border-slate-900 p-2"></td>
             </tr>
 
+            <!-- QUESTION (P)D.4.1 -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2 font-bold text-black">
-                (P)E.4
+              <td class="border border-slate-900 p-2 align-top">
+                <span class="text-[#0070c0] font-normal">(P)D.4.1</span>
               </td>
-              <td class="border border-slate-900 p-2 font-bold leading-tight">
-                <div class="text-black">Board structure and composition</div>
-                <div class="text-[#0070c0]">Struktur dan komposisi dewan</div>
-              </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-            </tr>
-
-            <!-- QUESTION (P)E.4.1 -->
-            <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">(P)E.4.1</span>
-              </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
-                  Has the chairman been the company CEO in the last three years?
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
+                  Has the Chairman been the company CEO in the last three years?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah ketua dewan pernah menjadi CEO perusahaan dalam tiga tahun
-                  terakhir?
+                  Apakah Komisaris Utama pernah menjabat sebagai Direktur Utama
+                  perusahaan dalam tiga tahun terakhir?
                 </div>
               </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                • Komisaris Utama tidak pernah menjabat sebagai Direktur Utama
+                perusahaan dalam tiga tahun terakhir. <sup>(1)(2)</sup>
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug">
+                <ol class="list-decimal ps-4 space-y-1">
+                  <li>Laporan tahunan Perusahaan 2023</li>
+                  <li>
+                    <a
+                      href="https://web.pln.co.id/tentang-kami/direksi"
+                      class="text-[#0563c1] underline break-all"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      >https://web.pln.co.id/tentang-kami/direksi</a>
+                  </li>
+                </ol>
+              </td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >NO</td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
             </tr>
 
-            <!-- QUESTION (P)E.4.2 -->
+            <!-- QUESTION (P)D.4.2 -->
             <tr class="bg-white">
-              <td class="border border-slate-900 p-2">
-                <span class="text-[#0070c0] font-normal">(P)E.4.2</span>
+              <td class="border border-slate-900 p-2 align-top">
+                <span class="text-[#0070c0] font-normal">(P)D.4.2</span>
               </td>
-              <td class="border border-slate-900 p-2 leading-snug">
-                <div
-                  class="text-black mb-1 text-justify font-normal leading-snug"
-                >
+              <td class="border border-slate-900 p-2 leading-snug align-top">
+                <div class="text-black mb-1 text-justify font-normal leading-snug">
                   Do non-executive directors/commissioners receive options,
                   performance shares or bonuses?
                 </div>
                 <div
                   class="text-[#0070c0] text-justify font-normal italic leading-snug"
                 >
-                  Apakah direktur/komisaris non-eksekutif menerima opsi, saham
-                  kinerja, atau bonus?
+                  Apakah non eksekutif direktur/komisaris menerima saham hasil
+                  kinerja atau bonus ?
                 </div>
               </td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
-              <td class="border border-slate-900 p-2"></td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug text-justify">
+                • Direksi/Dewan Komisaris tidak menerima opsi, bagi hasil atau
+                saham bonus
+              </td>
+              <td class="border border-slate-900 p-2 align-top text-xs leading-snug">
+                <ol class="list-decimal ps-4 space-y-1">
+                  <li>Laporan tahunan Perusahaan 2023</li>
+                </ol>
+              </td>
+              <td
+                class="border border-slate-900 p-2 align-top text-center font-bold"
+                >NO</td>
+              <td class="border border-slate-900 p-2 align-top text-center">-</td>
             </tr>
           </tbody>
         </table>
