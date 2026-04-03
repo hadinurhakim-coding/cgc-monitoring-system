@@ -1,65 +1,56 @@
-# Svelte library
+# GCG Monitoring System
 
-Everything you need to build a Svelte library, powered by [`sv`](https://npmjs.com/package/sv).
+Aplikasi [SvelteKit](https://svelte.dev/docs/kit) untuk pemantauan tata kelola. Dependensi dan skrip CLI memakai **[Bun](https://bun.sh)** secara konsisten.
 
-Read more about creating a library [in the docs](https://svelte.dev/docs/kit/packaging).
+## Prasyarat
 
-## Creating a project
+- [Bun](https://bun.sh/docs/installation) **1.3.x** (lihat `packageManager` di `package.json`)
 
-If you're seeing this, you've probably already done this step. Congrats!
-
-```sh
-# create a new project in the current directory
-npx sv create
-
-# create a new project in my-app
-npx sv create my-app
-```
-
-To recreate this project with the same configuration:
+## Memasang dependensi
 
 ```sh
-# recreate this project
-bun x sv@0.13.0 create --template library --types ts --install bun .
+bun install
 ```
 
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+## Pengembangan
 
 ```sh
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
+bun run dev
 ```
 
-Everything inside `src/lib` is part of your library, everything inside `src/routes` can be used as a showcase or preview app.
-
-## Building
-
-To build your library:
+Buka aplikasi (termasuk `/assessment-acgs`), biasanya di `http://localhost:5173`.
 
 ```sh
-npm pack
+bun run dev -- --open
 ```
 
-To create a production version of your showcase app:
+## Pemeriksaan tipe / Svelte
 
 ```sh
-npm run build
+bun run check
 ```
 
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
-
-## Publishing
-
-Go into the `package.json` and give your package the desired name through the `"name"` option. Also consider adding a `"license"` field and point it to a `LICENSE` file which you can create from a template (one popular option is the [MIT license](https://opensource.org/license/mit/)).
-
-To publish your library to [npm](https://www.npmjs.com):
+## Build & pratinjau produksi
 
 ```sh
-npm publish
+bun run build
+bun run preview
 ```
+
+## Proyek baru dengan `sv` (referensi)
+
+```sh
+bun x sv create
+```
+
+## Penerbitan paket npm (opsional)
+
+Registri tetap npmjs.com; perintah lokal memakai Bun:
+
+```sh
+bun publish
+```
+
+---
+
+Dokumentasi SvelteKit: [svelte.dev/docs/kit](https://svelte.dev/docs/kit). Adapter deployment: [adapters](https://svelte.dev/docs/kit/adapters).
