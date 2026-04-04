@@ -13,8 +13,17 @@
     Plus,
     Calendar,
     Filter,
-    Check
+    Check,
+    Cloud,
+    Loader2,
+    AlertCircle,
+    X
   } from "@lucide/svelte";
+  import { Skeleton } from "$lib/components/ui/skeleton/index.js";
+  import { upsertAnswer, createAssessment } from "./assessment-service.js";
+  import { goto } from "$app/navigation";
+  import { toast } from "svelte-sonner";
+  import * as Tooltip from "$lib/components/ui/tooltip/index.js";
 
   export interface AssessmentItem {
     type: string;
@@ -41,22 +50,38 @@
 
   interface Props {
     assessmentData: AssessmentItem[];
+    isLoading?: boolean;
+    currentYear?: number;
+    assessmentId?: string | null;
   }
 
-  let { assessmentData = [] }: Props = $props();
+  let { 
+    assessmentData = [], 
+    isLoading = false, 
+    currentYear = new Date().getFullYear(),
+    assessmentId = null
+  }: Props = $props();
 
   // State
   let searchQuery = $state("");
   let pageSize = $state(15);
   let currentPage = $state(1);
+  let syncStatus = $state<'saved' | 'saving' | 'error'>('saved');
+  let stagedFiles = $state<Record<string, File>>({});
 
-  // Year Filter State
-  let selectedYear = $state("2024");
+  // Year Filter State - Sync with prop
+  // svelte-ignore state_referenced_locally
+  let selectedYear = $state(currentYear.toString());
+  $effect(() => {
+    selectedYear = currentYear.toString();
+  });
+  
   let yearQuery = $state("");
+  
   const years = $derived(() => {
     const list = [];
-    const currentYear = new Date().getFullYear();
-    for(let i = currentYear + 1; i >= currentYear - 10; i--) {
+    const nowYear = new Date().getFullYear();
+    for(let i = nowYear + 1; i >= nowYear - 10; i--) {
         list.push(i.toString());
     }
     if (yearQuery && !list.includes(yearQuery) && /^\d{4}$/.test(yearQuery)) {
@@ -64,6 +89,105 @@
     }
     return list.filter(y => y.includes(yearQuery));
   });
+
+  // Effect to handle year change navigation
+  $effect(() => {
+    if (selectedYear !== currentYear.toString()) {
+      goto(`?year=${selectedYear}`, { keepFocus: true, noScroll: true });
+    }
+  });
+
+  // Auto-resize logic for textareas
+  function autoResize(node: HTMLTextAreaElement) {
+    function update() {
+        node.style.height = 'auto';
+        node.style.height = node.scrollHeight + 'px';
+    }
+    node.addEventListener('input', update);
+    update();
+    return {
+        destroy() {
+            node.removeEventListener('input', update);
+        }
+    };
+  }
+
+  // Handle Ctrl + Enter Save
+  async function handleKeyDown(e: KeyboardEvent, q: AssessmentItem, field: string) {
+    if (e.key === 'Enter' && e.ctrlKey) {
+        e.preventDefault();
+        await saveField(q, field, (e.target as HTMLTextAreaElement).value);
+    }
+  }
+
+  async function saveField(q: AssessmentItem, field: string, value: string) {
+    if (!q.id) return;
+    
+    let activeAssessmentId = assessmentId;
+    
+    // Create assessment header if it doesn't exist (Lazy creation)
+    if (!activeAssessmentId) {
+        syncStatus = 'saving';
+        const { data, error } = await createAssessment(currentYear);
+        if (error || !data) {
+            syncStatus = 'error';
+            toast.error("Gagal membuat data assessment tahun ini");
+            return;
+        }
+        activeAssessmentId = data.id;
+        // In real app, you'd update the parent state or re-fetch
+    }
+
+    syncStatus = 'saving';
+    
+    const { error } = await upsertAnswer({
+        id: q.id as string,
+        [field]: value 
+    });
+
+    if (error) {
+        syncStatus = 'error';
+        toast.error("Gagal menyimpan: " + error.message);
+    } else {
+        syncStatus = 'saved';
+        (q as any)[field] = value;
+    }
+  }
+
+  // File Upload Logic
+  let fileInputs = $state<Record<string, HTMLInputElement>>({});
+
+  function triggerFileInput(qId: string) {
+    fileInputs[qId]?.click();
+  }
+
+  function handleFileSelect(e: Event, qId: string) {
+    const target = e.target as HTMLInputElement;
+    if (target.files?.[0]) {
+        stagedFiles[qId] = target.files[0];
+    }
+  }
+
+  async function uploadStagedFile(q: AssessmentItem) {
+    const file = stagedFiles[q.id as string];
+    if (!file) return;
+
+    syncStatus = 'saving';
+    const { data: url, error } = await import('./assessment-service.js').then(m => m.uploadEvidence(file));
+    
+    if (error) {
+        syncStatus = 'error';
+        toast.error("Gagal upload: " + error.message);
+        return;
+    }
+
+    if (url) {
+        const newValue = (q.evidence ? q.evidence + "\n" : "") + url;
+        await saveField(q, 'evidence', newValue);
+        delete stagedFiles[q.id as string];
+        toast.success("File berhasil diunggah");
+    }
+  }
 
   // Filtered data
   const filteredData = $derived(
@@ -132,13 +256,27 @@
       />
     </div>
     <div class="flex items-center gap-2">
+        <!-- SYNC STATUS -->
+        <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-200 text-[10px] font-medium mr-2">
+            {#if syncStatus === 'saved'}
+                <Cloud size={14} class="text-emerald-500" />
+                <span class="text-slate-600">Tersimpan</span>
+            {:else if syncStatus === 'saving'}
+                <Loader2 size={14} class="text-primary animate-spin" />
+                <span class="text-primary">Menyimpan...</span>
+            {:else}
+                <AlertCircle size={14} class="text-red-500" />
+                <span class="text-red-500">Gagal Sinkron</span>
+            {/if}
+        </div>
+
         <!-- YEAR FILTER DROPDOWN -->
         <DropdownMenu.Root>
-          <DropdownMenu.Trigger>
-            <Button variant="outline" size="sm" class="gap-2 border-primary/20 hover:border-primary/40 hover:bg-slate-50 transition-all font-medium">
-              <Calendar size={16} class="text-primary" />
-              Tahun: <span class="text-primary font-bold">{selectedYear}</span>
-            </Button>
+          <DropdownMenu.Trigger 
+            class="inline-flex items-center justify-center gap-2 h-9 px-3 rounded-md bg-white border border-primary/20 hover:border-primary/40 hover:bg-slate-50 transition-all font-medium text-sm text-foreground ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+          >
+            <Calendar size={16} class="text-primary" />
+            Tahun: <span class="text-primary font-bold">{selectedYear}</span>
           </DropdownMenu.Trigger>
           <DropdownMenu.Content class="w-48 p-0" align="end">
             <div class="p-2 border-b">
@@ -199,7 +337,32 @@
 
       <!-- BODY -->
       <tbody class="align-top">
-        {#if pagedQuestions.length > 0}
+        {#if isLoading}
+          {#each Array(5) as _}
+            <tr class="animate-pulse">
+                <td class="border border-border p-4 text-center align-middle">
+                    <Skeleton class="h-4 w-10 mx-auto" />
+                </td>
+                <td class="border border-border p-4">
+                    <Skeleton class="h-4 w-3/4 mb-2" />
+                    <Skeleton class="h-3 w-full mb-1" />
+                    <Skeleton class="h-3 w-2/3" />
+                </td>
+                <td class="border border-border p-3">
+                    <Skeleton class="h-24 w-full rounded-md" />
+                </td>
+                <td class="border border-border p-3">
+                    <Skeleton class="h-24 w-full rounded-md" />
+                </td>
+                <td class="border border-border p-3 align-middle">
+                    <Skeleton class="h-8 w-full rounded-md" />
+                </td>
+                <td class="border border-border p-3">
+                    <Skeleton class="h-24 w-full rounded-md" />
+                </td>
+            </tr>
+          {/each}
+        {:else if pagedQuestions.length > 0}
             <!-- Forced Headers Logic per Page -->
             {#each pagedQuestions as q, i}
                 <!-- Show Level/Part header if it's the first question of the page OR if it changed from previous question -->
@@ -281,51 +444,105 @@
                   </td>
                   <td class="border border-border p-2 align-top">
                     <textarea 
-                      class="w-full bg-slate-50 border border-slate-200 rounded p-2 min-h-[100px] text-[10px] focus:bg-white focus:ring-1 focus:ring-primary focus:border-primary transition-all" 
-                      placeholder="Input implementasi..."
+                      use:autoResize
+                      class="w-full bg-slate-50 border border-slate-200 rounded p-2 min-h-[100px] text-[10px] focus:bg-white focus:ring-1 focus:ring-primary focus:border-primary transition-all resize-none overflow-hidden" 
+                      placeholder="Input implementasi... (Ctrl + Enter untuk simpan)"
                       value={q.implementation || ""}
+                      onkeydown={(e) => handleKeyDown(e, q, 'implementation')}
                     ></textarea>
                   </td>
                   <td class="border border-border p-3 align-top">
                     <!-- Text Area with Floating Plus Button -->
                     <div class="relative group">
                       <textarea 
-                        class="w-full bg-slate-50 border border-slate-200 rounded p-2 pr-10 min-h-[100px] text-[10px] focus:bg-white focus:ring-1 focus:ring-primary focus:border-primary transition-all resize-none" 
-                        placeholder="Klik untuk input keterangan bukti..."
+                        use:autoResize
+                        class="w-full bg-slate-50 border border-slate-200 rounded p-2 pr-10 min-h-[100px] text-[10px] focus:bg-white focus:ring-1 focus:ring-primary focus:border-primary transition-all resize-none overflow-hidden" 
+                        placeholder="Klik untuk input keterangan bukti... (Ctrl + Enter untuk simpan)"
                         value={q.evidence || ""}
+                        onkeydown={(e) => handleKeyDown(e, q, 'evidence')}
                       ></textarea>
                       
+                      <!-- Hidden File Input -->
+                      <input 
+                        type="file" 
+                        class="hidden" 
+                        bind:this={fileInputs[q.id as string]}
+                        onchange={(e) => handleFileSelect(e, q.id as string)}
+                      />
+
                       <!-- Rounded Plus Button bottom right -->
                       <button 
                         type="button"
-                        class="absolute bottom-2 right-2 flex items-center justify-center w-8 h-8 rounded-full bg-primary text-white shadow-md hover:bg-primary/90 hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer"
+                        class="absolute bottom-2 right-2 flex items-center justify-center w-7 h-7 rounded-full bg-primary text-white shadow-md hover:bg-primary/90 hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer"
                         title="Unggah Dokumen"
+                        onclick={() => triggerFileInput(q.id as string)}
                       >
-                        <Plus size={18} strokeWidth={3} />
+                        <Plus size={16} strokeWidth={3} />
                       </button>
                     </div>
 
-                    {#if q.evidence && q.evidence.includes('https')}
-                       <div class="mt-1 flex items-center gap-1 text-[9px] text-[#0563c1] font-medium italic opacity-70 group-hover:opacity-100 transition-opacity">
-                          🌐 Link sumber terdeteksi
+                    {#if stagedFiles[q.id as string]}
+                       <div class="mt-2 p-2 rounded bg-amber-50 border border-amber-200 flex flex-col gap-2">
+                          <div class="flex items-center justify-between text-[9px] font-bold text-amber-800">
+                             <div class="truncate max-w-[80px]">📎 {stagedFiles[q.id as string].name}</div>
+                             <button 
+                                class="text-rose-500 hover:text-rose-700" 
+                                onclick={() => delete stagedFiles[q.id as string]}
+                             >
+                                <X size={12} />
+                             </button>
+                          </div>
+                          <Button 
+                             size="sm" 
+                             class="h-6 text-[9px] bg-amber-600 hover:bg-amber-700 text-white w-full"
+                             onclick={() => uploadStagedFile(q)}
+                          >
+                             Submit File
+                          </Button>
+                       </div>
+                    {/if}
+
+                    {#if q.evidence && q.evidence.includes('http')}
+                       <div class="mt-1.5">
+                          <a 
+                            href={q.evidence} 
+                            target="_blank" 
+                            class="flex items-center gap-1 text-[9px] text-blue-600 font-medium hover:underline bg-blue-50 w-fit px-1.5 py-0.5 rounded border border-blue-100"
+                          >
+                             🌐 Lihat Bukti
+                          </a>
                        </div>
                     {/if}
                   </td>
                   <td class="border border-border p-2 align-middle text-center">
-                    <select 
-                      class="bg-white border border-slate-200 rounded p-1 text-[10px] font-bold focus:ring-1 focus:ring-primary"
-                      value={q.status === 'YES' ? 'Y' : q.status === 'NO' ? 'N' : q.status || ''}
-                    >
-                        <option value="">-</option>
-                        <option value="Y" selected={q.status === 'YES' || q.status === 'Y'}>YES</option>
-                        <option value="N" selected={q.status === 'NO' || q.status === 'N'}>NO</option>
-                    </select>
+                    <div class="flex flex-col gap-1 items-center">
+                        <button 
+                            class="w-10 py-1 rounded text-[9px] font-bold transition-all {q.status === 'YES' ? 'bg-emerald-500 text-white shadow-sm' : 'bg-slate-50 text-slate-400 hover:bg-slate-100'}"
+                            onclick={() => saveField(q, 'status', 'YES')}
+                        >
+                            YES
+                        </button>
+                        <button 
+                            class="w-10 py-1 rounded text-[9px] font-bold transition-all {q.status === 'NO' ? 'bg-rose-500 text-white shadow-sm' : 'bg-slate-50 text-slate-400 hover:bg-slate-100'}"
+                            onclick={() => saveField(q, 'status', 'NO')}
+                        >
+                            NO
+                        </button>
+                        <button 
+                            class="w-10 py-1 rounded text-[9px] font-bold transition-all {q.status === 'NA' ? 'bg-slate-400 text-white shadow-sm' : 'bg-slate-50 text-slate-400 hover:bg-slate-100'}"
+                            onclick={() => saveField(q, 'status', 'NA')}
+                        >
+                            NA
+                        </button>
+                    </div>
                   </td>
                   <td class="border border-border p-2 align-top">
                     <textarea 
-                      class="w-full bg-slate-50 border border-slate-200 rounded p-2 min-h-[100px] text-[10px] focus:bg-white focus:ring-1 focus:ring-primary focus:border-primary transition-all" 
-                      placeholder="Input rekomendasi..."
+                      use:autoResize
+                      class="w-full bg-slate-50 border border-slate-200 rounded p-2 min-h-[100px] text-[10px] focus:bg-white focus:ring-1 focus:ring-primary focus:border-primary transition-all resize-none overflow-hidden" 
+                      placeholder="Input rekomendasi... (Ctrl + Enter untuk simpan)"
                       value={q.recommendation || ""}
+                      onkeydown={(e) => handleKeyDown(e, q, 'recommendation')}
                     ></textarea>
                   </td>
                 </tr>

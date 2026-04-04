@@ -1,7 +1,9 @@
 import { createClient } from '@supabase/supabase-js';
-import { env } from '$env/dynamic/private';
+import { PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY } from '$env/static/public';
 
+// This client is safe for the browser as it only uses PUBLIC keys
+// Row Level Security (RLS) policies in Supabase must be configured to control access.
 export const supabase = createClient(
-  env.SUPABASE_URL || '',
-  env.SUPABASE_SERVICE_ROLE_KEY || ''
+  PUBLIC_SUPABASE_URL,
+  PUBLIC_SUPABASE_ANON_KEY
 );

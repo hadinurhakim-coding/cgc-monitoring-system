@@ -52,9 +52,9 @@
 			</div>
 		</div>
 	</div>
-	<div in:fade={{ duration: 1000, delay: 350 }} class="bg-[#fefcf7] relative hidden lg:block overflow-hidden">
+	<div in:fade={{ duration: 1000, delay: 350 }} class="bg-[#fefcf7] relative hidden lg:flex items-center justify-center overflow-hidden">
 		<div
-			class="absolute inset-0 h-full w-full [&>canvas]:h-full [&>canvas]:w-full [&>canvas]:object-cover"
+			class="absolute inset-0 h-full w-full [&>canvas]:h-full [&>canvas]:w-full [&>canvas]:object-contain"
 		>
 			{#if LottieComponent}
 				<div class="h-full w-full">
