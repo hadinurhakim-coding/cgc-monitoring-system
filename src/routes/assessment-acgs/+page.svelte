@@ -4,6 +4,8 @@
   import { Separator } from "$lib/components/ui/separator/index.js";
   import SummaryCards from "./summary-cards.svelte";
   import DataTable from "./data-table.svelte";
+  import type { PageData } from "./$types.js";
+  let { data }: { data: PageData } = $props();
 </script>
 
 <Sidebar.Provider
@@ -22,14 +24,14 @@
         orientation="vertical"
         class="data-[orientation=vertical]:h-5"
       />
-      <h1 class="text-lg font-semibold">ASSESSMENT ACGS</h1>
+      <h1 class="text-lg font-semibold uppercase tracking-tight text-primary">Assessment ACGS</h1>
     </header>
 
     <main
       class="flex flex-1 flex-col gap-4 p-4 md:gap-6 md:p-6 overflow-hidden"
     >
       <SummaryCards />
-      <DataTable />
+      <DataTable assessmentData={data.assessmentData || []} />
     </main>
   </Sidebar.Inset>
 </Sidebar.Provider>

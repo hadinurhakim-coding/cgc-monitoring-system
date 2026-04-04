@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { assessmentData } from "./assessment-data.js";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
   import { Button } from "$lib/components/ui/button/index.js";
@@ -17,12 +16,12 @@
     Check
   } from "@lucide/svelte";
 
-  interface AssessmentItem {
+  export interface AssessmentItem {
     type: string;
-    level: string;
-    part: string;
-    section: string;
-    id: string;
+    level_label?: string;
+    part_id?: string;
+    section_id?: string;
+    item_id?: string;
     label?: string;
     name_en?: string;
     name_id?: string;
@@ -34,7 +33,17 @@
     evidence?: string;
     status?: string;
     recommendation?: string;
+    level?: string; 
+    part?: string;  
+    section?: string; 
+    id?: string; 
   }
+
+  interface Props {
+    assessmentData: AssessmentItem[];
+  }
+
+  let { assessmentData = [] }: Props = $props();
 
   // State
   let searchQuery = $state("");
@@ -62,10 +71,11 @@
       if (item.type !== 'question') return false;
       if (!searchQuery) return true;
       const query = searchQuery.toLowerCase();
+      const id = item.item_id || item.id || "";
       return (
-        item.id?.toLowerCase().includes(query) ||
-        item.question_en?.toLowerCase().includes(query) ||
-        item.question_id?.toLowerCase().includes(query)
+        id.toLowerCase().includes(query) ||
+        (item.question_en || "").toLowerCase().includes(query) ||
+        (item.question_id || "").toLowerCase().includes(query)
       );
     }) as AssessmentItem[]
   );
@@ -80,12 +90,12 @@
   const pagedQuestions = $derived(filteredData.slice(startIndex, endIndex));
 
   // Helper to find parent headers for a question
-  function getHeadersForQuestion(questionId: string) {
-    const question = assessmentData.find((item) => item.id === questionId);
-    if (!question) return { level: null, part: null };
+  function getHeadersForQuestion(q: AssessmentItem) {
+    const levelLabel = q.level_label || q.level;
+    const partId = q.part_id || q.part;
     
-    const level = assessmentData.find((item) => item.type === 'level' && item.label === question.level);
-    const part = assessmentData.find((item) => item.type === 'part' && item.id === question.part);
+    const level = assessmentData.find((item) => item.type === 'level' && item.label === levelLabel);
+    const part = assessmentData.find((item) => item.type === 'part' && (item.item_id === partId || item.id === partId));
     return { level, part };
   }
 
@@ -193,8 +203,8 @@
             <!-- Forced Headers Logic per Page -->
             {#each pagedQuestions as q, i}
                 <!-- Show Level/Part header if it's the first question of the page OR if it changed from previous question -->
-                {@const headers = getHeadersForQuestion(q.id)}
-                {@const prevHeaders = i > 0 ? getHeadersForQuestion(pagedQuestions[i-1].id) : { level: null, part: null }}
+                {@const headers = getHeadersForQuestion(q)}
+                {@const prevHeaders = i > 0 ? getHeadersForQuestion(pagedQuestions[i-1]) : { level: null, part: null }}
                 
                 {#if i === 0 || headers.level?.label !== prevHeaders.level?.label}
                     <tr class="bg-[#f1f5f9]">
@@ -221,10 +231,10 @@
                     </tr>
                 {/if}
 
-                {@const sectionId = q.section}
-                {@const prevSectionId = i > 0 ? pagedQuestions[i-1].section : null}
+                {@const sectionId = q.section_id || q.section}
+                {@const prevSectionId = i > 0 ? (pagedQuestions[i-1].section_id || pagedQuestions[i-1].section) : null}
                 {#if sectionId && (i === 0 || sectionId !== prevSectionId)}
-                  {@const section = assessmentData.find(s => s.type === 'section' && s.id === sectionId)}
+                  {@const section = assessmentData.find(s => s.type === 'section' && (s.item_id === sectionId || s.id === sectionId))}
                   {#if section}
                     <tr class="bg-white">
                         <td class="border border-border p-2 font-bold text-primary align-middle text-center bg-slate-50/30">
@@ -243,8 +253,8 @@
                 {/if}
 
                 <!-- Subtitles Logic -->
-                {#if i === 0 || q.id !== pagedQuestions[i-1].id}
-                   {@const subtitle = assessmentData.find(s => s.type === 'subtitle' && s.id === q.id)}
+                {#if i === 0 || (q.item_id || q.id) !== (pagedQuestions[i-1].item_id || pagedQuestions[i-1].id)}
+                   {@const subtitle = assessmentData.find(s => s.type === 'subtitle' && (s.item_id === (q.item_id || q.id) || s.id === (q.item_id || q.id)))}
                    {#if subtitle}
                      <tr class="bg-slate-50/20 italic">
                         <td class="border border-border p-2 text-center align-middle text-xs">...</td>
@@ -263,7 +273,7 @@
                 <!-- Question Row -->
                 <tr class="hover:bg-slate-50 transition-colors">
                   <td class="border border-border p-2 align-middle text-center">
-                    <span class="text-accent font-bold">{q.id}</span>
+                    <span class="text-accent font-bold">{q.item_id || q.id}</span>
                   </td>
                   <td class="border border-border p-2 align-top leading-tight">
                     <div class="text-foreground mb-1 text-justify font-medium">{q.question_en}</div>
