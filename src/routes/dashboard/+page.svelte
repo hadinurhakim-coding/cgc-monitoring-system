@@ -33,7 +33,7 @@
 					<Card.Description>Mockup ringkasan capaian utama ACGS.</Card.Description>
 				</Card.Header>
 				<Card.Content>
-					<div class="bg-muted/40 h-48 rounded-lg border border-dashed"></div>
+					<div class="bg-muted/20 h-48 rounded-xl border border-dashed border-border transition-colors hover:bg-muted/30"></div>
 				</Card.Content>
 			</Card.Root>
 
@@ -43,7 +43,7 @@
 					<Card.Description>Mockup area chart / tren performa dari waktu ke waktu.</Card.Description>
 				</Card.Header>
 				<Card.Content>
-					<div class="bg-muted/40 h-48 rounded-lg border border-dashed"></div>
+					<div class="bg-muted/20 h-48 rounded-xl border border-dashed border-border transition-colors hover:bg-muted/30"></div>
 				</Card.Content>
 			</Card.Root>
 

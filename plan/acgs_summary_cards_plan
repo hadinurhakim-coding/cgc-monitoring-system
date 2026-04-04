@@ -1,0 +1,60 @@
+# Implementation Plan - Assessment ACGS Summary Cards
+
+We will add a summary dashboard at the top of the **Assessment ACGS** page to provide quick insights into compliance progress, scores, and gaps.
+
+## 1. Mockup Data Structure
+We will define a set of mockup data that represents the state of a typical ACGS assessment:
+
+```typescript
+const summaryData = {
+    // 1. Overall Completion Progress
+    progress: {
+        total: 128,
+        completed: 86,
+        percentage: 67
+    },
+    // 2. Compliance Score
+    compliance: {
+        score: 84.5,
+        trend: "+2.4%",
+        status: 'improving'
+    },
+    // 3. Part-wise Status (Score per Part A-E)
+    parts: [
+        { id: 'A', name: 'Rights of Shareholders', score: 92, color: '#3b82f6' }, // Blue
+        { id: 'B', name: 'Equitable Treatment', score: 75, color: '#10b981' }, // Green
+        { id: 'C', name: 'Role of Stakeholders', score: 62, color: '#f59e0b' }, // Amber
+        { id: 'D', name: 'Disclosure & Transparency', score: 88, color: '#8b5cf6' }, // Purple
+        { id: 'E', name: 'Responsibilities of Board', score: 70, color: '#ec4899' }  // Pink
+    ],
+    // 4. Evidence Fulfillment
+    evidence: {
+        total: 128,
+        fulfilled: 48,
+        percentage: 37.5
+    },
+    // 5. Gaps & Recommendations
+    gaps: {
+        total: 12,
+        urgent: 4,
+        normal: 8
+    }
+};
+```
+
+## 2. Component Design
+We will create a new component `src/routes/assessment-acgs/summary-cards.svelte` using:
+- **Card UI**: Standard project card components from `$lib/components/ui/card`.
+- **Icons**: Lucide icons for visual context (TrendingUp, FileCheck, AlertTriangle, etc.).
+- **Chart Mockups**: Simple SVG-based radial progress and micro-bar charts for a premium feel without external heavy libraries.
+
+## 3. Integration Steps
+- [ ] Create `src/routes/assessment-acgs/summary-cards.svelte`.
+- [ ] Import the component in `src/routes/assessment-acgs/+page.svelte`.
+- [ ] Insert the component above the main assessment table.
+- [ ] Ensure responsiveness (grid-cols-1 md:grid-cols-2 lg:grid-cols-5).
+
+## 4. Verification Plan
+- [ ] Verify the layout looks premium and fits the overall theme.
+- [ ] Check if icons and percentages are correctly displayed.
+- [ ] Verify the responsive layout on mobile vs desktop.
