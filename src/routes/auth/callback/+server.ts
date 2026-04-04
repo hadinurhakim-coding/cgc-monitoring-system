@@ -63,7 +63,12 @@ export const GET: RequestHandler = async ({ url, getClientAddress, request, cook
 		maxAge: 60 * 60 * 24 * 30
 	});
 
-	const ip = getClientAddress();
+	let ip: string | null = null;
+	try {
+		ip = getClientAddress();
+	} catch (e) {
+		console.warn("auth/callback getClientAddress failed:", e);
+	}
 	const userAgent = request.headers.get("user-agent");
 
 	try {

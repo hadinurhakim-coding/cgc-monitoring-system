@@ -6,13 +6,12 @@
  * melalui origin checking.
  */
 import { redirect } from "@sveltejs/kit";
-import { ACCESS_TOKEN_COOKIE, REFRESH_TOKEN_COOKIE } from "$lib/server/auth.js";
+import { clearAuthCookies } from "$lib/server/session-resolve.js";
 import type { Actions } from "./$types.js";
 
 export const actions: Actions = {
 	default: async ({ cookies }) => {
-		cookies.delete(ACCESS_TOKEN_COOKIE, { path: "/" });
-		cookies.delete(REFRESH_TOKEN_COOKIE, { path: "/" });
+		clearAuthCookies(cookies);
 		throw redirect(303, "/login");
 	}
 };
