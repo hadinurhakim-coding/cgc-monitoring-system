@@ -47,11 +47,14 @@
         </div>
       {/if}
       <SummaryCards
-        assessmentData={(data.assessmentData || []) as AssessmentItem[]}
+        summaryMetrics={data.summaryMetrics}
+        assessmentData={[]}
         isLoading={false}
       />
       <DataTable
-        assessmentData={(data.assessmentData || []) as AssessmentItem[]}
+        initialQuestions={(data.assessmentQuestions || []) as AssessmentItem[]}
+        serverSearch={data.search ?? ""}
+        structureFallbackData={[]}
         currentYear={data.year}
         availableYears={data.availableYears || []}
         isLoading={false}

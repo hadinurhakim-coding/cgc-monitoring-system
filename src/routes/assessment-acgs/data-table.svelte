@@ -28,11 +28,16 @@
     canonicalSectionIdForAcgsQuestion,
     isAcgsQuestionRow
   } from "./acgs-defaults.js";
+  import { browser } from "$app/environment";
   import { goto } from "$app/navigation";
+  import { resolve } from "$app/paths";
   import { toast } from "svelte-sonner";
 
   const UUID_RE =
     /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+  const SEARCH_DEBOUNCE_MS = 350;
+  let searchDebounceTimer: ReturnType<typeof setTimeout> | undefined;
 
   function norm(s: string | null | undefined) {
     return (s ?? "").replace(/\s+/g, " ").trim();
@@ -76,26 +81,69 @@
     id?: string;
     row_uid?: string;
     sort_order?: number | null;
+    /** Subtitle terakhir sebelum baris ini (dari server, urutan master/DB). */
+    acgs_subtitle_context?: { name_en?: string | null; name_id?: string | null } | null;
+    /** Diisi server (`attachResolvedAcgsHeaders`); klien tidak import master. */
+    acgs_resolved_level?: { label?: string | null } | null;
+    acgs_resolved_part?: {
+      item_id?: string | null;
+      id?: string | null;
+      part_id?: string | null;
+      name_id?: string | null;
+      full_name_en?: string | null;
+      full_name_id?: string | null;
+    } | null;
+    acgs_resolved_section?: {
+      item_id?: string | null;
+      id?: string | null;
+      name_en?: string | null;
+      name_id?: string | null;
+    } | null;
   }
 
   interface Props {
-    assessmentData: AssessmentItem[];
+    /** Seluruh pertanyaan tahun dari `load` (filter teks di klien). */
+    initialQuestions?: AssessmentItem[];
+    /** Baris struktur untuk fallback subtitle/header jika tidak ada field server (biasanya []). */
+    structureFallbackData?: AssessmentItem[];
+    serverSearch?: string;
     isLoading?: boolean;
     currentYear?: number;
     availableYears?: number[];
   }
 
   let {
-    assessmentData = [],
+    initialQuestions = [],
+    structureFallbackData = [],
+    serverSearch = "",
     isLoading = false,
     currentYear = new Date().getFullYear(),
     availableYears = []
   }: Props = $props();
 
-  // State
   let searchQuery = $state("");
+  /** Teks filter setelah debounce — dipakai untuk slice tabel (bukan `fetch`). */
+  let debouncedFilterText = $state("");
+
+  $effect(() => {
+    searchQuery = serverSearch;
+    debouncedFilterText = serverSearch.trim();
+  });
+
+  $effect(() => {
+    return () => {
+      if (searchDebounceTimer !== undefined) clearTimeout(searchDebounceTimer);
+    };
+  });
+
   let pageSize = $state(15);
   let currentPage = $state(1);
+
+  $effect(() => {
+    initialQuestions;
+    currentPage = 1;
+  });
+
   let syncStatus = $state<'saved' | 'saving' | 'error'>('saved');
   let stagedFiles = $state<Record<string, File>>({});
 
@@ -126,9 +174,72 @@
   // Effect to handle year change navigation
   $effect(() => {
     if (selectedYear !== currentYear.toString()) {
-      goto(`?year=${selectedYear}`, { keepFocus: true, noScroll: true });
+      if (searchDebounceTimer !== undefined) clearTimeout(searchDebounceTimer);
+      searchDebounceTimer = undefined;
+      const q = encodeURIComponent(searchQuery.trim());
+      goto(`${resolve("/assessment-acgs")}?year=${selectedYear}&q=${q}`, {
+        keepFocus: true,
+        noScroll: true
+      });
     }
   });
+
+  function scheduleSearchDebounce() {
+    if (!browser) return;
+    if (searchDebounceTimer !== undefined) clearTimeout(searchDebounceTimer);
+    searchDebounceTimer = setTimeout(() => {
+      searchDebounceTimer = undefined;
+      debouncedFilterText = searchQuery.trim();
+      currentPage = 1;
+    }, SEARCH_DEBOUNCE_MS);
+  }
+
+  function rowKeyOf(q: AssessmentItem) {
+    return (q.row_uid || q.uid || q.id) as string | undefined;
+  }
+
+  /** Indeks praproses untuk filter klien (sama bidang seperti FTS server). */
+  function buildSearchHaystack(q: AssessmentItem): string {
+    return [norm(q.item_id), norm(q.question_en), norm(q.question_id), norm(q.label)]
+      .join(" ")
+      .toLowerCase();
+  }
+
+  const allTableQuestions = $derived(
+    initialQuestions.filter((item) => isAcgsQuestionRow(item)) as AssessmentItem[]
+  );
+
+  const searchIndexByKey = $derived.by(() => {
+    const m = new Map<string, string>();
+    for (const q of allTableQuestions) {
+      const k = rowKeyOf(q);
+      if (k) m.set(k, buildSearchHaystack(q));
+    }
+    return m;
+  });
+
+  const filteredTableQuestions = $derived.by(() => {
+    const raw = debouncedFilterText.trim().toLowerCase();
+    if (!raw) return allTableQuestions;
+    const tokens = raw.split(/\s+/).filter(Boolean);
+    return allTableQuestions.filter((row) => {
+      const k = rowKeyOf(row);
+      const h = k ? (searchIndexByKey.get(k) ?? "") : "";
+      return tokens.every((t) => h.includes(t));
+    });
+  });
+
+  function applyServerSearch() {
+    if (browser && searchDebounceTimer !== undefined) {
+      clearTimeout(searchDebounceTimer);
+      searchDebounceTimer = undefined;
+    }
+    debouncedFilterText = searchQuery.trim();
+    currentPage = 1;
+    const y = currentYear;
+    const q = encodeURIComponent(searchQuery.trim());
+    goto(`${resolve("/assessment-acgs")}?year=${y}&q=${q}`, { keepFocus: true, noScroll: true });
+  }
 
   // Auto-resize logic for textareas
   function autoResize(node: HTMLTextAreaElement) {
@@ -182,10 +293,6 @@
   // File Upload Logic
   let fileInputs = $state<Record<string, HTMLInputElement>>({});
 
-  function rowKeyOf(q: AssessmentItem) {
-    return (q.row_uid || q.uid || q.id) as string | undefined;
-  }
-
   function triggerFileInput(qId: string) {
     fileInputs[qId]?.click();
   }
@@ -218,35 +325,19 @@
     }
   }
 
-  // Filtered data
-  const filteredData = $derived(
-    assessmentData.filter((item) => {
-      if (!isAcgsQuestionRow(item)) return false;
-      if (!searchQuery) return true;
-      const query = searchQuery.toLowerCase();
-      const id = item.item_id || "";
-      return (
-        id.toLowerCase().includes(query) ||
-        (item.question_en || "").toLowerCase().includes(query) ||
-        (item.question_id || "").toLowerCase().includes(query)
-      );
-    }) as AssessmentItem[]
-  );
+  const tableQuestions = $derived(filteredTableQuestions);
 
-  // Pagination stats
-  const totalItems = $derived(filteredData.length);
-  const totalPages = $derived(Math.ceil(totalItems / pageSize));
+  const totalItems = $derived(tableQuestions.length);
+  const totalPages = $derived(Math.max(1, Math.ceil(totalItems / pageSize)));
   const startIndex = $derived((currentPage - 1) * pageSize);
   const endIndex = $derived(Math.min(startIndex + pageSize, totalItems));
-  
-  // Current Page Questions
-  const pagedQuestions = $derived(filteredData.slice(startIndex, endIndex));
 
-  /** Most recent `subtitle` row before each question in flat `sort_order` (per tahun). */
+  const pagedQuestions = $derived(tableQuestions.slice(startIndex, endIndex));
+
   const questionSubtitle = $derived.by(() => {
     const map = new Map<string, AssessmentItem | null>();
     let lastSub: AssessmentItem | null = null;
-    for (const row of assessmentData) {
+    for (const row of structureFallbackData) {
       if (row.type === "subtitle") lastSub = row;
       else if (isAcgsQuestionRow(row)) {
         const k = rowKeyOf(row);
@@ -256,14 +347,60 @@
     return map;
   });
 
-  function getHeadersForQuestion(q: AssessmentItem) {
-    const levelLabel = norm(q.level_label || q.level);
-    const partCanon = canonicalPartIdForAcgsQuestion(q);
+  function subtitleKey(s: AssessmentItem | null): string {
+    if (!s) return "";
+    return `${norm(s.name_en)}|${norm(s.name_id)}`;
+  }
 
-    const level = assessmentData.find(
+  function subtitleRowFor(q: AssessmentItem): AssessmentItem | null {
+    const ctx = q.acgs_subtitle_context;
+    if (ctx !== undefined) {
+      if (!ctx || (!norm(ctx.name_en) && !norm(ctx.name_id))) return null;
+      return {
+        type: "subtitle",
+        name_en: ctx.name_en ?? undefined,
+        name_id: ctx.name_id ?? undefined
+      } as AssessmentItem;
+    }
+    const k = rowKeyOf(q);
+    if (!k) return null;
+    return questionSubtitle.get(k) ?? null;
+  }
+
+  function hasServerResolvedHeaders(q: AssessmentItem): boolean {
+    return isAcgsQuestionRow(q) && "acgs_resolved_level" in q;
+  }
+
+  /** Fallback DB-only (tanpa master) jika payload belum berisi `acgs_resolved_*`. */
+  function effectiveLevelLabelDbOnly(q: AssessmentItem): string {
+    return norm(q.level_label || q.level);
+  }
+
+  function getHeadersForQuestion(q: AssessmentItem) {
+    if (hasServerResolvedHeaders(q)) {
+      const lvl = q.acgs_resolved_level;
+      const prt = q.acgs_resolved_part;
+      return {
+        level: lvl ? { label: lvl.label ?? undefined } : null,
+        part: prt
+          ? ({
+              item_id: prt.item_id ?? undefined,
+              id: prt.id ?? undefined,
+              part_id: prt.part_id ?? undefined,
+              name_id: prt.name_id ?? undefined,
+              full_name_en: prt.full_name_en ?? undefined,
+              full_name_id: prt.full_name_id ?? undefined
+            } as AssessmentItem)
+          : null
+      };
+    }
+
+    const levelLabel = effectiveLevelLabelDbOnly(q);
+    const partCanon = canonicalPartIdForAcgsQuestion(q);
+    const level = structureFallbackData.find(
       (item) => item.type === "level" && norm(item.label) === levelLabel
     );
-    const part = assessmentData.find((item) => {
+    const part = structureFallbackData.find((item) => {
       if (item.type !== "part") return false;
       const code = norm(item.item_id || item.part_id || item.label || item.id);
       return code === norm(partCanon);
@@ -272,20 +409,27 @@
   }
 
   function findSectionRow(q: AssessmentItem) {
+    if (hasServerResolvedHeaders(q)) {
+      const s = q.acgs_resolved_section;
+      if (!s) return undefined;
+      return {
+        type: "section",
+        item_id: s.item_id ?? undefined,
+        id: s.id ?? undefined,
+        name_en: s.name_en ?? undefined,
+        name_id: s.name_id ?? undefined
+      } as AssessmentItem;
+    }
+
     const sid = canonicalSectionIdForAcgsQuestion(q);
     if (!norm(sid)) return undefined;
-    return assessmentData.find(
-      (s) =>
-        s.type === "section" &&
-        (norm(s.item_id || s.id) === norm(sid) ||
-          norm(s.section_id || s.section) === norm(sid))
+    return structureFallbackData.find(
+      (row) =>
+        row.type === "section" &&
+        (norm(row.item_id || row.id) === norm(sid) ||
+          norm(row.section_id || row.section) === norm(sid))
     );
   }
-
-  // Effect to reset page on search
-  $effect(() => {
-    if (searchQuery) currentPage = 1;
-  });
 
   // Pagination range logic (1 2 3 ... 10)
   const paginationRange = $derived(() => {
@@ -306,14 +450,24 @@
 <div class="space-y-4">
   <!-- SEARCH & ACTIONS -->
   <div class="flex flex-col md:flex-row items-center justify-between gap-4">
-    <div class="relative w-full md:w-96">
-      <Search class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
-      <Input 
-        placeholder="Cari ID atau indikator..." 
-        class="pl-10 border-border focus:ring-primary"
-        bind:value={searchQuery}
-      />
-    </div>
+    <form
+      class="relative w-full md:w-96 flex gap-2"
+      onsubmit={(e) => {
+        e.preventDefault();
+        applyServerSearch();
+      }}
+    >
+      <div class="relative flex-1">
+        <Search class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={18} />
+        <Input
+          placeholder="Filter lokal (debounce) — Enter: simpan ke URL…"
+          class="pl-10 border-border focus:ring-primary"
+          bind:value={searchQuery}
+          oninput={() => scheduleSearchDebounce()}
+        />
+      </div>
+      <Button type="submit" variant="secondary" size="sm" class="shrink-0">Cari</Button>
+    </form>
     <div class="flex items-center gap-2">
         <!-- SYNC STATUS -->
         <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-200 text-[10px] font-medium mr-2">
@@ -446,7 +600,7 @@
                 {#if i === 0 || partGroupKey(headers.part) !== partGroupKey(prevHeaders.part)}
                     <tr class="bg-slate-50/50">
                         <td class="border border-border p-2 font-bold bg-white align-middle text-center">
-                            <div class="text-slate-900 uppercase">{displayCode(headers.part?.item_id, headers.part?.part_id)}</div>
+                            <div class="text-slate-900 uppercase">{displayCode(headers.part?.item_id ?? headers.part?.id, headers.part?.part_id)}</div>
                             <div class="text-blue-700 uppercase text-[10px]">{norm(headers.part?.name_id)}</div>
                         </td>
                         <td class="border border-border p-2 font-bold leading-tight align-top text-left">
@@ -483,18 +637,9 @@
                 {/if}
 
                 <!-- Subtitles Logic -->
-                {@const subRow = (() => {
-                  const k = rowKeyOf(q);
-                  return k ? (questionSubtitle.get(k) ?? null) : null;
-                })()}
-                {@const prevSubRow =
-                  i > 0
-                    ? (() => {
-                        const k = rowKeyOf(pagedQuestions[i - 1]);
-                        return k ? (questionSubtitle.get(k) ?? null) : null;
-                      })()
-                    : null}
-                {#if subRow && (i === 0 || subRow !== prevSubRow)}
+                {@const subRow = subtitleRowFor(q)}
+                {@const prevSubRow = i > 0 ? subtitleRowFor(pagedQuestions[i - 1]) : null}
+                {#if subRow && (i === 0 || subtitleKey(subRow) !== subtitleKey(prevSubRow))}
                    {@const subtitle = subRow}
                    {#if subtitle && (norm(subtitle.name_en) || norm(subtitle.name_id))}
                      <tr class="bg-primary/5">
@@ -639,7 +784,11 @@
         {:else}
             <tr>
                 <td colspan="6" class="p-12 text-center text-muted-foreground border border-border italic">
-                    Data tidak ditemukan untuk pencarian "{searchQuery}"
+                  {#if debouncedFilterText.trim()}
+                    Tidak ada pertanyaan untuk filter "{debouncedFilterText.trim()}".
+                  {:else}
+                    Belum ada pertanyaan dimuat untuk tahun ini.
+                  {/if}
                 </td>
             </tr>
         {/if}
@@ -648,9 +797,21 @@
   </div>
 
   <!-- PAGINATION FOOTER -->
-  <div class="flex flex-col md:flex-row items-center justify-between gap-4 py-2 text-slate-600 text-xs font-medium">
+  <div class="flex flex-col gap-3 py-2 text-slate-600 text-xs font-medium">
+    <div class="flex flex-wrap items-center justify-between gap-2">
+      <span class="text-muted-foreground">
+        {#if debouncedFilterText.trim()}
+          <strong>{tableQuestions.length}</strong> cocok filter dari
+          <strong>{allTableQuestions.length}</strong> pertanyaan (tahun {currentYear})
+          <span class="italic">— "{debouncedFilterText.trim()}"</span>
+        {:else}
+          <strong>{allTableQuestions.length}</strong> pertanyaan (tahun {currentYear}), tampilan per halaman {pageSize}
+        {/if}
+      </span>
+    </div>
+    <div class="flex flex-col md:flex-row items-center justify-between gap-4">
     <div class="flex items-center gap-2">
-      <span>Baris per hlmn.</span>
+      <span>Baris tampilan per halaman</span>
       <select 
         class="border border-border rounded px-2 py-1 bg-white outline-none focus:ring-1 focus:ring-primary"
         bind:value={pageSize}
@@ -721,7 +882,8 @@
     </div>
 
     <div class="text-muted-foreground">
-      {startIndex + 1}-{endIndex} dari {totalItems}
+      Tampilan {totalItems > 0 ? startIndex + 1 : 0}-{endIndex} dari {totalItems} terunduh
+    </div>
     </div>
   </div>
 </div>

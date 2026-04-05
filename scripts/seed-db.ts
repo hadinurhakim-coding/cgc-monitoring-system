@@ -1,6 +1,15 @@
 /**
- * Seed tunggal ACGS: hapus semua baris `acgs_assessments`, lalu isi ulang dari master
- * (`assessment-data` → `buildFlatRowsForYear`).
+ * Seed tunggal ACGS: **menghapus seluruh** isi `acgs_assessments`, lalu insert ulang dari master
+ * (`assessment-data` → `buildFlatRowsForYear`). Hanya untuk dev / reset penuh — di produksi
+ * jangan menjalankan ini jika perlu mempertahankan jawaban tahun-tahun lalu.
+ *
+ * Tahun yang di-seed:
+ *   - Argumen CLI `2024 2025 2026`, atau
+ *   - Env `ACGS_SEED_YEARS` (koma/spasi), atau
+ *   - Satu tahun dari `ACGS_TEMPLATE_YEAR` (default 2026).
+ *
+ * Tahun template (`ACGS_TEMPLATE_YEAR`) dipakai aplikasi saat auto-populate tahun baru (clone snapshot);
+ * seed script hanya memakainya sebagai default tahun jika tidak ada argumen/env tahun.
  *
  * Usage:
  *   bun run seed:acgs
