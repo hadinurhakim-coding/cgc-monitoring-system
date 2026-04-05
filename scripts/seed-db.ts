@@ -1,62 +1,83 @@
-import { assessmentData } from '../src/routes/assessment-acgs/assessment-data';
-import { createClient } from '@supabase/supabase-js';
-import dotenv from 'dotenv';
+/**
+ * Seed tunggal ACGS: hapus semua baris `acgs_assessments`, lalu isi ulang dari master
+ * (`assessment-data` → `buildFlatRowsForYear`).
+ *
+ * Usage:
+ *   bun run seed:acgs
+ *   bun run scripts/seed-db.ts 2024 2025 2026
+ *
+ * Butuh SUPABASE_URL + SUPABASE_SERVICE_ROLE_KEY di .env
+ */
+import { createClient } from "@supabase/supabase-js";
+import dotenv from "dotenv";
+import { buildFlatRowsForYear } from "../src/routes/assessment-acgs/acgs-defaults.js";
 
 dotenv.config();
 
-const supabaseUrl = process.env.SUPABASE_URL!;
-const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-const supabase = createClient(supabaseUrl, supabaseKey);
+const DUMMY_UUID = "00000000-0000-0000-0000-000000000000";
 
-async function seed() {
-  console.log('Seeding ACGS Assessment data with Year 2026...');
+function parseYears(): number[] {
+	const argv = process.argv.slice(2).filter((a) => /^\d{4}$/.test(a));
+	if (argv.length > 0) return argv.map((y) => parseInt(y, 10));
 
-  // Clear existing data
-  const { error: deleteError } = await supabase
-    .from('acgs_assessments')
-    .delete()
-    .neq('type', 'completely_non_existent'); // Delete all
+	const envList = process.env.ACGS_SEED_YEARS?.split(/[\s,]+/)
+		.map((s) => s.trim())
+		.filter((a) => /^\d{4}$/.test(a))
+		.map((y) => parseInt(y, 10));
+	if (envList?.length) return envList;
 
-  if (deleteError) {
-    console.error('Error clearing table:', deleteError);
-  }
-
-  const rows = assessmentData.map((item, index) => ({
-    type: item.type,
-    sort_order: index,
-    year: 2026, // Include year!
-    level_label: (item as any).level || null,
-    part_id: (item as any).part || null,
-    section_id: (item as any).section || null,
-    item_id: item.id || null,
-    label: item.label || null,
-    name_en: item.name_en || null,
-    name_id: item.name_id || null,
-    full_name_en: item.full_name_en || null,
-    full_name_id: item.full_name_id || null,
-    question_en: item.question_en || null,
-    question_id: item.question_id || null,
-    implementation: item.implementation || '',
-    evidence: item.evidence || '',
-    status: item.status || '',
-    recommendation: item.recommendation || ''
-  }));
-
-  const chunkSize = 100;
-  for (let i = 0; i < rows.length; i += chunkSize) {
-    const chunk = rows.slice(i, i + chunkSize);
-    const { error } = await supabase
-      .from('acgs_assessments')
-      .insert(chunk);
-    
-    if (error) {
-      console.error(`Error inserting chunk ${i / chunkSize}:`, error);
-    } else {
-      console.log(`Inserted chunk ${i / chunkSize + 1}/${Math.ceil(rows.length / chunkSize)}`);
-    }
-  }
-
-  console.log('Seeding completed successfully with Year 2026.');
+	const raw = process.env.ACGS_TEMPLATE_YEAR ?? "2026";
+	const y = parseInt(raw, 10);
+	return Number.isFinite(y) && y >= 2000 && y <= 2200 ? [y] : [2026];
 }
 
-seed();
+async function wipeAcgs(supabase: ReturnType<typeof createClient>): Promise<Error | null> {
+	const { error } = await supabase.from("acgs_assessments").delete().neq("uid", DUMMY_UUID);
+	return error ? new Error(error.message) : null;
+}
+
+async function insertChunks(
+	supabase: ReturnType<typeof createClient>,
+	rows: Record<string, unknown>[]
+): Promise<Error | null> {
+	const chunkSize = 100;
+	for (let i = 0; i < rows.length; i += chunkSize) {
+		const chunk = rows.slice(i, i + chunkSize);
+		const { error } = await supabase.from("acgs_assessments").insert(chunk);
+		if (error) return new Error(`Chunk ${i / chunkSize + 1}: ${error.message}`);
+	}
+	return null;
+}
+
+async function main() {
+	const url = process.env.SUPABASE_URL;
+	const key = process.env.SUPABASE_SERVICE_ROLE_KEY;
+	if (!url || !key) {
+		console.error("Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY");
+		process.exit(1);
+	}
+
+	const years = parseYears();
+	const supabase = createClient(url, key);
+
+	console.log("Menghapus semua baris acgs_assessments…");
+	const wipeErr = await wipeAcgs(supabase);
+	if (wipeErr) {
+		console.error(wipeErr.message);
+		process.exit(1);
+	}
+
+	for (const year of years) {
+		const rows = buildFlatRowsForYear(year);
+		console.log(`Menyisipkan ${rows.length} baris untuk tahun ${year}…`);
+		const insErr = await insertChunks(supabase, rows);
+		if (insErr) {
+			console.error(insErr.message);
+			process.exit(1);
+		}
+	}
+
+	console.log("Selesai. Tahun:", years.join(", "));
+}
+
+main();

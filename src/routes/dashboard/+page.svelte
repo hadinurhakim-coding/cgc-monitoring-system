@@ -3,6 +3,7 @@
 	import { Separator } from "$lib/components/ui/separator/index.js";
 	import * as Card from "$lib/components/ui/card/index.js";
 	import AppSidebar from "$lib/components/app-sidebar.svelte";
+	import { resolve } from "$app/paths";
 	import type { PageData } from "./$types.js";
 
 	let { data }: { data: PageData } = $props();
@@ -27,33 +28,21 @@
 		</header>
 
 		<main class="flex flex-1 flex-col gap-4 p-4 md:gap-6 md:p-6">
-			<Card.Root id="data-pencapaian-acgs">
+			<Card.Root>
 				<Card.Header>
-					<Card.Title>DATA PENCAPAIAN ACGS</Card.Title>
-					<Card.Description>Mockup ringkasan capaian utama ACGS.</Card.Description>
+					<Card.Title>Ringkasan</Card.Title>
+					<Card.Description>
+						Gunakan Assessment ACGS untuk mengisi dan memantau indikator tata kelola.
+					</Card.Description>
 				</Card.Header>
-				<Card.Content>
-					<div class="bg-muted/20 h-48 rounded-xl border border-dashed border-border transition-colors hover:bg-muted/30"></div>
-				</Card.Content>
-			</Card.Root>
-
-			<Card.Root id="data-tren-pencapaian">
-				<Card.Header>
-					<Card.Title>DATA TREN PENCAPAIAN</Card.Title>
-					<Card.Description>Mockup area chart / tren performa dari waktu ke waktu.</Card.Description>
-				</Card.Header>
-				<Card.Content>
-					<div class="bg-muted/20 h-48 rounded-xl border border-dashed border-border transition-colors hover:bg-muted/30"></div>
-				</Card.Content>
-			</Card.Root>
-
-			<Card.Root id="data-detail-pencapaian-acgs">
-				<Card.Header>
-					<Card.Title>DATA DETAIL PENCAPAIAN ACGS</Card.Title>
-					<Card.Description>Mockup detail data per indikator.</Card.Description>
-				</Card.Header>
-				<Card.Content>
-					<div class="bg-muted/40 h-64 rounded-lg border border-dashed"></div>
+				<Card.Content class="text-sm text-muted-foreground">
+					<p>
+						<a
+							href={resolve("/assessment-acgs")}
+							class="text-primary font-medium underline underline-offset-4"
+							>Buka Assessment ACGS</a
+						>
+					</p>
 				</Card.Content>
 			</Card.Root>
 		</main>

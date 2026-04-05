@@ -1,22 +1,34 @@
 import { supabase } from "$lib/supabaseClient.js";
 
-// This client-side service uses the FLAT acgs_assessments table
-export async function upsertAnswer(data: { id: string; [key: string]: any }) {
-  const { id, ...fields } = data;
-  
-  // Map uppercase YES/NO to lower case
+export type UpsertAnswerInput = {
+	row_uid?: string;
+	id?: string;
+	implementation?: string;
+	evidence?: string;
+	status?: string;
+	recommendation?: string;
+};
+
+// Client-side updates on flat `acgs_assessments` (RLS + authenticated user).
+export async function upsertAnswer(data: UpsertAnswerInput) {
+	const rowUid = data.row_uid ?? data.id;
+	if (!rowUid) {
+		return { error: new Error("row_uid or id (uuid) is required") };
+	}
+
+	const { row_uid: _rw, id: _id, ...fields } = data;
+
   if (fields.status) {
     fields.status = fields.status.toLowerCase();
   }
 
-  // Fields should be what's in the table: implementation, evidence, status, recommendation
   const { error } = await supabase
     .from('acgs_assessments')
     .update({
         ...fields,
         updated_at: new Date().toISOString()
     })
-    .eq('uid', id); // We use 'id' passed from the UI, which we mapped to 'uid' earlier
+    .eq('uid', rowUid);
 
   return { error };
 }
@@ -40,12 +52,4 @@ export async function uploadEvidence(file: File, folder: string = 'gcg-evidence'
     .getPublicUrl(filePath);
 
   return { data: publicUrl, error: null };
-}
-
-export async function createAssessment(year: number, divisionId?: string) {
-  // In the FLAT schema, creating an assessment for a new year 
-  // often means CLONING the master structure (type: subtitle, level, part, section, question)
-  // from a previous year. 
-  console.warn("createAssessment for flat schema not yet fully implemented via UI cloning.");
-  return { data: null, error: 'Not implemented' };
 }

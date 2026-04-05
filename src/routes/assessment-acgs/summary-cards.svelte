@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { isAcgsQuestionRow } from "./acgs-defaults.js";
   import * as Card from "$lib/components/ui/card/index.js";
   import { Skeleton } from "$lib/components/ui/skeleton/index.js";
   import { 
@@ -16,7 +17,7 @@
   // Dynamic Metrics Calculation
   const stats = $derived.by(() => {
     // filter for questions only
-    const questions = assessmentData.filter(item => item.type === 'question');
+    const questions = assessmentData.filter((item) => isAcgsQuestionRow(item));
     const total = questions.length;
     if (total === 0) return {
         progress: { total: 0, completed: 0, percentage: 0 },
@@ -33,21 +34,38 @@
     const compliant = questions.filter(q => q.status === 'YES' || q.status === 'Y').length;
     const complianceScore = ((compliant / total) * 100).toFixed(1);
 
-    // Parts breakdown (A, B, C, D, E)
-    const partsList = [
-        { id: 'A', color: 'var(--primary)' },
-        { id: 'B', color: '#10b981' },
-        { id: 'C', color: '#f59e0b' },
-        { id: 'D', color: '#00b4d8' },
-        { id: 'E', color: '#64748b' }
+    const norm = (s: string | null | undefined) => (s ?? "").replace(/\s+/g, " ").trim();
+    const palette = [
+      "var(--primary)",
+      "#10b981",
+      "#f59e0b",
+      "#00b4d8",
+      "#64748b",
+      "#a855f7",
+      "#ec4899"
     ];
-    
-    const partsStats = partsList.map(p => {
-        const partQuestions = questions.filter(q => (q.part_id || q.part) === `PART ${p.id}`);
-        const pTotal = partQuestions.length;
-        const pCompliant = partQuestions.filter(q => q.status === 'YES' || q.status === 'Y').length;
-        const pScore = pTotal > 0 ? Math.round((pCompliant / pTotal) * 100) : 0;
-        return { ...p, score: pScore };
+    const partKeys = [
+      ...new Set(
+        questions.map((q) => norm(q.part_id || q.part)).filter(Boolean)
+      )
+    ].sort();
+    const partsStats = partKeys.map((partKey, idx) => {
+      const partQuestions = questions.filter(
+        (q) => norm(q.part_id || q.part) === partKey
+      );
+      const pTotal = partQuestions.length;
+      const pCompliant = partQuestions.filter(
+        (q) => q.status === "YES" || q.status === "Y"
+      ).length;
+      const pScore = pTotal > 0 ? Math.round((pCompliant / pTotal) * 100) : 0;
+      const short =
+        partKey.replace(/^PART\s+/i, "").trim() || partKey.slice(0, 8);
+      return {
+        id: short,
+        label: partKey,
+        color: palette[idx % palette.length],
+        score: pScore
+      };
     });
 
     const withEvidence = questions.filter(q => q.evidence).length;

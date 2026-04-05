@@ -18,14 +18,7 @@ export interface AssessmentItem {
 }
 
 export const assessmentData: AssessmentItem[] = [
-  {
-    "type": "subtitle",
-    "level": "",
-    "part": "",
-    "section": "",
-    "name_en": "ITEM",
-    "name_id": "STANDAR TATA KELOLA"
-  },
+ 
   {
     "type": "level",
     "label": " LEVEL 1 "

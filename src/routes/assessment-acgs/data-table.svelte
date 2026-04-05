@@ -9,10 +9,8 @@
     ChevronsRight,
     Search,
     FileDown,
-    Upload,
     Plus,
     Calendar,
-    Filter,
     Check,
     Cloud,
     Loader2,
@@ -20,10 +18,39 @@
     X
   } from "@lucide/svelte";
   import { Skeleton } from "$lib/components/ui/skeleton/index.js";
-  import { upsertAnswer, createAssessment } from "./assessment-service.js";
+  import {
+    upsertAnswer,
+    uploadEvidence,
+    type UpsertAnswerInput
+  } from "./assessment-service.js";
+  import {
+    canonicalPartIdForAcgsQuestion,
+    canonicalSectionIdForAcgsQuestion,
+    isAcgsQuestionRow
+  } from "./acgs-defaults.js";
   import { goto } from "$app/navigation";
   import { toast } from "svelte-sonner";
-  import * as Tooltip from "$lib/components/ui/tooltip/index.js";
+
+  const UUID_RE =
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+  function norm(s: string | null | undefined) {
+    return (s ?? "").replace(/\s+/g, " ").trim();
+  }
+
+  /** Prefer human-readable codes (PART A, A.1.1); never show raw row UUID in the grid. */
+  function displayCode(primary?: string | null, fallback?: string | null) {
+    const p = norm(primary);
+    if (p && !UUID_RE.test(p)) return p;
+    const f = norm(fallback);
+    if (f && !UUID_RE.test(f)) return f;
+    return p || f || "";
+  }
+
+  function partGroupKey(row: AssessmentItem | null | undefined) {
+    if (!row) return "";
+    return norm(row.item_id || row.part_id || row.label || "");
+  }
 
   export interface AssessmentItem {
     type: string;
@@ -36,30 +63,33 @@
     name_id?: string;
     full_name_en?: string;
     full_name_id?: string;
-    question_en: string;
-    question_id: string;
+    question_en?: string;
+    question_id?: string;
     implementation?: string;
     evidence?: string;
     status?: string;
     recommendation?: string;
-    level?: string; 
-    part?: string;  
-    section?: string; 
-    id?: string; 
+    level?: string;
+    part?: string;
+    section?: string;
+    uid?: string;
+    id?: string;
+    row_uid?: string;
+    sort_order?: number | null;
   }
 
   interface Props {
     assessmentData: AssessmentItem[];
     isLoading?: boolean;
     currentYear?: number;
-    assessmentId?: string | null;
+    availableYears?: number[];
   }
 
-  let { 
-    assessmentData = [], 
-    isLoading = false, 
+  let {
+    assessmentData = [],
+    isLoading = false,
     currentYear = new Date().getFullYear(),
-    assessmentId = null
+    availableYears = []
   }: Props = $props();
 
   // State
@@ -79,15 +109,18 @@
   let yearQuery = $state("");
   
   const years = $derived(() => {
-    const list = [];
     const nowYear = new Date().getFullYear();
-    for(let i = nowYear + 1; i >= nowYear - 10; i--) {
-        list.push(i.toString());
+    const fromDb = [...availableYears].sort((a, b) => b - a).map((y) => String(y));
+    const sliding = Array.from({ length: 18 }, (_, i) => String(nowYear + 1 - i));
+    const merged = [...new Set([...fromDb, ...sliding])];
+    merged.sort((a, b) => parseInt(b, 10) - parseInt(a, 10));
+    const cy = String(currentYear);
+    if (!merged.includes(cy)) merged.unshift(cy);
+    merged.sort((a, b) => parseInt(b, 10) - parseInt(a, 10));
+    if (yearQuery && !merged.includes(yearQuery) && /^\d{4}$/.test(yearQuery)) {
+      merged.unshift(yearQuery);
     }
-    if (yearQuery && !list.includes(yearQuery) && /^\d{4}$/.test(yearQuery)) {
-        list.unshift(yearQuery);
-    }
-    return list.filter(y => y.includes(yearQuery));
+    return merged.filter((y) => y.includes(yearQuery));
   });
 
   // Effect to handle year change navigation
@@ -121,41 +154,37 @@
   }
 
   async function saveField(q: AssessmentItem, field: string, value: string) {
-    if (!q.id) return;
-    
-    let activeAssessmentId = assessmentId;
-    
-    // Create assessment header if it doesn't exist (Lazy creation)
-    if (!activeAssessmentId) {
-        syncStatus = 'saving';
-        const { data, error } = await createAssessment(currentYear);
-        if (error || !data) {
-            syncStatus = 'error';
-            toast.error("Gagal membuat data assessment tahun ini");
-            return;
-        }
-        activeAssessmentId = data.id;
-        // In real app, you'd update the parent state or re-fetch
+    const rowKey = rowKeyOf(q);
+    if (!rowKey) {
+      toast.error("Tidak ada data assessment untuk tahun ini. Jalankan seed/migrasi lalu muat ulang halaman.");
+      return;
     }
 
-    syncStatus = 'saving';
-    
+    syncStatus = "saving";
+
     const { error } = await upsertAnswer({
-        id: q.id as string,
-        [field]: value 
-    });
+      row_uid: rowKey,
+      [field]: value
+    } as UpsertAnswerInput);
 
     if (error) {
-        syncStatus = 'error';
-        toast.error("Gagal menyimpan: " + error.message);
+      syncStatus = "error";
+      toast.error("Gagal menyimpan: " + error.message);
     } else {
-        syncStatus = 'saved';
-        (q as any)[field] = value;
+      syncStatus = "saved";
+      if (field === "implementation") q.implementation = value;
+      else if (field === "evidence") q.evidence = value;
+      else if (field === "recommendation") q.recommendation = value;
+      else if (field === "status") q.status = value;
     }
   }
 
   // File Upload Logic
   let fileInputs = $state<Record<string, HTMLInputElement>>({});
+
+  function rowKeyOf(q: AssessmentItem) {
+    return (q.row_uid || q.uid || q.id) as string | undefined;
+  }
 
   function triggerFileInput(qId: string) {
     fileInputs[qId]?.click();
@@ -169,11 +198,11 @@
   }
 
   async function uploadStagedFile(q: AssessmentItem) {
-    const file = stagedFiles[q.id as string];
+    const file = stagedFiles[rowKeyOf(q) ?? ""];
     if (!file) return;
 
     syncStatus = 'saving';
-    const { data: url, error } = await import('./assessment-service.js').then(m => m.uploadEvidence(file));
+    const { data: url, error } = await uploadEvidence(file);
     
     if (error) {
         syncStatus = 'error';
@@ -184,7 +213,7 @@
     if (url) {
         const newValue = (q.evidence ? q.evidence + "\n" : "") + url;
         await saveField(q, 'evidence', newValue);
-        delete stagedFiles[q.id as string];
+        delete stagedFiles[rowKeyOf(q) ?? ""];
         toast.success("File berhasil diunggah");
     }
   }
@@ -192,10 +221,10 @@
   // Filtered data
   const filteredData = $derived(
     assessmentData.filter((item) => {
-      if (item.type !== 'question') return false;
+      if (!isAcgsQuestionRow(item)) return false;
       if (!searchQuery) return true;
       const query = searchQuery.toLowerCase();
-      const id = item.item_id || item.id || "";
+      const id = item.item_id || "";
       return (
         id.toLowerCase().includes(query) ||
         (item.question_en || "").toLowerCase().includes(query) ||
@@ -213,14 +242,44 @@
   // Current Page Questions
   const pagedQuestions = $derived(filteredData.slice(startIndex, endIndex));
 
-  // Helper to find parent headers for a question
+  /** Most recent `subtitle` row before each question in flat `sort_order` (per tahun). */
+  const questionSubtitle = $derived.by(() => {
+    const map = new Map<string, AssessmentItem | null>();
+    let lastSub: AssessmentItem | null = null;
+    for (const row of assessmentData) {
+      if (row.type === "subtitle") lastSub = row;
+      else if (isAcgsQuestionRow(row)) {
+        const k = rowKeyOf(row);
+        if (k) map.set(k, lastSub);
+      }
+    }
+    return map;
+  });
+
   function getHeadersForQuestion(q: AssessmentItem) {
-    const levelLabel = q.level_label || q.level;
-    const partId = q.part_id || q.part;
-    
-    const level = assessmentData.find((item) => item.type === 'level' && item.label === levelLabel);
-    const part = assessmentData.find((item) => item.type === 'part' && (item.item_id === partId || item.id === partId));
+    const levelLabel = norm(q.level_label || q.level);
+    const partCanon = canonicalPartIdForAcgsQuestion(q);
+
+    const level = assessmentData.find(
+      (item) => item.type === "level" && norm(item.label) === levelLabel
+    );
+    const part = assessmentData.find((item) => {
+      if (item.type !== "part") return false;
+      const code = norm(item.item_id || item.part_id || item.label || item.id);
+      return code === norm(partCanon);
+    });
     return { level, part };
+  }
+
+  function findSectionRow(q: AssessmentItem) {
+    const sid = canonicalSectionIdForAcgsQuestion(q);
+    if (!norm(sid)) return undefined;
+    return assessmentData.find(
+      (s) =>
+        s.type === "section" &&
+        (norm(s.item_id || s.id) === norm(sid) ||
+          norm(s.section_id || s.section) === norm(sid))
+    );
   }
 
   // Effect to reset page on search
@@ -327,10 +386,12 @@
       <thead class="bg-primary text-white text-center font-bold sticky top-0 z-20">
         <tr>
           <th class="border border-border w-[8%] p-3 align-middle uppercase">ITEM</th>
-          <th class="border border-border w-[42%] p-3 align-middle uppercase leading-tight">STANDAR TATA KELOLA<br />PERUSAHAAN</th>
+          <th class="border border-border w-[42%] p-3 align-middle uppercase leading-tight">
+            STANDAR TATA KELOLA<br />PERUSAHAAN
+          </th>
           <th class="border border-border w-[15%] p-3 align-middle uppercase">IMPLEMENTASI</th>
           <th class="border border-border w-[15%] p-3 align-middle uppercase">EVIDENCE</th>
-          <th class="border border-border w-[5%] p-3 align-middle uppercase leading-tight">STATUS<br />YES/NO</th>
+          <th class="border border-border w-[5%] p-3 align-middle uppercase leading-tight">STATUS<br />YES OR NO</th>
           <th class="border border-border w-[15%] p-3 align-middle uppercase">REKOMENDASI</th>
         </tr>
       </thead>
@@ -369,23 +430,28 @@
                 {@const headers = getHeadersForQuestion(q)}
                 {@const prevHeaders = i > 0 ? getHeadersForQuestion(pagedQuestions[i-1]) : { level: null, part: null }}
                 
-                {#if i === 0 || headers.level?.label !== prevHeaders.level?.label}
-                    <tr class="bg-[#f1f5f9]">
-                        <td colspan="6" class="border border-border p-2 font-bold text-primary uppercase">
-                            {headers.level?.label || 'LEVEL UNKNOWN'}
+                {#if i === 0 || norm(headers.level?.label) !== norm(prevHeaders.level?.label)}
+                    <tr class="bg-[#e2e8f0]">
+                        <td class="border border-border p-2 font-bold text-slate-900 uppercase align-middle text-center">
+                            {norm(headers.level?.label) || "LEVEL UNKNOWN"}
                         </td>
+                        <td class="border border-border bg-[#e2e8f0]"></td>
+                        <td class="border border-border bg-[#e2e8f0]"></td>
+                        <td class="border border-border bg-[#e2e8f0]"></td>
+                        <td class="border border-border bg-[#e2e8f0]"></td>
+                        <td class="border border-border bg-[#e2e8f0]"></td>
                     </tr>
                 {/if}
 
-                {#if i === 0 || headers.part?.id !== prevHeaders.part?.id}
+                {#if i === 0 || partGroupKey(headers.part) !== partGroupKey(prevHeaders.part)}
                     <tr class="bg-slate-50/50">
                         <td class="border border-border p-2 font-bold bg-white align-middle text-center">
-                            <div class="text-primary uppercase">{headers.part?.id || ''}</div>
-                            <div class="text-accent uppercase text-[10px]">{headers.part?.name_id || ''}</div>
+                            <div class="text-slate-900 uppercase">{displayCode(headers.part?.item_id, headers.part?.part_id)}</div>
+                            <div class="text-blue-700 uppercase text-[10px]">{norm(headers.part?.name_id)}</div>
                         </td>
-                        <td class="border border-border p-2 font-bold leading-tight align-top">
-                             <div class="text-primary text-[10px] uppercase">{headers.part?.full_name_en || ''}</div>
-                             <div class="text-accent text-[10px] uppercase">{headers.part?.full_name_id || ''}</div>
+                        <td class="border border-border p-2 font-bold leading-tight align-top text-left">
+                             <div class="text-slate-900 text-[10px] md:text-[11px] uppercase">{norm(headers.part?.full_name_en)}</div>
+                             <div class="text-blue-700 text-[10px] md:text-[11px] uppercase mt-1">{norm(headers.part?.full_name_id)}</div>
                         </td>
                         <td class="border border-border h-full bg-slate-50/20"></td>
                         <td class="border border-border h-full bg-slate-50/20"></td>
@@ -394,18 +460,19 @@
                     </tr>
                 {/if}
 
-                {@const sectionId = q.section_id || q.section}
-                {@const prevSectionId = i > 0 ? (pagedQuestions[i-1].section_id || pagedQuestions[i-1].section) : null}
-                {#if sectionId && (i === 0 || sectionId !== prevSectionId)}
-                  {@const section = assessmentData.find(s => s.type === 'section' && (s.item_id === sectionId || s.id === sectionId))}
+                {@const sectionCanon = canonicalSectionIdForAcgsQuestion(q)}
+                {@const prevSectionCanon =
+                  i > 0 ? canonicalSectionIdForAcgsQuestion(pagedQuestions[i - 1]) : ""}
+                {#if norm(sectionCanon) && (i === 0 || norm(sectionCanon) !== norm(prevSectionCanon))}
+                  {@const section = findSectionRow(q)}
                   {#if section}
                     <tr class="bg-white">
-                        <td class="border border-border p-2 font-bold text-primary align-middle text-center bg-slate-50/30">
-                            {section.id}
+                        <td class="border border-border p-2 font-bold text-slate-900 align-middle text-center bg-slate-50/30">
+                            {displayCode(section.item_id, section.id)}
                         </td>
-                        <td class="border border-border p-2 font-bold leading-tight align-top">
-                            <div class="text-primary text-[10px]">{section.name_en}</div>
-                            <div class="text-accent text-[10px]">{section.name_id}</div>
+                        <td class="border border-border p-2 leading-tight align-top text-left">
+                            <div class="text-slate-900 text-[11px] md:text-xs font-bold">{norm(section.name_en)}</div>
+                            <div class="text-blue-700 text-[10px] md:text-[11px] mt-1 font-normal">{norm(section.name_id)}</div>
                         </td>
                         <td class="border border-border"></td>
                         <td class="border border-border"></td>
@@ -416,14 +483,29 @@
                 {/if}
 
                 <!-- Subtitles Logic -->
-                {#if i === 0 || (q.item_id || q.id) !== (pagedQuestions[i-1].item_id || pagedQuestions[i-1].id)}
-                   {@const subtitle = assessmentData.find(s => s.type === 'subtitle' && (s.item_id === (q.item_id || q.id) || s.id === (q.item_id || q.id)))}
-                   {#if subtitle}
-                     <tr class="bg-slate-50/20 italic">
-                        <td class="border border-border p-2 text-center align-middle text-xs">...</td>
-                        <td class="border border-border p-2 leading-tight">
-                            <div class="text-primary text-[10px]">{subtitle.name_en}</div>
-                            <div class="text-accent text-[10px]">{subtitle.name_id}</div>
+                {@const subRow = (() => {
+                  const k = rowKeyOf(q);
+                  return k ? (questionSubtitle.get(k) ?? null) : null;
+                })()}
+                {@const prevSubRow =
+                  i > 0
+                    ? (() => {
+                        const k = rowKeyOf(pagedQuestions[i - 1]);
+                        return k ? (questionSubtitle.get(k) ?? null) : null;
+                      })()
+                    : null}
+                {#if subRow && (i === 0 || subRow !== prevSubRow)}
+                   {@const subtitle = subRow}
+                   {#if subtitle && (norm(subtitle.name_en) || norm(subtitle.name_id))}
+                     <tr class="bg-primary/5">
+                        <td class="border border-border w-[8%] p-2 align-top bg-primary/5"></td>
+                        <td class="border border-border w-[42%] p-3 align-top leading-tight text-left">
+                          {#if norm(subtitle.name_en)}
+                            <div class="text-slate-900 text-[10px] font-bold mb-2">{norm(subtitle.name_en)}</div>
+                          {/if}
+                          {#if norm(subtitle.name_id)}
+                            <div class="text-blue-700 text-[10px] font-bold leading-snug">{norm(subtitle.name_id)}</div>
+                          {/if}
                         </td>
                         <td class="border border-border"></td>
                         <td class="border border-border"></td>
@@ -433,14 +515,21 @@
                    {/if}
                 {/if}
 
-                <!-- Question Row -->
+                <!-- Question: ITEM kosong; kode di sub-kolom STANDAR (biru), teks EN/ID di samping -->
                 <tr class="hover:bg-slate-50 transition-colors">
-                  <td class="border border-border p-2 align-middle text-center">
-                    <span class="text-accent font-bold">{q.item_id || q.id}</span>
-                  </td>
-                  <td class="border border-border p-2 align-top leading-tight">
-                    <div class="text-foreground mb-1 text-justify font-medium">{q.question_en}</div>
-                    <div class="text-accent text-justify italic">{q.question_id}</div>
+                  <td class="border border-border p-2 align-middle bg-white"></td>
+                  <td class="border border-border p-0 align-stretch">
+                    <div class="flex min-h-full w-full">
+                      <div
+                        class="w-[3.25rem] md:w-[4.25rem] shrink-0 border-r border-border p-2 align-top text-center font-bold text-blue-700 text-[10px] md:text-[11px] leading-snug"
+                      >
+                        {displayCode(q.item_id, null)}
+                      </div>
+                      <div class="min-w-0 flex-1 p-2 align-top leading-tight text-left">
+                        <div class="text-slate-900 mb-1 text-justify font-medium text-[11px] md:text-xs">{norm(q.question_en)}</div>
+                        <div class="text-blue-700 text-justify text-[10px] md:text-[11px] leading-snug font-normal">{norm(q.question_id)}</div>
+                      </div>
+                    </div>
                   </td>
                   <td class="border border-border p-2 align-top">
                     <textarea 
@@ -466,8 +555,8 @@
                       <input 
                         type="file" 
                         class="hidden" 
-                        bind:this={fileInputs[q.id as string]}
-                        onchange={(e) => handleFileSelect(e, q.id as string)}
+                        bind:this={fileInputs[rowKeyOf(q) ?? ""]}
+                        onchange={(e) => handleFileSelect(e, rowKeyOf(q) ?? "")}
                       />
 
                       <!-- Rounded Plus Button bottom right -->
@@ -475,19 +564,19 @@
                         type="button"
                         class="absolute bottom-2 right-2 flex items-center justify-center w-7 h-7 rounded-full bg-primary text-white shadow-md hover:bg-primary/90 hover:scale-110 active:scale-95 transition-all duration-200 cursor-pointer"
                         title="Unggah Dokumen"
-                        onclick={() => triggerFileInput(q.id as string)}
+                        onclick={() => triggerFileInput(rowKeyOf(q) ?? "")}
                       >
                         <Plus size={16} strokeWidth={3} />
                       </button>
                     </div>
 
-                    {#if stagedFiles[q.id as string]}
+                    {#if stagedFiles[rowKeyOf(q) ?? ""]}
                        <div class="mt-2 p-2 rounded bg-amber-50 border border-amber-200 flex flex-col gap-2">
                           <div class="flex items-center justify-between text-[9px] font-bold text-amber-800">
-                             <div class="truncate max-w-[80px]">📎 {stagedFiles[q.id as string].name}</div>
+                             <div class="truncate max-w-[80px]">📎 {stagedFiles[rowKeyOf(q) ?? ""].name}</div>
                              <button 
                                 class="text-rose-500 hover:text-rose-700" 
-                                onclick={() => delete stagedFiles[q.id as string]}
+                                onclick={() => delete stagedFiles[rowKeyOf(q) ?? ""]}
                              >
                                 <X size={12} />
                              </button>

@@ -1,8 +1,0 @@
-acgs_assessment_answers
-acgs_assessments
-acgs_parts
-acgs_questions
-acgs_sections
-auth_login_audits
-divisions
-users
