@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { resolve } from "$app/paths";
 	import ShieldCheckIcon from "@lucide/svelte/icons/shield-check";
-	import LoginForm from "$lib/components/login-form.svelte";
+	import LoginForm from "./_components/login-form.svelte";
 	import { onMount } from "svelte";
 	import { fade, fly } from "svelte/transition";
 

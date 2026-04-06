@@ -1,5 +1,5 @@
 import { redirect, type Handle } from "@sveltejs/kit";
-import { resolveAuthFromCookies } from "$lib/server/session-resolve.js";
+import { resolveAuthFromCookies } from "$lib/server/auth/session-resolve.js";
 
 const STATIC_FILE_EXT = /\.(svg|png|jpg|jpeg|webp|ico|json|txt|woff2?)$/i;
 

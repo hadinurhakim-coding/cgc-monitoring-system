@@ -2,10 +2,12 @@ import { redirect } from "@sveltejs/kit";
 import { dev } from "$app/environment";
 import {
 	ACCESS_TOKEN_COOKIE,
-	REFRESH_TOKEN_COOKIE,
+	REFRESH_TOKEN_COOKIE
+} from "$lib/server/auth/cookies.js";
+import {
 	createAdminServerClient,
 	createAnonServerClient
-} from "$lib/server/auth.js";
+} from "$lib/server/auth/clients.js";
 import { isSafeRedirect } from "$lib/server/safe-redirect.js";
 import type { RequestHandler } from "./$types.js";
 

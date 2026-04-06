@@ -16,7 +16,7 @@
  */
 import { createClient } from "@supabase/supabase-js";
 import dotenv from "dotenv";
-import { buildFlatRowsForYear } from "../src/routes/assessment-acgs/acgs-defaults.js";
+import { buildFlatRowsForYear } from "../src/routes/(app)/assessment-acgs/acgs-defaults.js";
 
 dotenv.config();
 

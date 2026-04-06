@@ -6,7 +6,7 @@
  * melalui origin checking.
  */
 import { redirect } from "@sveltejs/kit";
-import { clearAuthCookies } from "$lib/server/session-resolve.js";
+import { clearAuthCookies } from "$lib/server/auth/cookies.js";
 import type { Actions } from "./$types.js";
 
 export const actions: Actions = {

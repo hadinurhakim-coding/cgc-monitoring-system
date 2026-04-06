@@ -1,9 +1,9 @@
 <script lang="ts">
-	import './layout.css';
-	import Toaster from "$lib/components/toaster.svelte";
+	import "./layout.css";
+	import { Toaster } from "svelte-sonner";
 
 	const { children } = $props();
 </script>
 
 {@render children()}
-<Toaster />
+<Toaster position="top-right" richColors />
