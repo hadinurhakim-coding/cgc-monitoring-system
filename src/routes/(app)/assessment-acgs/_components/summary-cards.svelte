@@ -1,10 +1,10 @@
 <script lang="ts">
-  import { isAcgsQuestionRow } from "../acgs-defaults.js";
-  import type { AssessmentSummaryMetrics } from "../acgs-summary-types.js";
+  import { isAcgsQuestionRow } from "../_lib/acgs-question-utils.js";
+  import type { AssessmentSummaryMetrics } from "../_lib/types.js";
   import {
     computeAssessmentSummaryMetrics,
     emptyAssessmentSummaryMetrics
-  } from "../assessment-metrics.js";
+  } from "../_lib/metrics.js";
   import * as Card from "$lib/components/ui/card/index.js";
   import { Skeleton } from "$lib/components/ui/skeleton/index.js";
   import {

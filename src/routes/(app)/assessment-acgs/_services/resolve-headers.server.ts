@@ -2,12 +2,12 @@
  * Resolusi header level / part / section untuk baris pertanyaan ACGS.
  * Hanya di-import dari server — memakai master `_data/assessment-master` tanpa membawa ke bundle klien.
  */
-import { assessmentData as acgsMasterStructure } from "./_data/assessment-master.js";
+import { assessmentData as acgsMasterStructure } from "../_data/assessment-master.js";
 import {
 	canonicalPartIdForAcgsQuestion,
 	canonicalSectionIdForAcgsQuestion,
 	isAcgsQuestionRow
-} from "./acgs-defaults.js";
+} from "../_lib/acgs-question-utils.js";
 
 function norm(s: string | null | undefined) {
 	return (s ?? "").replace(/\s+/g, " ").trim();

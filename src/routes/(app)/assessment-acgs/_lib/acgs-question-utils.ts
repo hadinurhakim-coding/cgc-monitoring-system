@@ -4,7 +4,7 @@ export function isAcgsQuestionRow(item: { type?: string | null }): boolean {
 	return t === "question" || t === "acgs";
 }
 
-function norm(s: string | null | undefined) {
+export function norm(s: string | null | undefined) {
 	return (s ?? "").replace(/\s+/g, " ").trim();
 }
 

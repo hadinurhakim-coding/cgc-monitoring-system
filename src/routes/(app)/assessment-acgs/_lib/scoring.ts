@@ -1,4 +1,4 @@
-import { canonicalPartIdForAcgsQuestion, isAcgsQuestionRow } from "./acgs-defaults.js";
+import { canonicalPartIdForAcgsQuestion, isAcgsQuestionRow } from "./acgs-question-utils.js";
 
 /** Baris minimal untuk aturan skor GCG (1 / 0). */
 export type GcgScoreRow = {

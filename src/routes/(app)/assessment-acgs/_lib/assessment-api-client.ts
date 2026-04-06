@@ -73,3 +73,20 @@ export async function uploadEvidenceWithSignedUrl(
 	const downloadUrl = `${origin}${resolve("/assessment-acgs/api/download")}?path=${encodeURIComponent(path)}`;
 	return { data: downloadUrl, error: null };
 }
+
+/**
+ * Hapus objek secara fisik dari penyimpanan (bucket) server.
+ */
+export async function deleteEvidenceFile(path: string): Promise<{ error: Error | null }> {
+	const res = await fetch(resolve("/assessment-acgs/api/delete-file"), {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		credentials: "include",
+		body: JSON.stringify({ path })
+	});
+	if (!res.ok) {
+		const t = await res.text();
+		return { error: new Error(t || "Gagal menghapus file dari storage") };
+	}
+	return { error: null };
+}

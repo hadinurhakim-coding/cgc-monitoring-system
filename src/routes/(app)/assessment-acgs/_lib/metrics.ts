@@ -1,9 +1,9 @@
 /**
  * Agregat ringkas untuk SummaryCards — satu sumber kebenaran skor GCG (boleh di-import dari klien).
  */
-import { isAcgsQuestionRow } from "./acgs-defaults.js";
-import type { AssessmentSummaryMetrics } from "./acgs-summary-types.js";
-import { gcgPartLabel, gcgQuestionPoint, type GcgScoreRow } from "./gcg-scoring.js";
+import { isAcgsQuestionRow } from "./acgs-question-utils.js";
+import type { AssessmentSummaryMetrics } from "./types.js";
+import { gcgPartLabel, gcgQuestionPoint, type GcgScoreRow } from "./scoring.js";
 
 export type QuestionSummaryRow = GcgScoreRow;
 

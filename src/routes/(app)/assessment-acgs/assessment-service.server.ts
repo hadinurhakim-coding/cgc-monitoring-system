@@ -1,12 +1,12 @@
 import { env } from "$env/dynamic/private";
 import { createAdminServerClient } from "$lib/server/auth/clients.js";
-import { attachResolvedAcgsHeaders } from "./acgs-header-resolve.server.js";
-import type { AssessmentSummaryMetrics } from "./acgs-summary-types.js";
+import { attachResolvedAcgsHeaders } from "./_services/resolve-headers.server.js";
+import type { AssessmentSummaryMetrics } from "./_lib/types.js";
 import {
 	computeAssessmentSummaryMetrics,
 	emptyAssessmentSummaryMetrics,
 	type QuestionSummaryRow
-} from "./assessment-metrics.js";
+} from "./_lib/metrics.js";
 import { buildFlatRowsForYear, isAcgsQuestionRow, mergeQuestionDefaultsFromMaster } from "./acgs-defaults.js";
 
 export const MAX_ASSESSMENT_QUESTIONS_PAGE_SIZE = 200;
