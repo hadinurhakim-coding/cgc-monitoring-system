@@ -26,7 +26,6 @@
     return cleanup;
   });
 
-  export type { AssessmentItem } from "./_lib/types.js";
 
   interface Props {
     initialQuestions?: AssessmentItem[];
@@ -84,10 +83,17 @@
   let pageSize = $state(15);
   let currentPage = $state(1);
 
+  let lastYear: number | undefined = undefined;
+  let lastSearch: string | undefined = undefined;
+  
   $effect(() => {
-    currentYear;
-    serverSearch;
-    currentPage = 1;
+    if (lastYear !== undefined && lastSearch !== undefined) {
+      if (currentYear !== lastYear || serverSearch !== lastSearch) {
+        currentPage = 1;
+      }
+    }
+    lastYear = currentYear;
+    lastSearch = serverSearch;
   });
 
   // Core Data Functions
@@ -281,6 +287,19 @@
     if (ctx) return { type: "subtitle", name_en: ctx.name_en ?? undefined, name_id: ctx.name_id ?? undefined } as AssessmentItem;
     return null;
   }
+
+  function handlePageChange(action: "next" | "prev" | "first" | "last" | "jump") {
+    if (typeof window === "undefined") return;
+    
+    // Tunggu render Svelte selesai baru scroll
+    requestAnimationFrame(() => {
+      if (action === "prev") {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: "instant" });
+      } else {
+        window.scrollTo({ top: 0, behavior: "instant" });
+      }
+    });
+  }
 </script>
 
 <svelte:window onbeforeunload={saveScrollPosition} />
@@ -430,5 +449,6 @@
     debouncedFilterText={debouncedFilterText}
     allQuestionsCount={allTableQuestions.length}
     currentYear={currentYear}
+    onPageChange={handlePageChange}
   />
 </div>

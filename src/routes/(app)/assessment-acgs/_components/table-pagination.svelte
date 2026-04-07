@@ -8,7 +8,8 @@
     currentPage = $bindable(1),
     debouncedFilterText = "",
     allQuestionsCount = 0,
-    currentYear = 2026
+    currentYear = 2026,
+    onPageChange
   }: {
     totalItems: number;
     pageSize: number;
@@ -16,6 +17,7 @@
     debouncedFilterText?: string;
     allQuestionsCount?: number;
     currentYear?: number;
+    onPageChange?: (action: "next" | "prev" | "first" | "last" | "jump") => void;
   } = $props();
 
   const totalPages = $derived(Math.max(1, Math.ceil(totalItems / pageSize)));
@@ -81,7 +83,7 @@
         size="icon"
         class="h-8 w-8"
         disabled={currentPage === 1}
-        onclick={() => (currentPage = 1)}
+        onclick={() => { currentPage = 1; onPageChange?.("first"); }}
       >
         <ChevronsLeft size={16} />
       </Button>
@@ -90,7 +92,7 @@
         size="icon"
         class="h-8 w-8"
         disabled={currentPage === 1}
-        onclick={() => currentPage--}
+        onclick={() => { currentPage--; onPageChange?.("prev"); }}
       >
         <ChevronLeft size={16} />
       </Button>
@@ -106,7 +108,7 @@
               class="h-8 w-8 {currentPage === page
                 ? 'bg-[#ff7f50] hover:bg-[#ff7f50]/90 text-white'
                 : ''}"
-              onclick={() => (currentPage = page as number)}
+              onclick={() => { currentPage = page as number; onPageChange?.("jump"); }}
             >
               {page}
             </Button>
@@ -119,7 +121,7 @@
         size="icon"
         class="h-8 w-8"
         disabled={currentPage === totalPages}
-        onclick={() => currentPage++}
+        onclick={() => { currentPage++; onPageChange?.("next"); }}
       >
         <ChevronRight size={16} />
       </Button>
@@ -128,7 +130,7 @@
         size="icon"
         class="h-8 w-8"
         disabled={currentPage === totalPages}
-        onclick={() => (currentPage = totalPages)}
+        onclick={() => { currentPage = totalPages; onPageChange?.("last"); }}
       >
         <ChevronsRight size={16} />
       </Button>
