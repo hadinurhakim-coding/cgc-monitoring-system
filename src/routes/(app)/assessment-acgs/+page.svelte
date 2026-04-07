@@ -1,7 +1,6 @@
 <script lang="ts">
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import { Separator } from "$lib/components/ui/separator/index.js";
-	import SummaryCards from "./_components/summary-cards.svelte";
 	import DataTable from "./data-table.svelte";
 	import type { AssessmentItem } from "./_lib/types.js";
 	import type { PageData } from "./$types.js";
@@ -31,11 +30,6 @@
 			{data.loadError}
 		</div>
 	{/if}
-	<SummaryCards
-		summaryMetrics={data.summaryMetrics}
-		assessmentData={[]}
-		isLoading={false}
-	/>
 	<DataTable
 		initialQuestions={(data.assessmentQuestions || []) as AssessmentItem[]}
 		serverSearch={data.search ?? ""}

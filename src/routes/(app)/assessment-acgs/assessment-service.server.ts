@@ -1,12 +1,6 @@
 import { env } from "$env/dynamic/private";
 import { createAdminServerClient } from "$lib/server/auth/clients.js";
 import { attachResolvedAcgsHeaders } from "./_services/resolve-headers.server.js";
-import type { AssessmentSummaryMetrics } from "./_lib/types.js";
-import {
-	computeAssessmentSummaryMetrics,
-	emptyAssessmentSummaryMetrics,
-	type QuestionSummaryRow
-} from "./_lib/metrics.js";
 import { buildFlatRowsForYear, isAcgsQuestionRow, mergeQuestionDefaultsFromMaster } from "./acgs-defaults.js";
 
 export const MAX_ASSESSMENT_QUESTIONS_PAGE_SIZE = 200;
@@ -245,12 +239,11 @@ function processQuestionRowsForClient(
 	});
 }
 
-async function loadAssessmentQuestionsAndMetrics(
+async function loadAssessmentQuestions(
 	adminDb: ReturnType<typeof createAdminServerClient>,
 	year: number
 ): Promise<{
 	questions: FlatAssessmentRow[];
-	metrics: AssessmentSummaryMetrics;
 	error: Error | null;
 }> {
 	const [trailRows, pageRes] = await Promise.all([
@@ -258,38 +251,15 @@ async function loadAssessmentQuestionsAndMetrics(
 		fetchAllAssessmentQuestionRowsRaw(adminDb, year)
 	]);
 	if (pageRes.error) {
-		return { questions: [], metrics: emptyAssessmentSummaryMetrics(), error: pageRes.error };
+		return { questions: [], error: pageRes.error };
 	}
 	const subMap = buildSubtitleMapFromTrail(trailRows);
 	const questions = processQuestionRowsForClient(pageRes.data as FlatAssessmentRow[], subMap);
-	const metrics = computeAssessmentSummaryMetrics(questions as unknown as QuestionSummaryRow[]);
-	return { questions, metrics, error: null };
-}
-
-async function persistAcgsYearSummary(
-	adminDb: ReturnType<typeof createAdminServerClient>,
-	year: number,
-	metrics: AssessmentSummaryMetrics
-): Promise<void> {
-	const { error } = await adminDb.from("acgs_year_summaries").upsert(
-		{
-			year,
-			question_count: metrics.progress.total,
-			points_sum: metrics.progress.pointsSum,
-			score_pct: metrics.progress.percentage,
-			payload: metrics as unknown as Record<string, unknown>,
-			updated_at: new Date().toISOString()
-		},
-		{ onConflict: "year" }
-	);
-	if (error) {
-		console.warn("[acgs_year_summaries] persist skipped:", error.message);
-	}
+	return { questions, error: null };
 }
 
 export type AssessmentPagePayload = {
 	availableYears: number[];
-	summaryMetrics: AssessmentSummaryMetrics;
 	questions: FlatAssessmentRow[];
 	questionsTotal: number;
 	questionsOffset: number;
@@ -298,7 +268,7 @@ export type AssessmentPagePayload = {
 	error: Error | null;
 };
 
-/** Muat ringkasan + seluruh pertanyaan tahun (filter teks di klien). */
+/** Muat seluruh pertanyaan tahun (filter teks di klien). */
 export async function getAssessmentPageData(
 	year: number,
 	opts?: { search?: string }
@@ -309,7 +279,6 @@ export async function getAssessmentPageData(
 
 	const emptyPayload = (): AssessmentPagePayload => ({
 		availableYears: state.availableYears,
-		summaryMetrics: emptyAssessmentSummaryMetrics(),
 		questions: [],
 		questionsTotal: 0,
 		questionsOffset: 0,
@@ -322,7 +291,7 @@ export async function getAssessmentPageData(
 		return emptyPayload();
 	}
 
-	const { questions, metrics, error: loadErr } = await loadAssessmentQuestionsAndMetrics(adminDb, year);
+	const { questions, error: loadErr } = await loadAssessmentQuestions(adminDb, year);
 
 	if (loadErr) {
 		return {
@@ -331,11 +300,8 @@ export async function getAssessmentPageData(
 		};
 	}
 
-	await persistAcgsYearSummary(adminDb, year, metrics);
-
 	return {
 		availableYears: state.availableYears,
-		summaryMetrics: metrics,
 		questions,
 		questionsTotal: questions.length,
 		questionsOffset: 0,

@@ -2,7 +2,9 @@
   import { Input } from "$lib/components/ui/input/index.js";
   import { Button } from "$lib/components/ui/button/index.js";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
-  import { Search, Cloud, Loader2, AlertCircle, Calendar, Check, FileDown } from "@lucide/svelte";
+  import * as Dialog from "$lib/components/ui/dialog/index.js";
+  import { Search, Cloud, Loader2, AlertCircle, Calendar, Check, FileDown, LayoutDashboard } from "@lucide/svelte";
+  import ScoreSummaryTable from "./score-summary-table.svelte";
 
   let { 
     searchQuery = $bindable(""),
@@ -67,6 +69,27 @@
     >
   </form>
   <div class="flex items-center gap-2">
+    <!-- DASHBOARD SUMMARY DIALOG -->
+    <Dialog.Root>
+      <Dialog.Trigger>
+        {#snippet child({ props })}
+          <Button variant="outline" size="sm" class="h-8 w-8 px-0 rounded-full text-slate-600 mr-2" {...props}>
+            <LayoutDashboard size={16} />
+          </Button>
+        {/snippet}
+      </Dialog.Trigger>
+      <Dialog.Content class="max-w-[95vw]! w-[95vw]! h-auto p-8">
+        <Dialog.Header class="mb-4">
+          <Dialog.Title class="text-lg font-bold text-slate-800 text-center">
+            Tabel Skor Capaian Assessment ACGS PT PLN (Persero), Tahun Buku {selectedYear}
+          </Dialog.Title>
+        </Dialog.Header>
+        <div class="w-full overflow-x-auto">
+          <ScoreSummaryTable />
+        </div>
+      </Dialog.Content>
+    </Dialog.Root>
+
     <!-- SYNC STATUS -->
     <div
       class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-200 text-[10px] font-medium mr-2"

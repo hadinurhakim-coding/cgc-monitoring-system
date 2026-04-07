@@ -17,6 +17,14 @@
   import { saveAssessmentField, uploadEvidenceWithSignedUrl, deleteEvidenceFile } from "./_lib/assessment-api-client.js";
   import { canonicalPartIdForAcgsQuestion, canonicalSectionIdForAcgsQuestion, isAcgsQuestionRow, norm } from "./_lib/acgs-question-utils.js";
   import { buildSearchHaystack } from "./_lib/search-utils.js";
+  import { saveScrollPosition, restoreScrollPosition, initScrollTracking } from "./_lib/actions.js";
+
+  // Restore scroll position after page refresh and init debounced tracker
+  $effect(() => {
+    restoreScrollPosition();
+    const cleanup = initScrollTracking();
+    return cleanup;
+  });
 
   export type { AssessmentItem } from "./_lib/types.js";
 
@@ -274,6 +282,8 @@
     return null;
   }
 </script>
+
+<svelte:window onbeforeunload={saveScrollPosition} />
 
 <div class="space-y-4">
   <TableToolbar 

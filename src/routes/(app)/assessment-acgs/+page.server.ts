@@ -21,7 +21,6 @@ export const load: PageServerLoad = async ({ url, locals, depends }) => {
 	if (payload.error) {
 		return {
 			authUser,
-			summaryMetrics: payload.summaryMetrics,
 			assessmentQuestions: [] as typeof payload.questions,
 			questionsTotal: 0,
 			search: search.trim(),
@@ -33,7 +32,6 @@ export const load: PageServerLoad = async ({ url, locals, depends }) => {
 
 	return {
 		authUser,
-		summaryMetrics: payload.summaryMetrics,
 		assessmentQuestions: payload.questions,
 		questionsTotal: payload.questionsTotal,
 		search: payload.search,

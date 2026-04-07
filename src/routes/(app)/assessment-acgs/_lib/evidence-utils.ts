@@ -34,3 +34,32 @@ export function reconstructEvidence(
   if (trimmed && markers) return trimmed + "\n" + markers;
   return trimmed || markers;
 }
+
+/** URL regex untuk mendeteksi link dalam teks. */
+const URL_RE = /https?:\/\/[^\s]+/g;
+
+export type EvidenceTextSegment =
+  | { type: "text"; value: string }
+  | { type: "url"; value: string };
+
+/**
+ * Ubah teks evidence (plain) menjadi array segmen: teks biasa dan URL.
+ * Berguna untuk render teks yang mengandung link menjadi elemen <a> yang bisa diklik.
+ */
+export function parseEvidenceTextSegments(text: string): EvidenceTextSegment[] {
+  const segments: EvidenceTextSegment[] = [];
+  let lastIndex = 0;
+  URL_RE.lastIndex = 0;
+  let match: RegExpExecArray | null;
+  while ((match = URL_RE.exec(text)) !== null) {
+    if (match.index > lastIndex) {
+      segments.push({ type: "text", value: text.slice(lastIndex, match.index) });
+    }
+    segments.push({ type: "url", value: match[0] });
+    lastIndex = URL_RE.lastIndex;
+  }
+  if (lastIndex < text.length) {
+    segments.push({ type: "text", value: text.slice(lastIndex) });
+  }
+  return segments;
+}

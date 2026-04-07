@@ -37,6 +37,7 @@
 
 <textarea
   use:autoResize
+  spellcheck="false"
   class="w-full h-full min-h-full bg-transparent border-0 p-3 text-[10px] focus:ring-0 focus:outline-none transition-all resize-none overflow-hidden block"
   {placeholder}
   bind:value={localValue}
