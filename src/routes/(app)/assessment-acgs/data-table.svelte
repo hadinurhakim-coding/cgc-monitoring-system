@@ -312,6 +312,7 @@
     syncStatus={syncStatus}
     bind:selectedYear={selectedYear}
     availableYears={availableYears}
+    assessmentQuestions={allTableQuestions}
   />
 
   <div class="overflow-x-auto w-full border border-border rounded-lg bg-white shadow-sm overflow-hidden">

@@ -5,6 +5,7 @@
   import * as Dialog from "$lib/components/ui/dialog/index.js";
   import { Search, Cloud, Loader2, AlertCircle, Calendar, Check, FileDown, LayoutDashboard } from "@lucide/svelte";
   import ScoreSummaryTable from "./score-summary-table.svelte";
+  import type { AssessmentItem } from "../_lib/types.js";
 
   let { 
     searchQuery = $bindable(""),
@@ -13,7 +14,8 @@
     syncStatus = "saved",
     selectedYear = $bindable(""),
     availableYears = [],
-    onExportPdf
+    onExportPdf,
+    assessmentQuestions = [] as AssessmentItem[]
   }: {
     searchQuery: string;
     onSearch: () => void;
@@ -22,6 +24,7 @@
     selectedYear: string;
     availableYears: number[];
     onExportPdf?: () => void;
+    assessmentQuestions: AssessmentItem[];
   } = $props();
 
   let yearQuery = $state("");
@@ -85,7 +88,7 @@
           </Dialog.Title>
         </Dialog.Header>
         <div class="w-full overflow-x-auto">
-          <ScoreSummaryTable />
+          <ScoreSummaryTable questions={assessmentQuestions} />
         </div>
       </Dialog.Content>
     </Dialog.Root>
