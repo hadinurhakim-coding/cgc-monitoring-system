@@ -6,6 +6,8 @@ const ALLOWED_FIELDS = new Set(["implementation", "evidence", "status", "recomme
 export type SaveAnswerAuth = {
 	userId: string | null;
 	role: string | null;
+	email: string | null;
+	divisionId: string | null;
 };
 
 export async function saveAssessmentAnswer(
@@ -27,6 +29,29 @@ export async function saveAssessmentAnswer(
 	}
 
 	const admin = createAdminServerClient();
+
+	const { data: prevRow, error: prevErr } = await admin
+		.from("acgs_assessments")
+		.select("uid,year,item_id,implementation,evidence,status,recommendation")
+		.eq("uid", rowUid)
+		.maybeSingle();
+
+	if (prevErr) {
+		return { error: new Error(prevErr.message) };
+	}
+	if (!prevRow?.uid) {
+		return { error: new Error("Row tidak ditemukan") };
+	}
+
+	const oldValue =
+		input.field === "implementation"
+			? String(prevRow.implementation ?? "")
+			: input.field === "evidence"
+				? String(prevRow.evidence ?? "")
+				: input.field === "status"
+					? String(prevRow.status ?? "")
+					: String(prevRow.recommendation ?? "");
+
 	const payload: Record<string, unknown> = {
 		updated_at: new Date().toISOString()
 	};
@@ -40,6 +65,28 @@ export async function saveAssessmentAnswer(
 
 	if (dbError) {
 		return { error: new Error(dbError.message) };
+	}
+
+	// Audit log: siapa mengubah apa, kapan.
+	const userEmail = auth.email ?? "";
+	const year = Number(prevRow.year ?? 0);
+	const itemId = prevRow.item_id != null ? String(prevRow.item_id) : null;
+	const newValue = input.field === "status" ? input.value.toLowerCase() : input.value;
+
+	const { error: auditErr } = await admin.from("assessment_change_logs").insert({
+		user_id: auth.userId,
+		user_email: userEmail,
+		division_id: auth.divisionId,
+		assessment_uid: prevRow.uid,
+		year: Number.isFinite(year) ? year : 0,
+		item_id: itemId,
+		field: input.field,
+		old_value: oldValue,
+		new_value: newValue
+	});
+
+	if (auditErr) {
+		console.warn("[assessment_change_logs] insert failed:", auditErr.message);
 	}
 	return { error: null };
 }

@@ -15,7 +15,12 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const value = typeof body.value === "string" ? body.value : "";
 
 	const { error: saveErr } = await saveAssessmentAnswer(
-		{ userId: locals.auth.userId, role: locals.auth.role },
+		{
+			userId: locals.auth.userId,
+			role: locals.auth.role,
+			email: locals.auth.email,
+			divisionId: locals.auth.divisionId
+		},
 		{ row_uid, field, value }
 	);
 

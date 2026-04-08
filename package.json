@@ -11,6 +11,8 @@
 		"check:watch": "svelte-kit sync && svelte-check --tsconfig ./tsconfig.json --watch",
 		"seed:acgs": "bun run scripts/seed-db.ts",
 		"sync:acgs:year": "bun run scripts/sync-acgs-master-to-year.ts"
+		,
+		"db:schema:snapshot": "supabase db dump --schema public --local > docs/db/schema.snapshot.sql"
 	},
 	"type": "module",
 	"engines": {

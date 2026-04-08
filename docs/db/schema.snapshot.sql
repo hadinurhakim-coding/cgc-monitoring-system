@@ -1,0 +1,21 @@
+-- ============================================================================
+-- SCHEMA SNAPSHOT (agent-friendly)
+-- ============================================================================
+-- Cara regenerate (recommended):
+--   supabase db dump --schema public --local > docs/db/schema.snapshot.sql
+--
+-- Sumber kebenaran tetap: supabase/migrations/*.sql
+-- File ini dibuat agar agent/dev bisa cepat melihat "kondisi skema terakhir".
+--
+-- NOTE: Snapshot ini adalah template placeholder. Regenerate dari DB Anda untuk
+-- mendapatkan DDL + policies lengkap yang benar-benar sesuai environment.
+-- ============================================================================
+
+-- Tables (high level)
+-- - public.divisions
+-- - public.users
+-- - public.auth_login_audits
+-- - public.acgs_assessments
+-- - public.acgs_year_summaries
+-- - public.assessment_change_logs
+

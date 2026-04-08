@@ -1,0 +1,72 @@
+erDiagram
+  divisions ||--o{ users : has
+  users ||--|| auth_login_audits : has
+  acgs_assessments ||--o{ assessment_change_logs : changes
+  users ||--o{ assessment_change_logs : writes
+  divisions ||--o{ assessment_change_logs : scopes
+
+  divisions {
+    uuid id PK
+    varchar name
+    timestamptz created_at
+  }
+
+  users {
+    uuid id PK
+    text email
+    text full_name
+    uuid division_id FK
+    varchar role
+    timestamptz created_at
+  }
+
+  auth_login_audits {
+    uuid user_id PK,FK
+    text email
+    varchar provider
+    timestamptz last_login_at
+    inet ip_address
+    text user_agent
+    timestamptz created_at
+    timestamptz updated_at
+  }
+
+  acgs_assessments {
+    uuid uid PK
+    text type
+    int sort_order
+    int year
+    text item_id
+    text question_en
+    text question_id
+    text implementation
+    text evidence
+    text status
+    text recommendation
+    timestamptz created_at
+    timestamptz updated_at
+  }
+
+  acgs_year_summaries {
+    int year PK
+    int question_count
+    int points_sum
+    numeric score_pct
+    jsonb payload
+    timestamptz updated_at
+  }
+
+  assessment_change_logs {
+    bigserial id PK
+    timestamptz created_at
+    uuid user_id FK
+    text user_email
+    uuid division_id FK
+    uuid assessment_uid FK
+    int year
+    text item_id
+    text field
+    text old_value
+    text new_value
+  }
+
