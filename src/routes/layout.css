@@ -40,6 +40,13 @@
 
 	/* PLN Legacy if needed */
 	--legacy-pln-cyan: #00a2b9;
+
+	/* Charts (light): align with primary navy + accent cyan */
+	--chart-1: #12225c;
+	--chart-2: #00b4d8;
+	--chart-3: #2d3d73;
+	--chart-4: #33c5e0;
+	--chart-5: #0a1438;
 }
 
 .dark {

@@ -8,6 +8,7 @@
 	import { Input } from "$lib/components/ui/input/index.js";
 	import { Button } from "$lib/components/ui/button/index.js";
 	import type { PageData } from "./$types.js";
+	import TrendScoreAreaChart from "./_components/trend-score-area-chart.svelte";
 
 	let { data }: { data: PageData } = $props();
 
@@ -31,42 +32,6 @@
 		return d.toLocaleString();
 	}
 
-	type TrendPoint = (PageData["trend"] extends (infer T)[] ? T : never);
-	type ChartModel = {
-		w: number;
-		h: number;
-		minX: number;
-		maxX: number;
-		minY: number;
-		maxY: number;
-		pts: TrendPoint[];
-		points: string;
-	};
-
-	function chartModelFromTrend(trend: TrendPoint[]): ChartModel | null {
-		if (!trend.length) return null;
-		const minX = Math.min(...trend.map((p) => Number(p.year)));
-		const maxX = Math.max(...trend.map((p) => Number(p.year)));
-		const values = trend.map((p) => Number(p.score_pct ?? 0));
-		const minY = Math.min(...values, 0);
-		const maxY = Math.max(...values, 100);
-		const w = 940;
-		const h = 220;
-
-		const spanX = Math.max(1, maxX - minX);
-		const spanY = Math.max(1, maxY - minY);
-
-		const toX = (yearValue: number) => ((yearValue - minX) / spanX) * w;
-		const toY = (score: number) => h - ((score - minY) / spanY) * h;
-
-		const points = trend
-			.map((p) => `${40 + toX(Number(p.year))},${20 + toY(Number(p.score_pct ?? 0))}`)
-			.join(" ");
-
-		return { w, h, minX, maxX, minY, maxY, pts: trend, points };
-	}
-
-	const chart = $derived.by(() => chartModelFromTrend((data.trend ?? []) as TrendPoint[]));
 </script>
 
 <header
@@ -112,48 +77,12 @@
 		</Card.Content>
 	</Card.Root>
 
-	<!-- Tren waktu (full width) -->
-	<Card.Root>
-		<Card.Header>
-			<Card.Title>Tren Skor Tahunan (Global)</Card.Title>
-			<Card.Description>
-				Sumber data: <code>acgs_year_summaries</code> (tanpa filter divisi).
-			</Card.Description>
-		</Card.Header>
-		<Card.Content>
-			{#if data.trend?.length && chart}
-				<div class="w-full overflow-x-auto">
-					<div class="min-w-[720px]">
-						<svg viewBox="0 0 1000 260" class="h-[260px] w-full">
-							<rect x="0" y="0" width="1000" height="260" fill="transparent" />
-							<!-- Grid -->
-							{#each [0, 25, 50, 75, 100] as yTick}
-								{@const spanY = Math.max(1, chart.maxY - chart.minY)}
-								{@const y = 20 + (chart.h - ((yTick - chart.minY) / spanY) * chart.h)}
-								<line x1="40" y1={y} x2="980" y2={y} stroke="rgba(148,163,184,0.35)" stroke-width="1" />
-								<text x="8" y={y + 4} font-size="10" fill="rgba(100,116,139,0.9)">{yTick}%</text>
-							{/each}
-
-							<!-- Line -->
-							<polyline points={chart.points} fill="none" stroke="rgb(37,99,235)" stroke-width="2.5" />
-
-							<!-- Dots + labels -->
-							{#each data.trend as p (p.year)}
-								{@const spanX = Math.max(1, chart.maxX - chart.minX)}
-								{@const spanY = Math.max(1, chart.maxY - chart.minY)}
-								{@const cx = 40 + ((Number(p.year) - chart.minX) / spanX) * chart.w}
-								{@const cy = 20 + (chart.h - ((Number(p.score_pct ?? 0) - chart.minY) / spanY) * chart.h)}
-								<circle cx={cx} cy={cy} r="4" fill="rgb(37,99,235)" />
-								<text x={cx - 10} y="252" font-size="10" fill="rgba(15,23,42,0.9)">{p.year}</text>
-							{/each}
-						</svg>
-					</div>
-				</div>
-			{:else}
-				<p class="text-sm text-muted-foreground">Belum ada data tren.</p>
-			{/if}
-		</Card.Content>
-	</Card.Root>
+	<TrendScoreAreaChart
+		trend={data.trend}
+		availableYears={data.trend.map((r) => r.year)}
+		selectedYear={data.selectedYear}
+		onYearChange={(y) => { year = y; applyFilters(); }}
+	/>
 
 	<!-- Aktivitas terbaru -->
 	<Card.Root>
