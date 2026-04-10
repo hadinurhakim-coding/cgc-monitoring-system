@@ -1,5 +1,6 @@
 import { createAdminServerClient } from "$lib/server/auth/clients.js";
 import { hasPermission } from "$lib/server/rbac.js";
+import { persistYearSummary } from "../_lib/acgs-summary.server.js";
 
 const ALLOWED_FIELDS = new Set(["implementation", "evidence", "status", "recommendation"]);
 
@@ -30,63 +31,48 @@ export async function saveAssessmentAnswer(
 
 	const admin = createAdminServerClient();
 
+	// Ambil year untuk recompute ringkasan (row harus ada)
 	const { data: prevRow, error: prevErr } = await admin
 		.from("acgs_assessments")
-		.select("uid,year,item_id,implementation,evidence,status,recommendation")
+		.select("uid,year,item_id")
 		.eq("uid", rowUid)
 		.maybeSingle();
 
-	if (prevErr) {
-		return { error: new Error(prevErr.message) };
-	}
-	if (!prevRow?.uid) {
-		return { error: new Error("Row tidak ditemukan") };
-	}
+	if (prevErr) return { error: new Error(prevErr.message) };
+	if (!prevRow?.uid) return { error: new Error("Row tidak ditemukan") };
 
-	const oldValue =
-		input.field === "implementation"
-			? String(prevRow.implementation ?? "")
-			: input.field === "evidence"
-				? String(prevRow.evidence ?? "")
-				: input.field === "status"
-					? String(prevRow.status ?? "")
-					: String(prevRow.recommendation ?? "");
-
-	const payload: Record<string, unknown> = {
-		updated_at: new Date().toISOString()
-	};
-	if (input.field === "status") {
-		payload.status = input.value.toLowerCase();
-	} else {
-		payload[input.field] = input.value;
-	}
-
-	const { error: dbError } = await admin.from("acgs_assessments").update(payload).eq("uid", rowUid);
-
-	if (dbError) {
-		return { error: new Error(dbError.message) };
-	}
-
-	// Audit log: siapa mengubah apa, kapan.
-	const userEmail = auth.email ?? "";
-	const year = Number(prevRow.year ?? 0);
-	const itemId = prevRow.item_id != null ? String(prevRow.item_id) : null;
-	const newValue = input.field === "status" ? input.value.toLowerCase() : input.value;
-
-	const { error: auditErr } = await admin.from("assessment_change_logs").insert({
-		user_id: auth.userId,
-		user_email: userEmail,
-		division_id: auth.divisionId,
-		assessment_uid: prevRow.uid,
-		year: Number.isFinite(year) ? year : 0,
-		item_id: itemId,
-		field: input.field,
-		old_value: oldValue,
-		new_value: newValue
+	// UPDATE + audit log ditulis oleh trigger dalam satu transaksi atomik.
+	// Tidak perlu insert manual ke assessment_change_logs.
+	const { error: rpcErr } = await admin.rpc("save_acgs_assessment_field", {
+		p_row_uid:     rowUid,
+		p_field:       input.field,
+		p_value:       input.value,
+		p_user_id:     auth.userId,
+		p_user_email:  auth.email ?? "",
+		p_division_id: auth.divisionId ?? null
 	});
 
-	if (auditErr) {
-		console.warn("[assessment_change_logs] insert failed:", auditErr.message);
+	if (rpcErr) {
+		return { error: new Error(rpcErr.message) };
 	}
+
+	// Non-fatal: refresh ringkasan tahun setelah save berhasil.
+	const year = Number(prevRow.year ?? 0);
+	const summaryYear = Number.isFinite(year) && year >= 2000 && year <= 2200 ? year : 0;
+	if (summaryYear) {
+		const { data: yearQuestions } = await admin
+			.from("acgs_assessments")
+			.select("type,status,evidence,item_id,part_id,part,level,level_label")
+			.eq("year", summaryYear)
+			.in("type", ["question", "acgs"]);
+
+		if (yearQuestions?.length) {
+			const { error: summaryErr } = await persistYearSummary(admin, summaryYear, yearQuestions);
+			if (summaryErr) {
+				console.warn("[acgs_year_summaries] upsert failed:", summaryErr.message);
+			}
+		}
+	}
+
 	return { error: null };
 }

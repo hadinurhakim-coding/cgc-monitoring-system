@@ -7,51 +7,46 @@
 	import { Area, AreaChart, ChartClipPath } from "layerchart";
 	import { curveNatural } from "d3-shape";
 	import { cubicInOut } from "svelte/easing";
-	import { Calendar, Check, Search } from "@lucide/svelte";
+	import { Calendar, Check } from "@lucide/svelte";
 
 	type TrendPoint = {
 		year: number;
 		score_pct: number;
+		overall_score: number;
 	};
 
 	interface Props {
 		trend?: TrendPoint[];
-		availableYears?: number[];
-		selectedYear?: number;
-		onYearChange?: (year: string) => void;
 	}
 
-	let {
-		trend = [],
-		availableYears = [],
-		selectedYear = new Date().getFullYear(),
-		onYearChange = (_y: string) => {},
-	}: Props = $props();
+	let { trend = [] }: Props = $props();
 
-	// Year dropdown filter (same pattern as table-toolbar.svelte)
-	let yearQuery = $state("");
+	const RANGES = [
+		{ value: 1,  label: "1 tahun ini" },
+		{ value: 3,  label: "3 tahun" },
+		{ value: 6,  label: "6 tahun" },
+		{ value: 10, label: "10 tahun" },
+	] as const;
 
-	const years = $derived.by(() => {
-		const nowYear = new Date().getFullYear();
-		const fromDb = [...availableYears].sort((a, b) => b - a).map(String);
-		const sliding = Array.from({ length: 18 }, (_, i) => String(nowYear + 1 - i));
-		const merged = [...new Set([...fromDb, ...sliding])];
-		merged.sort((a, b) => parseInt(b, 10) - parseInt(a, 10));
-		if (yearQuery && !merged.includes(yearQuery) && /^\d{4}$/.test(yearQuery)) {
-			merged.unshift(yearQuery);
-		}
-		return merged.filter((y) => y.includes(yearQuery));
-	});
+	let rangeYears = $state<1 | 3 | 6 | 10>(3);
 
-	// Chart data: one point per year, ordered ascending
-	const chartData = $derived(
-		[...trend]
-			.sort((a, b) => a.year - b.year)
-			.map((r) => ({ year: r.year, score: r.score_pct }))
+	const selectedRangeLabel = $derived(
+		RANGES.find((r) => r.value === rangeYears)?.label ?? "3 tahun"
 	);
 
+	// Filter data by range from the most recent year in the dataset
+	const chartData = $derived.by(() => {
+		const sorted = [...trend].sort((a, b) => a.year - b.year);
+		if (sorted.length === 0) return [];
+		const maxYear = sorted[sorted.length - 1].year;
+		const minYear = maxYear - rangeYears + 1;
+		return sorted
+			.filter((r) => r.year >= minYear)
+			.map((r) => ({ year: r.year, score: r.overall_score }));
+	});
+
 	const chartConfig = {
-		score: { label: "Skor (%)", color: "var(--chart-1)" },
+		score: { label: "Total Skor (maks. 130)", color: "var(--chart-1)" },
 	} satisfies Chart.ChartConfig;
 </script>
 
@@ -60,48 +55,30 @@
 		<div class="grid flex-1 gap-1 text-center sm:text-start">
 			<Card.Title>Tren skor tahunan</Card.Title>
 			<Card.Description>
-				Persentase skor ACGS per tahun dari <code>acgs_year_summaries</code>.
+				Total Skor ACGS per tahun (maks. 130), sesuai tabel capaian.
 			</Card.Description>
 		</div>
 
-		<!-- Year filter — same DropdownMenu pattern as table-toolbar.svelte -->
+		<!-- Range filter -->
 		<DropdownMenu.Root>
 			<DropdownMenu.Trigger
 				class="inline-flex items-center justify-center gap-2 h-9 px-3 rounded-md bg-white border border-primary/20 hover:border-primary/40 hover:bg-slate-50 transition-all font-medium text-sm text-foreground ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
 			>
 				<Calendar size={16} class="text-primary" />
-				Tahun: <span class="text-primary font-bold">{selectedYear}</span>
+				<span class="text-primary font-bold">{selectedRangeLabel}</span>
 			</DropdownMenu.Trigger>
-			<DropdownMenu.Content class="w-48 p-0" align="end">
-				<div class="p-2 border-b">
-					<div class="relative">
-						<Search class="absolute left-2 top-1/2 -translate-y-1/2 text-slate-400" size={12} />
-						<input
-							type="text"
-							placeholder="Cari tahun..."
-							class="w-full pl-7 py-1 text-xs border border-slate-200 rounded focus:ring-1 focus:ring-primary outline-none"
-							bind:value={yearQuery}
-						/>
-					</div>
-				</div>
-				<div class="max-h-[200px] overflow-y-auto p-1 custom-scrollbar">
-					{#each years as year (year)}
-						<DropdownMenu.Item
-							class="flex items-center justify-between gap-2 px-2 py-1.5 cursor-pointer rounded-md text-xs {String(selectedYear) === year ? 'bg-primary/5 text-primary font-bold' : ''}"
-							onSelect={() => onYearChange(year)}
-						>
-							<span>{year}</span>
-							{#if String(selectedYear) === year}
-								<Check size={14} class="text-primary" />
-							{/if}
-						</DropdownMenu.Item>
-					{/each}
-					{#if years.length === 0}
-						<div class="px-2 py-4 text-[10px] text-center text-muted-foreground italic">
-							Tahun tidak valid
-						</div>
-					{/if}
-				</div>
+			<DropdownMenu.Content class="w-40" align="end">
+				{#each RANGES as range (range.value)}
+					<DropdownMenu.Item
+						class="flex items-center justify-between gap-2 px-2 py-1.5 cursor-pointer rounded-md text-xs {rangeYears === range.value ? 'bg-primary/5 text-primary font-bold' : ''}"
+						onSelect={() => { rangeYears = range.value; }}
+					>
+						<span>{range.label}</span>
+						{#if rangeYears === range.value}
+							<Check size={14} class="text-primary" />
+						{/if}
+					</DropdownMenu.Item>
+				{/each}
 			</DropdownMenu.Content>
 		</DropdownMenu.Root>
 	</Card.Header>
@@ -117,6 +94,7 @@
 					data={chartData}
 					x="year"
 					xScale={scaleLinear()}
+					yScale={scaleLinear().domain([0, 130]).nice()}
 					series={[
 						{
 							key: "score",
@@ -126,10 +104,11 @@
 					]}
 					props={{
 						xAxis: {
+							ticks: chartData.map((d) => d.year),
 							format: (v: number) => String(v),
 						},
 						yAxis: {
-							format: (v: number) => `${v}%`,
+							format: (v: number) => String(Math.round(v)),
 						},
 					}}
 				>

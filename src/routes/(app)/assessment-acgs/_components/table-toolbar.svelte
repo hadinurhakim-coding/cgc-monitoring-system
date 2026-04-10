@@ -3,7 +3,9 @@
   import { Button } from "$lib/components/ui/button/index.js";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
   import * as Dialog from "$lib/components/ui/dialog/index.js";
-  import { Search, Cloud, Loader2, AlertCircle, Calendar, Check, FileDown, LayoutDashboard } from "@lucide/svelte";
+  import { resolve } from "$app/paths";
+  import { toast } from "svelte-sonner";
+  import { Search, Cloud, LoaderCircle, CircleAlert, Calendar, Check, FileDown, LayoutDashboard, RefreshCw } from "@lucide/svelte";
   import ScoreSummaryTable from "./score-summary-table.svelte";
   import type { AssessmentItem } from "../_lib/types.js";
 
@@ -28,6 +30,31 @@
   } = $props();
 
   let yearQuery = $state("");
+  let isRecomputing = $state(false);
+
+  async function handleRecompute() {
+    const year = parseInt(selectedYear, 10);
+    if (!Number.isFinite(year)) return;
+    isRecomputing = true;
+    try {
+      const res = await fetch(`${resolve("/assessment-acgs")}/api/recompute`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ year }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json?.message ?? "Gagal recompute");
+      toast.success(`Recompute selesai — Tahun ${year}`, {
+        description: `Total Skor tersimpan: ${Number(json.score_pct ?? 0).toFixed(2)}`,
+      });
+    } catch (err) {
+      toast.error("Recompute gagal", {
+        description: err instanceof Error ? err.message : "Terjadi kesalahan",
+      });
+    } finally {
+      isRecomputing = false;
+    }
+  }
 
   const years = $derived(() => {
     const nowYear = new Date().getFullYear();
@@ -101,10 +128,10 @@
         <Cloud size={14} class="text-emerald-500" />
         <span class="text-slate-600">Tersimpan</span>
       {:else if syncStatus === "saving"}
-        <Loader2 size={14} class="text-primary animate-spin" />
+        <LoaderCircle size={14} class="text-primary animate-spin" />
         <span class="text-primary">Menyimpan...</span>
       {:else}
-        <AlertCircle size={14} class="text-red-500" />
+        <CircleAlert size={14} class="text-red-500" />
         <span class="text-red-500">Gagal Sinkron</span>
       {/if}
     </div>
@@ -159,6 +186,22 @@
         </div>
       </DropdownMenu.Content>
     </DropdownMenu.Root>
+
+    <Button
+      variant="outline"
+      size="sm"
+      class="gap-2"
+      disabled={isRecomputing}
+      onclick={handleRecompute}
+    >
+      {#if isRecomputing}
+        <LoaderCircle size={16} class="animate-spin" />
+        Menghitung...
+      {:else}
+        <RefreshCw size={16} />
+        Recompute
+      {/if}
+    </Button>
 
     <Button variant="outline" size="sm" class="gap-2" onclick={onExportPdf}>
       <FileDown size={16} />

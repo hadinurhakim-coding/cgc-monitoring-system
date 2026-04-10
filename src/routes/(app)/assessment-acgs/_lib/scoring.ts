@@ -25,10 +25,13 @@ function normEvidence(s: string | null | undefined): string {
 }
 
 /**
- * Skor per pertanyaan (hanya untuk type question/acgs):
+ * Binary point per question (hanya untuk type question/acgs):
  * - 1 jika status N/A
  * - 1 jika status YES/Y dan evidence terisi
  * - 0 selain itu
+ *
+ * Nilai ini digunakan untuk `points_sum` di `acgs_year_summaries` (hitungan integer sederhana).
+ * Untuk persentase skor tertimbang per bagian, gunakan `computeAcgsSummary` di acgs-summary.server.ts.
  */
 export function gcgQuestionPoint(row: GcgScoreRow): 0 | 1 {
 	if (!isAcgsQuestionRow(row)) return 0;

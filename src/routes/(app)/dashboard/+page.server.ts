@@ -2,12 +2,14 @@ import type { PageServerLoad } from "./$types.js";
 import { error } from "@sveltejs/kit";
 import { createAdminServerClient } from "$lib/server/auth/clients.js";
 import { hasPermission } from "$lib/server/rbac.js";
+import { ACCESS_TOKEN_COOKIE } from "$lib/server/auth/cookies.js";
 
 type TrendPoint = {
 	year: number;
 	question_count: number;
 	points_sum: number;
 	score_pct: number;
+	overall_score: number;
 	payload: Record<string, unknown>;
 	updated_at: string;
 };
@@ -26,11 +28,12 @@ type AuditRow = {
 	new_value: string | null;
 };
 
-export const load: PageServerLoad = async ({ url, locals }) => {
+export const load: PageServerLoad = async ({ url, locals, cookies }) => {
 	if (!hasPermission(locals.auth.role, "dashboard:read")) {
 		throw error(403, "Akses dashboard ditolak");
 	}
 
+	const accessToken = cookies.get(ACCESS_TOKEN_COOKIE) ?? "";
 	const admin = createAdminServerClient();
 
 	const nowYear = new Date().getFullYear();
@@ -48,16 +51,20 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 		.select("year,question_count,points_sum,score_pct,payload,updated_at")
 		.order("year", { ascending: true });
 
-	if (trendErr) throw error(500, trendErr.message);
+	if (trendErr) console.warn("[dashboard] acgs_year_summaries query failed:", trendErr.message);
 
-	const trend = (trendRows ?? []).map((r) => ({
-		year: Number(r.year),
-		question_count: Number(r.question_count ?? 0),
-		points_sum: Number(r.points_sum ?? 0),
-		score_pct: Number(r.score_pct ?? 0),
-		payload: (r.payload ?? {}) as Record<string, unknown>,
-		updated_at: String(r.updated_at ?? "")
-	})) satisfies TrendPoint[];
+	const trend = (trendRows ?? []).map((r) => {
+		const payload = (r.payload ?? {}) as Record<string, unknown>;
+		return {
+			year: Number(r.year),
+			question_count: Number(r.question_count ?? 0),
+			points_sum: Number(r.points_sum ?? 0),
+			score_pct: Number(r.score_pct ?? 0),
+			overall_score: Number((payload as Record<string, unknown>)?.overallScore ?? 0),
+			payload,
+			updated_at: String(r.updated_at ?? "")
+		};
+	}) satisfies TrendPoint[];
 
 	// 2) Aktivitas terbaru (audit log) — dibatasi divisi untuk bpo/viewer.
 	let auditQ = admin
@@ -86,7 +93,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 	}
 
 	const { data: auditRows, error: auditErr } = await auditQ;
-	if (auditErr) throw error(500, auditErr.message);
+	if (auditErr) console.warn("[dashboard] assessment_change_logs query failed:", auditErr.message);
 
 	const activity = (auditRows ?? []).map((r) => ({
 		id: Number(r.id),
@@ -107,6 +114,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 		selectedYear,
 		search,
 		trend,
-		activity
+		activity,
+		accessToken
 	};
 };
