@@ -6,18 +6,18 @@
   import { toast } from "svelte-sonner";
 
   // Components
-  import TableToolbar from "./_components/table-toolbar.svelte";
-  import TablePagination from "./_components/table-pagination.svelte";
-  import StatusButtons from "./_components/status-buttons.svelte";
-  import EvidenceCell from "./_components/evidence-cell.svelte";
-  import EditableCell from "./_components/editable-cell.svelte";
+  import TableToolbar from "./table-toolbar.svelte";
+  import TablePagination from "./table-pagination.svelte";
+  import StatusButtons from "./status-buttons.svelte";
+  import EvidenceCell from "./evidence-cell.svelte";
+  import EditableCell from "./editable-cell.svelte";
 
   // Lib & Utils
-  import type { AssessmentItem } from "./_lib/types.js";
-  import { saveAssessmentField, uploadEvidenceWithSignedUrl, deleteEvidenceFile } from "./_lib/assessment-api-client.js";
-  import { canonicalPartIdForAcgsQuestion, canonicalSectionIdForAcgsQuestion, isAcgsQuestionRow, norm } from "./_lib/acgs-question-utils.js";
-  import { buildSearchHaystack } from "./_lib/search-utils.js";
-  import { saveScrollPosition, restoreScrollPosition, initScrollTracking } from "./_lib/actions.js";
+  import type { AssessmentItem } from "../_lib/types.js";
+  import { saveAssessmentField, uploadEvidenceWithSignedUrl, deleteEvidenceFile } from "../_lib/assessment-api-client.js";
+  import { canonicalPartIdForAcgsQuestion, canonicalSectionIdForAcgsQuestion, isAcgsQuestionRow, norm } from "../_lib/acgs-question-utils.js";
+  import { buildSearchHaystack } from "../_lib/search-utils.js";
+  import { saveScrollPosition, restoreScrollPosition, initScrollTracking } from "../_lib/actions.js";
 
   // Restore scroll position after page refresh and init debounced tracker
   $effect(() => {
@@ -214,7 +214,7 @@
      // The files are already removed from q.evidence in child before calling this? 
      // No, the child should call this as a request.
      // Re-implementing simplified logic here.
-     const { extractEvidenceText, extractEvidenceFiles, reconstructEvidence } = await import("./_lib/evidence-utils.js");
+     const { extractEvidenceText, extractEvidenceFiles, reconstructEvidence } = await import("../_lib/evidence-utils.js");
      
      const text = extractEvidenceText(q.evidence);
      const files = extractEvidenceFiles(q.evidence);

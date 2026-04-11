@@ -26,7 +26,7 @@
 <div class="flex flex-col h-full items-stretch divide-y divide-border">
   <button
     type="button"
-    class="flex-1 min-h-[32px] w-full rounded-none text-[9px] font-bold transition-colors duration-75 active:scale-[0.98] {statusMatches(
+    class="flex-1 min-h-8 w-full rounded-none text-[9px] font-bold transition-colors duration-75 active:scale-[0.98] {statusMatches(
       q,
       'YES',
     )
@@ -38,7 +38,7 @@
   </button>
   <button
     type="button"
-    class="flex-1 min-h-[32px] w-full rounded-none text-[9px] font-bold transition-colors duration-75 active:scale-[0.98] {statusMatches(
+    class="flex-1 min-h-8 w-full rounded-none text-[9px] font-bold transition-colors duration-75 active:scale-[0.98] {statusMatches(
       q,
       'NO',
     )
@@ -50,7 +50,7 @@
   </button>
   <button
     type="button"
-    class="flex-1 min-h-[32px] w-full rounded-none text-[9px] font-bold transition-colors duration-75 active:scale-[0.98] {statusMatches(
+    class="flex-1 min-h-8 w-full rounded-none text-[9px] font-bold transition-colors duration-75 active:scale-[0.98] {statusMatches(
       q,
       'NA',
     )

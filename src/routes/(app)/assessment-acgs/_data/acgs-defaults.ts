@@ -1,5 +1,5 @@
-import { assessmentData, type AssessmentItem } from "./_data/assessment-master.js";
-import { isAcgsQuestionRow } from "./_lib/acgs-question-utils.js";
+import { assessmentData, type AssessmentItem } from "./assessment-master.js";
+import { isAcgsQuestionRow } from "../_lib/acgs-question-utils.js";
 
 export {
 	isAcgsQuestionRow,
@@ -7,7 +7,7 @@ export {
 	sectionIdFromQuestionItemId,
 	canonicalPartIdForAcgsQuestion,
 	canonicalSectionIdForAcgsQuestion
-} from "./_lib/acgs-question-utils.js";
+} from "../_lib/acgs-question-utils.js";
 
 function norm(s: string | null | undefined) {
 	return (s ?? "").replace(/\s+/g, " ").trim();

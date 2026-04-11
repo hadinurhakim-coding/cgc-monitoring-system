@@ -148,7 +148,16 @@ import { something } from "../../../lib/server/auth/clients";
 
 ---
 
-## 8. Checklist Sebelum Commit / Deploy
+## 8. Tailwind CSS — Gunakan Utility Class Bawaan
+
+- **Dilarang**: arbitrary value seperti `min-w-[700px]`, `w-[32px]`, `p-[12px]` jika Tailwind sudah punya utility class yang setara
+- Selalu cek skala default Tailwind sebelum menulis arbitrary value
+- Gunakan utility bawaan: `min-w-175` bukan `min-w-[700px]`, `w-8` bukan `w-[32px]`, dst.
+- Jika VSCode/linter menampilkan warning `suggestCanonicalClasses` → wajib diperbaiki sebelum commit
+
+---
+
+## 9. Checklist Sebelum Commit / Deploy
 
 - [ ] `bun run check` tidak ada error
 - [ ] Tidak ada `any` baru yang ditambahkan

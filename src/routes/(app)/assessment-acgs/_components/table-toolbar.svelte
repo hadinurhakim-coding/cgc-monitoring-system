@@ -159,7 +159,7 @@
             />
           </div>
         </div>
-        <div class="max-h-[200px] overflow-y-auto p-1 custom-scrollbar">
+        <div class="max-h-50 overflow-y-auto p-1 custom-scrollbar">
           {#each years() as year}
             <DropdownMenu.Item
               class="flex items-center justify-between gap-2 px-2 py-1.5 cursor-pointer rounded-md text-xs {selectedYear ===

@@ -3,7 +3,7 @@
   import {
     canonicalPartIdForAcgsQuestion,
     isAcgsQuestionRow
-  } from "../acgs-defaults.js";
+  } from "../_data/acgs-defaults.js";
 
   let { questions = [] }: { questions?: AssessmentItem[] } = $props();
 
@@ -175,7 +175,7 @@
 </script>
 
 <div class="w-full overflow-x-auto">
-  <table class="w-full min-w-[700px] border-collapse border-2 border-black font-sans text-[13px] text-black bg-white">
+  <table class="w-full min-w-175 border-collapse border-2 border-black font-sans text-[13px] text-black bg-white">
     <thead>
       <tr class="bg-[#002060] text-white text-center">
         <th rowspan="2" colspan="2" class="border border-white px-3 py-2 font-semibold align-middle w-[30%]">Standar Tata Kelola Perusahaan</th>

@@ -1,7 +1,7 @@
 import { env } from "$env/dynamic/private";
 import { createAdminServerClient } from "$lib/server/auth/clients.js";
-import { attachResolvedAcgsHeaders } from "./_services/resolve-headers.server.js";
-import { buildFlatRowsForYear, isAcgsQuestionRow, mergeQuestionDefaultsFromMaster } from "./acgs-defaults.js";
+import { attachResolvedAcgsHeaders } from "./resolve-headers.server.js";
+import { buildFlatRowsForYear, isAcgsQuestionRow, mergeQuestionDefaultsFromMaster } from "../_data/acgs-defaults.js";
 
 export const MAX_ASSESSMENT_QUESTIONS_PAGE_SIZE = 200;
 

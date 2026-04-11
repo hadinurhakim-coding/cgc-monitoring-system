@@ -7,4 +7,4 @@ export {
 	MAX_ASSESSMENT_QUESTIONS_PAGE_SIZE,
 	type FlatAssessmentRow,
 	type AssessmentPagePayload
-} from "../assessment-service.server.js";
+} from "./assessment-service.server.js";

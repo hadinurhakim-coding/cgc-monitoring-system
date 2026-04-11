@@ -85,7 +85,7 @@
     {:else}
       <!-- Preview Mode: Render URL sebagai link -->
       <div
-        class="w-full min-h-[60px] p-3 pr-10 text-[10px] leading-relaxed cursor-text text-slate-700 whitespace-pre-wrap break-all"
+        class="w-full min-h-15 p-3 pr-10 text-[10px] leading-relaxed cursor-text text-slate-700 whitespace-pre-wrap break-all"
         role="textbox"
         tabindex="0"
         aria-label="Evidence — klik untuk mengedit"
@@ -161,7 +161,7 @@
   {#if stagedFile}
     <div class="mx-3 mb-2 p-2 rounded bg-amber-50 border border-amber-200 flex flex-col gap-2">
       <div class="flex items-center justify-between text-[9px] font-bold text-amber-800">
-        <div class="truncate max-w-[100px]">📎 {stagedFile.name}</div>
+        <div class="truncate max-w-25">📎 {stagedFile.name}</div>
         <button
           type="button"
           class="text-rose-500 hover:text-rose-700"

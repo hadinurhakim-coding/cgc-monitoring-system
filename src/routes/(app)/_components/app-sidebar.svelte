@@ -3,11 +3,15 @@
 	import { resolve } from "$app/paths";
 	import LayoutDashboardIcon from "@lucide/svelte/icons/layout-dashboard";
 	import ClipboardCheckIcon from "@lucide/svelte/icons/clipboard-check";
+	import ListTodoIcon from "@lucide/svelte/icons/list-todo";
+	import BarChart2Icon from "@lucide/svelte/icons/bar-chart-2";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import SidebarUserFooter from "./sidebar-user-footer.svelte";
 	import type { ComponentProps } from "svelte";
 
 	const assessmentPath = "/assessment-acgs" as const;
+	const aoiPath = "/area-of-improvement" as const;
+	const monitoringAoiPath = "/monitoring-aoi" as const;
 
 	let {
 		user,
@@ -53,6 +57,32 @@
 								<a href={resolve(assessmentPath)} {...props}>
 									<ClipboardCheckIcon />
 									<span>ASSESSMENT ACGS</span>
+								</a>
+							{/snippet}
+						</Sidebar.MenuButton>
+					</Sidebar.MenuItem>
+					<Sidebar.MenuItem>
+						<Sidebar.MenuButton
+							isActive={page.url.pathname === aoiPath}
+							tooltipContent="Area of Improvement"
+						>
+							{#snippet child({ props })}
+								<a href={resolve(aoiPath)} {...props}>
+									<ListTodoIcon />
+									<span>Area of Improvement</span>
+								</a>
+							{/snippet}
+						</Sidebar.MenuButton>
+					</Sidebar.MenuItem>
+					<Sidebar.MenuItem>
+						<Sidebar.MenuButton
+							isActive={page.url.pathname === monitoringAoiPath}
+							tooltipContent="Monitoring AOI"
+						>
+							{#snippet child({ props })}
+								<a href={resolve(monitoringAoiPath)} {...props}>
+									<BarChart2Icon />
+									<span>Monitoring AOI</span>
 								</a>
 							{/snippet}
 						</Sidebar.MenuButton>

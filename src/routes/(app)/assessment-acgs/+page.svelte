@@ -1,7 +1,7 @@
 <script lang="ts">
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import { Separator } from "$lib/components/ui/separator/index.js";
-	import DataTable from "./data-table.svelte";
+	import DataTable from "./_components/data-table.svelte";
 	import type { AssessmentItem } from "./_lib/types.js";
 	import type { PageData } from "./$types.js";
 
