@@ -214,7 +214,7 @@
      // The files are already removed from q.evidence in child before calling this? 
      // No, the child should call this as a request.
      // Re-implementing simplified logic here.
-     const { extractEvidenceText, extractEvidenceFiles, reconstructEvidence } = await import("../_lib/evidence-utils.js");
+     const { extractEvidenceText, extractEvidenceFiles, reconstructEvidence } = await import("$lib/evidence-utils.js");
      
      const text = extractEvidenceText(q.evidence);
      const files = extractEvidenceFiles(q.evidence);

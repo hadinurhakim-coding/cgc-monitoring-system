@@ -6,8 +6,9 @@
   import { Button } from "$lib/components/ui/button/index.js";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
   import type { AoiItem, StatusRekomendasi } from "../_lib/types.js";
-  import { saveAoiField, addAoiItem, deleteAoiItem } from "../_lib/aoi-api-client.js";
+  import { saveAoiField, addAoiItem, deleteAoiItem, uploadAoiEvidence, deleteAoiEvidenceFile } from "../_lib/aoi-api-client.js";
   import { buildStandarOptions, type StandarOption } from "../_lib/aoi-standar-options.js";
+  import { extractEvidenceText, extractEvidenceFiles, reconstructEvidence } from "$lib/evidence-utils.js";
   import AoiStatusButtons from "./aoi-status-buttons.svelte";
   import AoiStandarSelect from "./aoi-standar-select.svelte";
   import AoiEvidenceCell from "./aoi-evidence-cell.svelte";
@@ -24,6 +25,7 @@
   let localItems = $state<AoiItem[]>([]);
   let globalSyncStatus = $state<"saved" | "saving" | "error">("saved");
   let isAdding = $state(false);
+  let stagedFiles = $state<Record<string, File>>({});
 
   $effect(() => {
     localItems = [...items];
@@ -31,9 +33,6 @@
 
   function setSync(status: "saved" | "saving" | "error") {
     globalSyncStatus = status;
-    if (status === "saved") {
-      setTimeout(() => { globalSyncStatus = "saved"; }, 1500);
-    }
   }
 
   async function handleSaveField(uid: string, field: string, value: string) {
@@ -100,6 +99,44 @@
     }
   }
 
+  async function handleFileUpload(item: AoiItem, file: File) {
+    setSync("saving");
+    try {
+      const { path, fileName } = await uploadAoiEvidence(file, { year: currentYear, itemUid: item.uid });
+      const existingFiles = extractEvidenceFiles(item.eviden);
+      const existingText = extractEvidenceText(item.eviden);
+      const combined = reconstructEvidence(existingText, [...existingFiles, { path, name: fileName }]);
+      await saveAoiField(item.uid, "eviden", combined);
+      localItems = localItems.map((i) => i.uid === item.uid ? { ...i, eviden: combined } : i);
+      const { [item.uid]: _, ...rest } = stagedFiles;
+      stagedFiles = rest;
+      setSync("saved");
+      toast.success("File berhasil diunggah");
+    } catch (err) {
+      setSync("error");
+      toast.error("Gagal upload: " + (err instanceof Error ? err.message : String(err)));
+    }
+  }
+
+  async function handleRemoveFile(item: AoiItem, index: number) {
+    if (!confirm("Apakah Anda yakin ingin menghapus file bukti ini?")) return;
+    const files = extractEvidenceFiles(item.eviden);
+    const text = extractEvidenceText(item.eviden);
+    const fileToDelete = files[index];
+    if (fileToDelete?.path) {
+      setSync("saving");
+      const { error } = await deleteAoiEvidenceFile(fileToDelete.path);
+      if (error) {
+        setSync("error");
+        toast.error("Gagal hapus di cloud: " + error.message);
+        return;
+      }
+    }
+    files.splice(index, 1);
+    const newValue = reconstructEvidence(text, files);
+    await handleSaveField(item.uid, "eviden", newValue);
+  }
+
   // Year selector state
   let selectedYear = $state("");
   let yearQuery = $state("");
@@ -117,7 +154,7 @@
   const years = $derived.by(() => {
     const nowYear = new Date().getFullYear();
     const fromDb = [...availableYears].sort((a, b) => b - a).map(String);
-    const sliding = Array.from({ length: 10 }, (_, i) => String(nowYear + 1 - i));
+    const sliding = Array.from({ length: 18 }, (_, i) => String(nowYear + 1 - i));
     const merged = [...new Set([...fromDb, ...sliding])].sort((a, b) => parseInt(b) - parseInt(a));
     if (yearQuery && !merged.includes(yearQuery) && /^\d{4}$/.test(yearQuery)) merged.unshift(yearQuery);
     return merged.filter((y) => y.includes(yearQuery));
@@ -128,7 +165,7 @@
 <div class="flex flex-col md:flex-row items-center justify-between gap-4">
   <div class="flex items-center gap-2">
     <!-- Sync status -->
-    <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-200 text-[10px] font-medium">
+    <div class="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-slate-50 border border-slate-200 text-[10px] font-medium mr-2">
       {#if globalSyncStatus === "saved"}
         <Cloud size={14} class="text-emerald-500" />
         <span class="text-slate-600">Tersimpan</span>
@@ -146,7 +183,7 @@
     <!-- Year dropdown -->
     <DropdownMenu.Root>
       <DropdownMenu.Trigger
-        class="inline-flex items-center justify-center gap-2 h-9 px-3 rounded-md bg-white border border-primary/20 hover:border-primary/40 hover:bg-slate-50 transition-all font-medium text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        class="inline-flex items-center justify-center gap-2 h-9 px-3 rounded-md bg-white border border-primary/20 hover:border-primary/40 hover:bg-slate-50 transition-all font-medium text-sm text-foreground ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
       >
         <Calendar size={16} class="text-primary" />
         Tahun: <span class="text-primary font-bold">{selectedYear}</span>
@@ -160,7 +197,7 @@
             bind:value={yearQuery}
           />
         </div>
-        <div class="max-h-48 overflow-y-auto p-1">
+        <div class="max-h-50 overflow-y-auto p-1">
           {#each years as y}
             <DropdownMenu.Item
               class="flex items-center justify-between gap-2 px-2 py-1.5 cursor-pointer rounded-md text-xs {selectedYear === y ? 'bg-primary/5 text-primary font-bold' : ''}"
@@ -170,6 +207,11 @@
               {#if selectedYear === y}<Check size={14} class="text-primary" />{/if}
             </DropdownMenu.Item>
           {/each}
+          {#if years.length === 0}
+            <div class="px-2 py-4 text-[10px] text-center text-muted-foreground italic">
+              Tahun tidak valid
+            </div>
+          {/if}
         </div>
       </DropdownMenu.Content>
     </DropdownMenu.Root>
@@ -189,7 +231,7 @@
 
 <!-- Table -->
 <div class="overflow-x-auto w-full border border-border rounded-lg bg-white shadow-sm overflow-hidden">
-  <table class="w-full border-collapse text-xs">
+  <table class="w-full border-collapse text-[11px] md:text-xs">
     <thead class="bg-primary text-white text-center font-bold sticky top-0 z-20">
       <tr>
         <th class="border border-border w-10 p-3 align-middle uppercase">No</th>
@@ -208,7 +250,7 @@
       {#each localItems as item, idx (item.uid)}
         <tr class="hover:bg-slate-50 transition-colors">
           <!-- No -->
-          <td class="border border-border p-2 text-center text-muted-foreground">{idx + 1}</td>
+          <td class="border border-border p-2 text-center text-muted-foreground align-middle">{idx + 1}</td>
 
           <!-- Standar -->
           <td class="border border-border px-2 py-1">
@@ -222,7 +264,7 @@
           <!-- Fakta Temuan -->
           <td class="border border-border p-0 align-top h-1">
             <textarea
-              class="w-full h-full min-h-20 p-3 text-xs bg-transparent border-0 focus:ring-0 focus:outline-none resize-none"
+              class="w-full h-full min-h-20 p-3 text-[10px] bg-transparent border-0 focus:ring-0 focus:outline-none resize-none block"
               placeholder="Fakta temuan..."
               value={item.fakta_temuan}
               disabled={!canWrite}
@@ -236,7 +278,7 @@
           <!-- Rekomendasi -->
           <td class="border border-border p-0 align-top h-1">
             <textarea
-              class="w-full h-full min-h-20 p-3 text-xs bg-transparent border-0 focus:ring-0 focus:outline-none resize-none"
+              class="w-full h-full min-h-20 p-3 text-[10px] bg-transparent border-0 focus:ring-0 focus:outline-none resize-none block"
               placeholder="Rekomendasi..."
               value={item.rekomendasi}
               disabled={!canWrite}
@@ -250,7 +292,7 @@
           <!-- PIC -->
           <td class="border border-border p-0 align-top h-1">
             <textarea
-              class="w-full h-full min-h-20 p-3 text-xs bg-transparent border-0 focus:ring-0 focus:outline-none resize-none"
+              class="w-full h-full min-h-20 p-3 text-[10px] bg-transparent border-0 focus:ring-0 focus:outline-none resize-none block"
               placeholder="PIC..."
               value={item.pic}
               disabled={!canWrite}
@@ -276,6 +318,14 @@
               {item}
               disabled={!canWrite}
               onSave={(field, val) => handleSaveField(item.uid, field, val)}
+              onUpload={handleFileUpload}
+              onRemoveFile={handleRemoveFile}
+              onFileSelected={(it, file) => { stagedFiles = { ...stagedFiles, [it.uid]: file }; }}
+              stagedFile={stagedFiles[item.uid] ?? null}
+              onUnstageFile={(it) => {
+                const { [it.uid]: _, ...rest } = stagedFiles;
+                stagedFiles = rest;
+              }}
             />
           </td>
 
@@ -295,7 +345,7 @@
         </tr>
       {:else}
         <tr>
-          <td colspan={canWrite ? 8 : 7} class="border border-border py-12 text-center text-muted-foreground text-sm">
+          <td colspan={canWrite ? 8 : 7} class="border border-border py-12 text-center text-muted-foreground text-sm italic">
             Belum ada data AOI untuk tahun {currentYear}.
             {#if canWrite}
               Klik "+ Tambah AOI" untuk mulai.

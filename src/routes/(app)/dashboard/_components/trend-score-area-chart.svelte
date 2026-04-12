@@ -84,11 +84,11 @@
 	</Card.Header>
 	<Card.Content>
 		{#if chartData.length === 0}
-			<div class="flex h-[250px] items-center justify-center text-sm text-muted-foreground">
+			<div class="flex h-62.5 items-center justify-center text-sm text-muted-foreground">
 				Belum ada data tren tersedia.
 			</div>
 		{:else}
-			<ChartContainer config={chartConfig} class="-ml-3 aspect-auto h-[250px] w-full">
+			<ChartContainer config={chartConfig} class="-ml-3 aspect-auto h-62.5 w-full">
 				<AreaChart
 					legend
 					data={chartData}
@@ -139,7 +139,7 @@
 					{/snippet}
 					{#snippet tooltip()}
 						<Chart.Tooltip
-							labelFormatter={(v: number) => `Tahun ${v}`}
+							labelFormatter={(v: unknown) => `Tahun ${v}`}
 							indicator="line"
 						/>
 					{/snippet}

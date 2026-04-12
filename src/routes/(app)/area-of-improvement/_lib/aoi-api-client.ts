@@ -63,6 +63,19 @@ export async function deleteAoiItem(uid: string): Promise<void> {
 	}
 }
 
+export async function deleteAoiEvidenceFile(path: string): Promise<{ error: Error | null }> {
+	const res = await fetch("/area-of-improvement/api/delete-file", {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify({ path }),
+	});
+	if (!res.ok) {
+		const t = await res.text();
+		return { error: new Error(t || "Gagal menghapus file dari storage") };
+	}
+	return { error: null };
+}
+
 export type UploadAoiEvidenceOpts = {
 	year: number;
 	itemUid: string;

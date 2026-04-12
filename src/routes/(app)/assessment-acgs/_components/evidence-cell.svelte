@@ -2,7 +2,7 @@
   import type { AssessmentItem } from "../_lib/types.js";
   import { Plus, X } from "@lucide/svelte";
   import { Button } from "$lib/components/ui/button/index.js";
-  import { extractEvidenceText, extractEvidenceFiles, reconstructEvidence, parseEvidenceTextSegments } from "../_lib/evidence-utils.js";
+  import { extractEvidenceText, extractEvidenceFiles, reconstructEvidence, parseEvidenceTextSegments } from "$lib/evidence-utils.js";
   import { norm } from "../_lib/acgs-question-utils.js";
 
   let { 
