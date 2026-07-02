@@ -121,12 +121,7 @@ function buildSummaryGroups(questions: AssessmentItem[]): {
 		na: partA.na + partB.na + partC.na + partD.na,
 		tidak: partA.tidak + partB.tidak + partC.tidak + partD.tidak,
 		ya: partA.ya + partB.ya + partC.ya + partD.ya,
-		scoreTotal:
-			partA.total + partB.total + partC.total + partD.total === 0
-				? 0
-				: ((partA.na + partB.na + partC.na + partD.na + partA.ya + partB.ya + partC.ya + partD.ya) /
-						(partA.total + partB.total + partC.total + partD.total)) *
-					100
+		scoreTotal: partA.scoreTotal + partB.scoreTotal + partC.scoreTotal + partD.scoreTotal
 	};
 	const bonus = computeGroup(
 		questionRows.filter((q) => /^PART\s+\(B\)/.test(canonicalPartIdForAcgsQuestion(q))),

@@ -89,13 +89,14 @@
   });
 
   const level1Total = $derived(() => {
-    // Pakai hitungan agregat dari group individual agar rounding konsisten dengan template.
+    // Total level mengikuti penjumlahan skor per bagian yang ditampilkan di template.
     const total = partA().total + partB().total + partC().total + partD().total;
     const na = partA().na + partB().na + partC().na + partD().na;
     const ya = partA().ya + partB().ya + partC().ya + partD().ya;
     const tidak = partA().tidak + partB().tidak + partC().tidak + partD().tidak;
 
-    const scoreTotal = total === 0 ? 0 : ((na + ya) / total) * 100;
+    const scoreTotal =
+      partA().scoreTotal + partB().scoreTotal + partC().scoreTotal + partD().scoreTotal;
     return {
       total,
       na,
