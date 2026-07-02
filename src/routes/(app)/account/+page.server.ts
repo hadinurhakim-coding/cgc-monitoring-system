@@ -222,6 +222,38 @@ export const actions: Actions = {
 		}
 
 		const admin = createAdminServerClient();
+		const { data: existingUser, error: existingUserError } = await admin
+			.from("users")
+			.select("id,email,is_active")
+			.eq("email", email)
+			.maybeSingle();
+
+		if (existingUserError) {
+			return badRequest("createUser", existingUserError.message, values);
+		}
+
+		if (existingUser) {
+			if (existingUser.is_active) {
+				return badRequest("createUser", "Email ini sudah terdaftar dan masih aktif.", values);
+			}
+
+			const { error: reactivateError } = await admin
+				.from("users")
+				.update({
+					full_name: fullName || null,
+					role,
+					division_id: divisionId || null,
+					is_active: true
+				})
+				.eq("id", existingUser.id);
+
+			if (reactivateError) {
+				return badRequest("createUser", reactivateError.message, values);
+			}
+
+			return { success: "Akun lama berhasil diaktifkan kembali.", intent: "createUser" as const };
+		}
+
 		const { data: created, error: authError } = await admin.auth.admin.createUser({
 			email,
 			email_confirm: true,
@@ -232,14 +264,19 @@ export const actions: Actions = {
 			return badRequest("createUser", authError?.message ?? "Gagal membuat akun Supabase Auth.", values);
 		}
 
-		const { error: profileError } = await admin.from("users").insert({
-			id: created.user.id,
-			email,
-			full_name: fullName || null,
-			role,
-			division_id: divisionId || null,
-			is_active: true
-		});
+		const { error: profileError } = await admin
+			.from("users")
+			.upsert(
+				{
+					id: created.user.id,
+					email,
+					full_name: fullName || null,
+					role,
+					division_id: divisionId || null,
+					is_active: true
+				},
+				{ onConflict: "id" }
+			);
 
 		if (profileError) {
 			await admin.auth.admin.deleteUser(created.user.id);

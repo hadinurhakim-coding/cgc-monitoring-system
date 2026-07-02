@@ -4,25 +4,9 @@
     canonicalPartIdForAcgsQuestion,
     isAcgsQuestionRow
   } from "../_data/acgs-defaults.js";
+  import { isAcgsNa, isAcgsYes } from "../_lib/scoring.js";
 
   let { questions = [] }: { questions?: AssessmentItem[] } = $props();
-
-  function normStatus(s: string | null | undefined) {
-    return String(s ?? "").trim().toUpperCase();
-  }
-
-  function hasEvidence(e: string | null | undefined) {
-    return String(e ?? "").trim().length > 0;
-  }
-
-  function isNA(row: AssessmentItem) {
-    return normStatus(row.status) === "NA";
-  }
-
-  function isYes(row: AssessmentItem) {
-    const st = normStatus(row.status);
-    return (st === "YES" || st === "Y") && hasEvidence(row.evidence);
-  }
 
   function fmtComma2(n: number) {
     return n.toFixed(2).replace(".", ",");
@@ -47,8 +31,8 @@
 
   function computeGroup(rows: AssessmentItem[], scoreMax: number, mode: GroupMode): GroupScore {
     const total = rows.length;
-    const na = rows.filter(isNA).length;
-    const ya = rows.filter(isYes).length;
+    const na = rows.filter(isAcgsNa).length;
+    const ya = rows.filter(isAcgsYes).length;
     const tidak = Math.max(0, total - na - ya);
 
     const scoreTotal =

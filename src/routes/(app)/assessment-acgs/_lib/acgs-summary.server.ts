@@ -4,7 +4,7 @@
  */
 import { createAdminServerClient } from "$lib/server/auth/clients.js";
 import { canonicalPartIdForAcgsQuestion, isAcgsQuestionRow } from "./acgs-question-utils.js";
-import { gcgQuestionPoint, type GcgScoreRow } from "./scoring.js";
+import { gcgQuestionPoint, isAcgsNa, isAcgsYes, type GcgScoreRow } from "./scoring.js";
 
 type GroupMode = "level1" | "bonus" | "penalti";
 
@@ -17,27 +17,10 @@ interface GroupScore {
 	scoreTotal: number;
 }
 
-function normStatus(s: string | null | undefined): string {
-	return String(s ?? "").trim().toUpperCase();
-}
-
-function hasEvidence(e: string | null | undefined): boolean {
-	return String(e ?? "").trim().length > 0;
-}
-
-function isNA(row: GcgScoreRow): boolean {
-	return normStatus(row.status) === "NA";
-}
-
-function isYes(row: GcgScoreRow): boolean {
-	const st = normStatus(row.status);
-	return (st === "YES" || st === "Y") && hasEvidence(row.evidence);
-}
-
 function computeGroup(rows: GcgScoreRow[], scoreMax: number, mode: GroupMode): GroupScore {
 	const total = rows.length;
-	const na = rows.filter(isNA).length;
-	const ya = rows.filter(isYes).length;
+	const na = rows.filter(isAcgsNa).length;
+	const ya = rows.filter(isAcgsYes).length;
 	const tidak = Math.max(0, total - na - ya);
 
 	const scoreTotal =

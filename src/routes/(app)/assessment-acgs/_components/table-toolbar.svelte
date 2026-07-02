@@ -16,7 +16,6 @@
     syncStatus = "saved",
     selectedYear = $bindable(""),
     availableYears = [],
-    onExportPdf,
     canRecompute = false,
     assessmentQuestions = [] as AssessmentItem[]
   }: {
@@ -26,13 +25,13 @@
     syncStatus: "saved" | "saving" | "error";
     selectedYear: string;
     availableYears: number[];
-    onExportPdf?: () => void;
     canRecompute?: boolean;
     assessmentQuestions: AssessmentItem[];
   } = $props();
 
   let yearQuery = $state("");
   let isRecomputing = $state(false);
+  let isExporting = $state(false);
 
   async function handleRecompute() {
     const year = parseInt(selectedYear, 10);
@@ -56,6 +55,19 @@
     } finally {
       isRecomputing = false;
     }
+  }
+
+  function handleExportDocx() {
+    const year = parseInt(selectedYear, 10);
+    if (!Number.isFinite(year)) {
+      toast.error("Tahun export tidak valid");
+      return;
+    }
+    isExporting = true;
+    window.location.href = `${resolve("/assessment-acgs")}/api/export-docx?year=${year}`;
+    setTimeout(() => {
+      isExporting = false;
+    }, 1500);
   }
 
   const years = $derived(() => {
@@ -207,9 +219,14 @@
       </Button>
     {/if}
 
-    <Button variant="outline" size="sm" class="gap-2" onclick={onExportPdf}>
-      <FileDown size={16} />
-      Export PDF
+    <Button variant="outline" size="sm" class="gap-2" disabled={isExporting} onclick={handleExportDocx}>
+      {#if isExporting}
+        <LoaderCircle size={16} class="animate-spin" />
+        Menyiapkan...
+      {:else}
+        <FileDown size={16} />
+        Export DOCX
+      {/if}
     </Button>
   </div>
 </div>

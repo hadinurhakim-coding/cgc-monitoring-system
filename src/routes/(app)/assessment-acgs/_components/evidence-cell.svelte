@@ -115,6 +115,7 @@
     <!-- Hidden File Input -->
     <input
       type="file"
+      accept=".pdf,.png,.jpg,.jpeg,.webp,application/pdf,image/png,image/jpeg,image/webp"
       class="hidden"
       bind:this={fileInput}
       onchange={(e) => {
@@ -122,6 +123,7 @@
           if (target.files?.[0]) {
               onFileSelected(q, target.files[0]);
           }
+          target.value = "";
       }}
     />
 

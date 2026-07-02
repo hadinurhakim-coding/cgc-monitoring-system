@@ -1,8 +1,9 @@
 import { createAdminServerClient } from "$lib/server/auth/clients.js";
-import { canAccessDivision, hasPermission, isAdminRole } from "$lib/server/rbac.js";
+import { hasPermission, isAdminRole } from "$lib/server/rbac.js";
 import { persistYearSummary } from "../_lib/acgs-summary.server.js";
 
 const ALLOWED_FIELDS = new Set(["implementation", "evidence", "status", "recommendation"]);
+const CLEAR_RECOMMENDATION_STATUSES = new Set(["YES", "NA"]);
 
 export type SaveAnswerAuth = {
 	userId: string | null;
@@ -10,6 +11,19 @@ export type SaveAnswerAuth = {
 	email: string | null;
 	divisionId: string | null;
 };
+
+function normalizeStatusInput(status: string): "YES" | "NO" | "NA" | null {
+	const normalized = status.trim().toUpperCase();
+	if (normalized === "Y") return "YES";
+	if (normalized === "N") return "NO";
+	if (normalized === "YES" || normalized === "NO" || normalized === "NA") return normalized;
+	return null;
+}
+
+function isNoStatus(status: string | null | undefined): boolean {
+	const normalized = normalizeStatusInput(String(status ?? ""));
+	return normalized === "NO";
+}
 
 export async function saveAssessmentAnswer(
 	auth: SaveAnswerAuth,
@@ -34,30 +48,53 @@ export async function saveAssessmentAnswer(
 	// Ambil year untuk recompute ringkasan (row harus ada)
 	const { data: prevRow, error: prevErr } = await admin
 		.from("acgs_assessments")
-		.select("uid,year,item_id,division_id")
+		.select("uid,year,item_id,status,recommendation")
 		.eq("uid", rowUid)
 		.maybeSingle();
 
 	if (prevErr) return { error: new Error(prevErr.message) };
 	if (!prevRow?.uid) return { error: new Error("Row tidak ditemukan") };
-	const rowDivisionId = prevRow.division_id != null ? String(prevRow.division_id) : null;
-	if (!canAccessDivision({ ...auth, isAuthenticated: true }, rowDivisionId)) {
-		return { error: new Error("Izin ditolak") };
+
+	let valueToSave = input.value;
+	let clearRecommendationAfterStatus = false;
+	if (input.field === "status") {
+		const normalizedStatus = normalizeStatusInput(input.value);
+		if (!normalizedStatus) {
+			return { error: new Error("Status tidak valid") };
+		}
+		valueToSave = normalizedStatus;
+		clearRecommendationAfterStatus = CLEAR_RECOMMENDATION_STATUSES.has(normalizedStatus);
+	}
+
+	if (input.field === "recommendation" && input.value.trim() && !isNoStatus(prevRow.status)) {
+		return { error: new Error("Rekomendasi hanya bisa diisi ketika status NO") };
+	}
+
+	async function saveFieldValue(field: string, value: string): Promise<Error | null> {
+		const { error: rpcErr } = await admin.rpc("save_acgs_assessment_field", {
+			p_row_uid: rowUid,
+			p_field: field,
+			p_value: value,
+			p_user_id: auth.userId,
+			p_user_email: auth.email ?? "",
+			p_division_id: auth.divisionId ?? null
+		});
+
+		return rpcErr ? new Error(rpcErr.message) : null;
 	}
 
 	// UPDATE + audit log ditulis oleh trigger dalam satu transaksi atomik.
 	// Tidak perlu insert manual ke assessment_change_logs.
-	const { error: rpcErr } = await admin.rpc("save_acgs_assessment_field", {
-		p_row_uid:     rowUid,
-		p_field:       input.field,
-		p_value:       input.value,
-		p_user_id:     auth.userId,
-		p_user_email:  auth.email ?? "",
-		p_division_id: auth.divisionId ?? null
-	});
-
+	const rpcErr = await saveFieldValue(input.field, valueToSave);
 	if (rpcErr) {
-		return { error: new Error(rpcErr.message) };
+		return { error: rpcErr };
+	}
+
+	if (clearRecommendationAfterStatus && String(prevRow.recommendation ?? "").trim()) {
+		const clearErr = await saveFieldValue("recommendation", "");
+		if (clearErr) {
+			return { error: clearErr };
+		}
 	}
 
 	// Non-fatal: refresh ringkasan tahun setelah save berhasil.

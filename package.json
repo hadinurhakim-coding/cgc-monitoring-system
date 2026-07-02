@@ -47,6 +47,7 @@
 		"@dotlottie/player-component": "^2.7.12",
 		"@lottiefiles/dotlottie-svelte": "^0.9.9",
 		"@supabase/supabase-js": "^2.100.1",
+		"docx": "^9.7.1",
 		"dotenv": "^17.4.0",
 		"file-type": "^22.0.0",
 		"pg": "^8.20.0",

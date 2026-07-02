@@ -1,7 +1,8 @@
 <script lang="ts">
   import { browser } from "$app/environment";
-  import { goto, invalidate } from "$app/navigation";
+  import { goto } from "$app/navigation";
   import { resolve } from "$app/paths";
+  import { extractEvidenceFiles, extractEvidenceText, reconstructEvidence } from "$lib/evidence-utils.js";
   import { Skeleton } from "$lib/components/ui/skeleton/index.js";
   import { toast } from "svelte-sonner";
 
@@ -11,6 +12,7 @@
   import StatusButtons from "./status-buttons.svelte";
   import EvidenceCell from "./evidence-cell.svelte";
   import EditableCell from "./editable-cell.svelte";
+  import ScoreSummaryTable from "./score-summary-table.svelte";
 
   // Lib & Utils
   import type { AssessmentItem } from "../_lib/types.js";
@@ -48,6 +50,15 @@
   }: Props = $props();
 
   const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  const MAX_EVIDENCE_BYTES = 15 * 1024 * 1024;
+  const ALLOWED_EVIDENCE_EXTS = new Set(["pdf", "png", "jpg", "jpeg", "webp"]);
+  const ALLOWED_EVIDENCE_MIME_BY_EXT: Record<string, string> = {
+    pdf: "application/pdf",
+    png: "image/png",
+    jpg: "image/jpeg",
+    jpeg: "image/jpeg",
+    webp: "image/webp"
+  };
 
   // Search & Filter State
   let searchQuery = $state("");
@@ -116,6 +127,28 @@
     return norm(row.item_id || row.part_id || row.label || "");
   }
 
+  function normalizedStatus(q: AssessmentItem): string {
+    const status = String(q.status ?? "").trim().toUpperCase();
+    if (status === "Y") return "YES";
+    if (status === "N") return "NO";
+    return status;
+  }
+
+  function recommendationDisabled(q: AssessmentItem): boolean {
+    const status = normalizedStatus(q);
+    return status === "YES" || status === "NA";
+  }
+
+  function validateEvidenceFile(file: File): string | null {
+    const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
+    const fileType = file.type || "application/octet-stream";
+    if (file.size <= 0) return "File bukti tidak boleh kosong.";
+    if (file.size > MAX_EVIDENCE_BYTES) return "Ukuran file bukti maksimal 15 MB.";
+    if (!ALLOWED_EVIDENCE_EXTS.has(ext)) return "Ekstensi file tidak didukung. Unggah PDF, JPG, PNG, atau WEBP.";
+    if (fileType.toLowerCase() !== ALLOWED_EVIDENCE_MIME_BY_EXT[ext]) return "Tipe file tidak sesuai dengan ekstensi.";
+    return null;
+  }
+
   // Wrap the prop in $state so it becomes deeply reactive (making optimistic UI work instantly)
   let localQuestions = $state<AssessmentItem[]>([]);
   $effect(() => {
@@ -151,20 +184,26 @@
   const pagedQuestions = $derived(filteredTableQuestions.slice((currentPage - 1) * pageSize, currentPage * pageSize));
 
   // Async Operations
-  async function saveField(q: AssessmentItem, field: string, value: string) {
+  async function persistField(q: AssessmentItem, field: string, value: string): Promise<boolean> {
     const rowKey = rowKeyOf(q);
-    if (!rowKey) return;
+    if (!rowKey) return false;
     
     // Optimistic Update for instant UI
     const prevImpl = q.implementation;
     const prevEvid = q.evidence;
     const prevRec = q.recommendation;
     const prevStatus = q.status;
+    const statusValue = field === "status" ? value.trim().toUpperCase() : "";
+    const shouldClearRecommendation =
+      field === "status" && (statusValue === "YES" || statusValue === "NA");
     
     if (field === "implementation") q.implementation = value;
     else if (field === "evidence") q.evidence = value;
     else if (field === "recommendation") q.recommendation = value;
-    else if (field === "status") q.status = value;
+    else if (field === "status") {
+      q.status = value;
+      if (shouldClearRecommendation) q.recommendation = "";
+    }
 
     syncStatus = "saving";
     const { error } = await saveAssessmentField(rowKey, field, value);
@@ -176,17 +215,22 @@
       else if (field === "evidence") q.evidence = prevEvid;
       else if (field === "recommendation") q.recommendation = prevRec;
       else if (field === "status") q.status = prevStatus;
+      q.recommendation = prevRec;
+      return false;
     } else {
       syncStatus = "saved";
-      // Don't await invalidate so UI doesn't block, let it run in background
-      invalidate("assessment-acgs:data").catch(() => {});
+      return true;
     }
+  }
+
+  async function saveField(q: AssessmentItem, field: string, value: string): Promise<void> {
+    await persistField(q, field, value);
   }
 
   async function handleFileUpload(q: AssessmentItem, file: File) {
     syncStatus = "saving";
     const code = norm(q.item_id) || "unknown";
-    const { data: url, error } = await uploadEvidenceWithSignedUrl(file, {
+    const { data: uploaded, error } = await uploadEvidenceWithSignedUrl(file, {
       year: currentYear,
       questionCode: code,
     });
@@ -195,15 +239,19 @@
       toast.error("Gagal upload: " + error.message);
       return;
     }
-    if (url) {
-      let storagePath = url;
-      try {
-        const urlObj = new URL(url, window.location.origin);
-        storagePath = urlObj.searchParams.get("path") || url;
-      } catch { /* parse fail fallback */ }
-
-      // Use actual evidence text from object but handle undefined
-      await saveField(q, "evidence", q.evidence ?? "");
+    if (uploaded) {
+      const text = extractEvidenceText(q.evidence);
+      const files = extractEvidenceFiles(q.evidence);
+      const nextEvidence = reconstructEvidence(text, [
+        ...files,
+        { path: uploaded.path, name: uploaded.name }
+      ]);
+      const saved = await persistField(q, "evidence", nextEvidence);
+      if (!saved) {
+        await deleteEvidenceFile(uploaded.path);
+        toast.error("Upload dibatalkan karena evidence gagal disimpan.");
+        return;
+      }
       const rk = rowKeyOf(q) ?? "";
       const { [rk]: _, ...rest } = stagedFiles;
       stagedFiles = rest;
@@ -307,6 +355,13 @@
 <svelte:window onbeforeunload={saveScrollPosition} />
 
 <div class="space-y-4">
+  <section class="space-y-3">
+    <h2 class="text-center text-lg font-bold text-slate-800">
+      Tabel Skor Capaian Assessment ACGS PT PLN (Persero), Tahun Buku {selectedYear || currentYear}
+    </h2>
+    <ScoreSummaryTable questions={allTableQuestions} />
+  </section>
+
   <TableToolbar 
     bind:searchQuery={searchQuery}
     onSearch={handleFullSearch}
@@ -419,6 +474,11 @@
                     onRemoveFile={handleRemoveFile}
                     stagedFile={stagedFiles[rowKeyOf(q) ?? ""] ?? null}
                     onFileSelected={(rq, f) => {
+                        const validationError = validateEvidenceFile(f);
+                        if (validationError) {
+                          toast.error(validationError);
+                          return;
+                        }
                         const rk = rowKeyOf(rq);
                         if (rk) stagedFiles[rk] = f;
                     }}
@@ -435,7 +495,14 @@
                 <StatusButtons {q} onSave={saveField} />
               </td>
               <td class="border border-border p-0 align-top h-1">
-                <EditableCell value={q.recommendation} {q} field="recommendation" placeholder="Rekomendasi — Ctrl+Enter atau ⌘+Enter untuk simpan" onSave={saveField} />
+                <EditableCell
+                  value={q.recommendation}
+                  {q}
+                  field="recommendation"
+                  placeholder={recommendationDisabled(q) ? "Rekomendasi hanya untuk status NO" : "Rekomendasi — Ctrl+Enter atau ⌘+Enter untuk simpan"}
+                  disabled={recommendationDisabled(q)}
+                  onSave={saveField}
+                />
               </td>
             </tr>
           {/each}

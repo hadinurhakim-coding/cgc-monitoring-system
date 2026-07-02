@@ -1,6 +1,6 @@
 import { env } from "$env/dynamic/private";
 import { createAdminServerClient } from "$lib/server/auth/clients.js";
-import { hasPermission, isAdminRole, isAuthenticated, scopedDivisionId, type AuthContext } from "$lib/server/rbac.js";
+import { hasPermission, isAdminRole, isAuthenticated, type AuthContext } from "$lib/server/rbac.js";
 import { attachResolvedAcgsHeaders } from "./resolve-headers.server.js";
 import { buildFlatRowsForYear, isAcgsQuestionRow, mergeQuestionDefaultsFromMaster } from "../_data/acgs-defaults.js";
 
@@ -132,15 +132,8 @@ async function loadAssessmentYearState(
 	year: number,
 	auth: AuthContext
 ): Promise<{ availableYears: number[]; error: Error | null }> {
-	const divisionId = scopedDivisionId(auth);
-	let yearQuery = adminDb.from("acgs_assessments").select("year");
-	let sampleQuery = adminDb.from("acgs_assessments").select("uid").eq("year", year).limit(1);
-
-	if (!isAdminRole(auth.role)) {
-		if (!divisionId) return { availableYears: [], error: null };
-		yearQuery = yearQuery.eq("division_id", divisionId);
-		sampleQuery = sampleQuery.eq("division_id", divisionId);
-	}
+	const yearQuery = adminDb.from("acgs_assessments").select("year");
+	const sampleQuery = adminDb.from("acgs_assessments").select("uid").eq("year", year).limit(1);
 
 	const [{ data: yearRows, error: yearError }, { data: sample, error: sampleErr }] = await Promise.all([
 		yearQuery,
@@ -174,21 +167,13 @@ async function loadAssessmentYearState(
 
 async function fetchSubtitleTrailRows(
 	adminDb: ReturnType<typeof createAdminServerClient>,
-	year: number,
-	auth: AuthContext
+	year: number
 ): Promise<{ uid?: string; type?: string; name_en?: string; name_id?: string }[]> {
-	const divisionId = scopedDivisionId(auth);
-	if (!isAdminRole(auth.role) && !divisionId) return [];
-
-	let qb = adminDb
+	const { data, error } = await adminDb
 		.from("acgs_assessments")
 		.select("uid,type,name_en,name_id,sort_order")
 		.eq("year", year)
 		.order("sort_order", { ascending: true });
-	if (!isAdminRole(auth.role) && divisionId) {
-		qb = qb.eq("division_id", divisionId);
-	}
-	const { data, error } = await qb;
 	if (error) {
 		console.error("fetchSubtitleTrailRows:", error.message);
 		return [];
@@ -218,25 +203,18 @@ function buildSubtitleMapFromTrail(
 /** Semua baris question/acgs untuk tahun (chunked, untuk UI client-side filter). */
 async function fetchAllAssessmentQuestionRowsRaw(
 	adminDb: ReturnType<typeof createAdminServerClient>,
-	year: number,
-	auth: AuthContext
+	year: number
 ): Promise<{ data: Record<string, unknown>[]; error: Error | null }> {
-	const divisionId = scopedDivisionId(auth);
-	if (!isAdminRole(auth.role) && !divisionId) return { data: [], error: null };
-
 	const chunkSize = MAX_ASSESSMENT_QUESTIONS_PAGE_SIZE;
 	const all: Record<string, unknown>[] = [];
 	for (let offset = 0; ; offset += chunkSize) {
-		let query = adminDb
+		const query = adminDb
 			.from("acgs_assessments")
 			.select("*")
 			.eq("year", year)
 			.in("type", [...QUESTION_TYPES])
 			.order("sort_order", { ascending: true })
 			.range(offset, offset + chunkSize - 1);
-		if (!isAdminRole(auth.role) && divisionId) {
-			query = query.eq("division_id", divisionId);
-		}
 		const { data, error } = await query;
 		if (error) return { data: [], error: new Error(error.message) };
 		const rows = data ?? [];
@@ -275,8 +253,8 @@ async function loadAssessmentQuestions(
 	error: Error | null;
 }> {
 	const [trailRows, pageRes] = await Promise.all([
-		fetchSubtitleTrailRows(adminDb, year, auth),
-		fetchAllAssessmentQuestionRowsRaw(adminDb, year, auth)
+		fetchSubtitleTrailRows(adminDb, year),
+		fetchAllAssessmentQuestionRowsRaw(adminDb, year)
 	]);
 	if (pageRes.error) {
 		return { questions: [], error: pageRes.error };
@@ -380,19 +358,11 @@ export async function getAssessmentData(year: number, auth: AuthContext) {
 		return { data: [] as FlatAssessmentRow[], availableYears: state.availableYears, error: state.error };
 	}
 
-	const divisionId = scopedDivisionId(auth);
-	if (!isAdminRole(auth.role) && !divisionId) {
-		return { data: [] as FlatAssessmentRow[], availableYears: state.availableYears, error: null };
-	}
-
-	let query = adminDb
+	const query = adminDb
 		.from("acgs_assessments")
 		.select("*")
 		.eq("year", year)
 		.order("sort_order", { ascending: true });
-	if (!isAdminRole(auth.role) && divisionId) {
-		query = query.eq("division_id", divisionId);
-	}
 	const { data, error } = await query;
 
 	if (error) {
@@ -403,7 +373,7 @@ export async function getAssessmentData(year: number, auth: AuthContext) {
 		return { data: [], availableYears: state.availableYears, error: null };
 	}
 
-	const trailRows = await fetchSubtitleTrailRows(adminDb, year, auth);
+	const trailRows = await fetchSubtitleTrailRows(adminDb, year);
 	const subMap = buildSubtitleMapFromTrail(trailRows);
 	const normalized = data.map((item) => normalizeRow(item as FlatAssessmentRow));
 	const merged = mergeMasterOnLoadEnabled() ? applyAcgsDefaults(normalized) : normalized;

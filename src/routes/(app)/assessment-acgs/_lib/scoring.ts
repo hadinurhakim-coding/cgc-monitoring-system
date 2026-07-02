@@ -18,16 +18,24 @@ function normStatus(s: string | null | undefined): string {
 		.toLowerCase();
 }
 
-function normEvidence(s: string | null | undefined): string {
-	return String(s ?? "")
-		.replace(/\s+/g, " ")
-		.trim();
+export function isAcgsYes(row: GcgScoreRow): boolean {
+	const st = normStatus(row.status);
+	return st === "yes" || st === "y";
+}
+
+export function isAcgsNo(row: GcgScoreRow): boolean {
+	const st = normStatus(row.status);
+	return st === "no" || st === "n";
+}
+
+export function isAcgsNa(row: GcgScoreRow): boolean {
+	return normStatus(row.status) === "na";
 }
 
 /**
  * Binary point per question (hanya untuk type question/acgs):
  * - 1 jika status N/A
- * - 1 jika status YES/Y dan evidence terisi
+ * - 1 jika status YES/Y
  * - 0 selain itu
  *
  * Nilai ini digunakan untuk `points_sum` di `acgs_year_summaries` (hitungan integer sederhana).
@@ -35,11 +43,7 @@ function normEvidence(s: string | null | undefined): string {
  */
 export function gcgQuestionPoint(row: GcgScoreRow): 0 | 1 {
 	if (!isAcgsQuestionRow(row)) return 0;
-	const st = normStatus(row.status);
-	if (st === "na") return 1;
-	if (st === "yes" || st === "y") {
-		return normEvidence(row.evidence) ? 1 : 0;
-	}
+	if (isAcgsNa(row) || isAcgsYes(row)) return 1;
 	return 0;
 }
 

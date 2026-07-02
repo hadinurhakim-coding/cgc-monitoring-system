@@ -62,7 +62,7 @@ function validYear(year: number): boolean {
 }
 
 export async function canAccessAssessmentEvidencePath(
-	auth: EvidenceAuth,
+	_auth: EvidenceAuth,
 	path: string | null | undefined
 ): Promise<EvidencePathAccessResult> {
 	const storagePath = normalizeStoragePath(path);
@@ -71,7 +71,7 @@ export async function canAccessAssessmentEvidencePath(
 	const admin = createAdminServerClient();
 	const { data, error } = await admin
 		.from("acgs_assessments")
-		.select("uid,division_id,evidence")
+		.select("uid,evidence")
 		.ilike("evidence", `%[FILE:${storagePath}%`)
 		.limit(50);
 
@@ -79,9 +79,8 @@ export async function canAccessAssessmentEvidencePath(
 
 	const rows = (data ?? []) as Record<string, unknown>[];
 	const allowed = rows.some((row) => {
-		const rowDivisionId = nullableStringField(row, "division_id");
 		const evidence = stringField(row, "evidence");
-		return canAccessDivision(auth, rowDivisionId) && evidenceHasPath(evidence, storagePath);
+		return evidenceHasPath(evidence, storagePath);
 	});
 
 	return allowed ? { allowed: true, path: storagePath } : denied();
@@ -114,7 +113,7 @@ export async function canAccessAoiEvidencePath(
 }
 
 export async function canUploadAssessmentEvidence(
-	auth: EvidenceAuth,
+	_auth: EvidenceAuth,
 	year: number,
 	questionCode: string
 ): Promise<EvidenceTargetAccessResult> {
@@ -126,7 +125,7 @@ export async function canUploadAssessmentEvidence(
 	const admin = createAdminServerClient();
 	const { data, error } = await admin
 		.from("acgs_assessments")
-		.select("uid,division_id,type")
+		.select("uid,type")
 		.eq("year", year)
 		.eq("item_id", normalizedQuestionCode)
 		.in("type", [...QUESTION_TYPES])
@@ -136,9 +135,7 @@ export async function canUploadAssessmentEvidence(
 
 	const row = ((data ?? []) as Record<string, unknown>[])[0];
 	if (!row) return denied();
-
-	const rowDivisionId = nullableStringField(row, "division_id");
-	return canAccessDivision(auth, rowDivisionId) ? { allowed: true } : denied();
+	return { allowed: true };
 }
 
 export async function canUploadAoiEvidence(
