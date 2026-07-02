@@ -3,6 +3,10 @@ import { saveAssessmentAnswer } from "../../_services/save-answer.server.js";
 import type { RequestHandler } from "./$types.js";
 
 export const POST: RequestHandler = async ({ request, locals }) => {
+	if (!locals.auth.isAuthenticated) {
+		throw error(401, "Tidak terautentikasi");
+	}
+
 	let body: { row_uid?: string; field?: string; value?: unknown };
 	try {
 		body = await request.json();

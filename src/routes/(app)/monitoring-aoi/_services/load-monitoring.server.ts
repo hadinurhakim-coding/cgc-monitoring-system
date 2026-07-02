@@ -1,4 +1,5 @@
 import { createAdminServerClient } from "$lib/server/auth/clients.js";
+import { hasPermission, isAdminRole, isAuthenticated, scopedDivisionId, type AuthContext } from "$lib/server/rbac.js";
 import type { AoiItem, StatusRekomendasi } from "../../area-of-improvement/_lib/types.js";
 import { STATUS_REKOMENDASI_OPTIONS } from "../../area-of-improvement/_lib/types.js";
 import { buildMonitoringData } from "../_lib/monitoring-aggregator.js";
@@ -30,26 +31,47 @@ function toAoiItem(raw: Record<string, unknown>): AoiItem {
 	};
 }
 
-export async function getMonitoringPageData(year: number): Promise<{
+export async function getMonitoringPageData(year: number, auth: AuthContext): Promise<{
 	levels: AoiLevelGroup[];
 	grandTotal: MonitoringGrandTotal;
 	availableYears: number[];
 	error: Error | null;
 }> {
+	const emptyGrandTotal = { jumlahAoi: 0, statusCounts: { selesai: 0, onProgress: 0, tidakDapat: 0, belum: 0 } };
+	if (!isAuthenticated(auth)) {
+		return { levels: [], grandTotal: emptyGrandTotal, availableYears: [], error: new Error("Tidak terautentikasi") };
+	}
+	if (!hasPermission(auth.role, "assessment:read")) {
+		return { levels: [], grandTotal: emptyGrandTotal, availableYears: [], error: new Error("Izin ditolak") };
+	}
+
 	const admin = createAdminServerClient();
+	const divisionId = scopedDivisionId(auth);
+	if (!isAdminRole(auth.role) && !divisionId) {
+		return { levels: [], grandTotal: emptyGrandTotal, availableYears: [], error: null };
+	}
+
+	let rowsQuery = admin.from("aoi_items").select("*").eq("year", year);
+	let yearsQuery = admin.from("aoi_items").select("year").order("year", { ascending: false });
+	if (!isAdminRole(auth.role) && divisionId) {
+		rowsQuery = rowsQuery.eq("division_id", divisionId);
+		yearsQuery = yearsQuery.eq("division_id", divisionId);
+	}
 
 	const [
 		{ data: rows, error: rowsErr },
 		{ data: keteranganRows, error: keteranganErr },
 		{ data: yearRows, error: yearErr },
 	] = await Promise.all([
-		admin.from("aoi_items").select("*").eq("year", year),
-		admin.from("aoi_monitoring_keterangan").select("part_id,keterangan").eq("year", year),
-		admin.from("aoi_items").select("year").order("year", { ascending: false }),
+		rowsQuery,
+		isAdminRole(auth.role)
+			? admin.from("aoi_monitoring_keterangan").select("part_id,keterangan").eq("year", year)
+			: Promise.resolve({ data: [], error: null }),
+		yearsQuery,
 	]);
 
-	if (rowsErr) return { levels: [], grandTotal: { jumlahAoi: 0, statusCounts: { selesai: 0, onProgress: 0, tidakDapat: 0, belum: 0 } }, availableYears: [], error: new Error(rowsErr.message) };
-	if (keteranganErr) return { levels: [], grandTotal: { jumlahAoi: 0, statusCounts: { selesai: 0, onProgress: 0, tidakDapat: 0, belum: 0 } }, availableYears: [], error: new Error(keteranganErr.message) };
+	if (rowsErr) return { levels: [], grandTotal: emptyGrandTotal, availableYears: [], error: new Error(rowsErr.message) };
+	if (keteranganErr) return { levels: [], grandTotal: emptyGrandTotal, availableYears: [], error: new Error(keteranganErr.message) };
 
 	const items = (rows ?? []).map((r) => toAoiItem(r as Record<string, unknown>));
 

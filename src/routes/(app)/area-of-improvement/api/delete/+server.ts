@@ -3,6 +3,10 @@ import type { RequestHandler } from "./$types.js";
 import { deleteAoiItem } from "../../_services/delete-aoi-item.server.js";
 
 export const POST: RequestHandler = async ({ request, locals }) => {
+	if (!locals.auth.isAuthenticated) {
+		throw error(401, "Tidak terautentikasi");
+	}
+
 	let body: { uid?: unknown };
 	try {
 		body = await request.json();
@@ -14,12 +18,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	if (!uid) throw error(400, "uid wajib diisi");
 
 	const { error: delErr } = await deleteAoiItem(
-		{
-			userId: locals.auth.userId,
-			role: locals.auth.role,
-			email: locals.auth.email,
-			divisionId: locals.auth.divisionId,
-		},
+		locals.auth,
 		uid
 	);
 

@@ -15,7 +15,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 		divisionId: locals.auth.divisionId,
 	};
 
-	const payload = await getMonitoringPageData(resolvedYear);
+	const payload = await getMonitoringPageData(resolvedYear, locals.auth);
 
 	if (payload.error) {
 		return {

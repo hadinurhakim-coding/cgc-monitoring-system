@@ -16,7 +16,7 @@ export const load: PageServerLoad = async ({ url, locals, depends }) => {
 
 	const search = url.searchParams.get("q") ?? "";
 
-	const payload = await getAssessmentPageData(year, { search });
+	const payload = await getAssessmentPageData(year, locals.auth, { search });
 
 	if (payload.error) {
 		return {

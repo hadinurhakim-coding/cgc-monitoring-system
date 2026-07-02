@@ -1,5 +1,5 @@
 import { createAdminServerClient } from "$lib/server/auth/clients.js";
-import { hasPermission } from "$lib/server/rbac.js";
+import { hasPermission, isAdminRole } from "$lib/server/rbac.js";
 import type { AoiItem, StatusRekomendasi } from "../_lib/types.js";
 import { STATUS_REKOMENDASI_OPTIONS } from "../_lib/types.js";
 import type { SaveAoiAuth } from "./save-aoi-field.server.js";
@@ -42,16 +42,24 @@ export async function addAoiItem(
 ): Promise<{ data: AoiItem | null; error: Error | null }> {
 	if (!auth.userId) return { data: null, error: new Error("Tidak terautentikasi") };
 	if (!hasPermission(auth.role, "assessment:write")) return { data: null, error: new Error("Izin ditolak") };
+	if (!isAdminRole(auth.role) && !auth.divisionId) {
+		return { data: null, error: new Error("Divisi pengguna tidak valid") };
+	}
 
 	const admin = createAdminServerClient();
+	const divisionId = isAdminRole(auth.role) ? null : auth.divisionId;
 
-	const { data: maxRow } = await admin
+	let maxQuery = admin
 		.from("aoi_items")
 		.select("sort_order")
 		.eq("year", input.year)
 		.order("sort_order", { ascending: false, nullsFirst: false })
-		.limit(1)
-		.maybeSingle();
+		.limit(1);
+	if (divisionId) {
+		maxQuery = maxQuery.eq("division_id", divisionId);
+	}
+
+	const { data: maxRow } = await maxQuery.maybeSingle();
 
 	const nextSortOrder = maxRow != null && (maxRow as Record<string, unknown>).sort_order != null
 		? Number((maxRow as Record<string, unknown>).sort_order) + 1
@@ -62,7 +70,7 @@ export async function addAoiItem(
 		.insert({
 			year: input.year,
 			sort_order: nextSortOrder,
-			division_id: auth.divisionId ?? null,
+			division_id: divisionId,
 			level_label: input.levelLabel,
 			part_id: input.partId,
 			section_id: input.sectionId,

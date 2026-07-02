@@ -4,7 +4,8 @@
  * untuk proteksi authorization endpoint.
  */
 
-type UserRole = "admin" | "bpo" | "viewer" | null;
+export type UserRole = "admin" | "bpo" | "viewer" | null;
+export type AuthContext = App.Locals["auth"];
 
 type Permission = "assessment:read" | "assessment:write" | "users:manage" | "dashboard:read";
 
@@ -21,6 +22,26 @@ export function hasPermission(role: string | null | undefined, permission: Permi
 	if (!role) return false;
 	if (!(role in ROLE_PERMISSIONS)) return false;
 	return ROLE_PERMISSIONS[role as keyof typeof ROLE_PERMISSIONS].includes(permission);
+}
+
+export function isAdminRole(role: string | null | undefined): boolean {
+	return role === "admin";
+}
+
+export function isAuthenticated(auth: AuthContext): boolean {
+	return Boolean(auth.isAuthenticated && auth.userId);
+}
+
+export function canAccessDivision(auth: AuthContext, divisionId: string | null | undefined): boolean {
+	if (!isAuthenticated(auth)) return false;
+	if (isAdminRole(auth.role)) return true;
+	if (auth.role !== "bpo" && auth.role !== "viewer") return false;
+	return Boolean(auth.divisionId && divisionId && auth.divisionId === divisionId);
+}
+
+export function scopedDivisionId(auth: AuthContext): string | null {
+	if (!isAuthenticated(auth) || isAdminRole(auth.role)) return null;
+	return auth.divisionId;
 }
 
 /**

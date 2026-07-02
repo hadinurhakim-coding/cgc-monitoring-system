@@ -13,7 +13,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 		divisionId: locals.auth.divisionId,
 	};
 
-	const payload = await getAoiPageData(Number.isFinite(year) ? year : currentYear);
+	const payload = await getAoiPageData(Number.isFinite(year) ? year : currentYear, locals.auth);
 
 	if (payload.error) {
 		return {

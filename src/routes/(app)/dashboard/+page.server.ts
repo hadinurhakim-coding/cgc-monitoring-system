@@ -1,7 +1,7 @@
 import type { PageServerLoad } from "./$types.js";
 import { error } from "@sveltejs/kit";
 import { createAdminServerClient } from "$lib/server/auth/clients.js";
-import { hasPermission } from "$lib/server/rbac.js";
+import { hasPermission, isAdminRole, scopedDivisionId } from "$lib/server/rbac.js";
 import { ACCESS_TOKEN_COOKIE } from "$lib/server/auth/cookies.js";
 
 type TrendPoint = {
@@ -28,6 +28,15 @@ type AuditRow = {
 	new_value: string | null;
 };
 
+function sanitizeAuditSearch(value: string): string {
+	return value
+		.trim()
+		.slice(0, 80)
+		.replace(/[^a-zA-Z0-9@._\-\s]/g, " ")
+		.replace(/\s+/g, " ")
+		.trim();
+}
+
 export const load: PageServerLoad = async ({ url, locals, cookies }) => {
 	if (!hasPermission(locals.auth.role, "dashboard:read")) {
 		throw error(403, "Akses dashboard ditolak");
@@ -42,14 +51,16 @@ export const load: PageServerLoad = async ({ url, locals, cookies }) => {
 	const search = (url.searchParams.get("q") ?? "").trim();
 
 	const canAct = locals.auth.role === "admin" || locals.auth.role === "bpo";
-	const isAdmin = locals.auth.role === "admin";
-	const divisionId = locals.auth.divisionId;
+	const isAdmin = isAdminRole(locals.auth.role);
+	const divisionId = scopedDivisionId(locals.auth);
 
 	// 1) Tren tahunan (global) — tidak pakai filter divisi.
-	const { data: trendRows, error: trendErr } = await admin
-		.from("acgs_year_summaries")
-		.select("year,question_count,points_sum,score_pct,payload,updated_at")
-		.order("year", { ascending: true });
+	const { data: trendRows, error: trendErr } = isAdmin
+		? await admin
+			.from("acgs_year_summaries")
+			.select("year,question_count,points_sum,score_pct,payload,updated_at")
+			.order("year", { ascending: true })
+		: { data: [], error: null };
 
 	if (trendErr) console.warn("[dashboard] acgs_year_summaries query failed:", trendErr.message);
 
@@ -86,7 +97,7 @@ export const load: PageServerLoad = async ({ url, locals, cookies }) => {
 	if (search) {
 		// Search fokus untuk audit table.
 		// supabase-js: or() pakai string filter.
-		const q = search.replace(/[,]/g, " ").trim();
+		const q = sanitizeAuditSearch(search);
 		if (q) {
 			auditQ = auditQ.or(`user_email.ilike.%${q}%,field.ilike.%${q}%,item_id.ilike.%${q}%`);
 		}

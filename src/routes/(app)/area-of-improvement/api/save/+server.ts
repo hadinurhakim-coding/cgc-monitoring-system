@@ -3,6 +3,10 @@ import type { RequestHandler } from "./$types.js";
 import { saveAoiField } from "../../_services/save-aoi-field.server.js";
 
 export const POST: RequestHandler = async ({ request, locals }) => {
+	if (!locals.auth.isAuthenticated) {
+		throw error(401, "Tidak terautentikasi");
+	}
+
 	let body: { uid?: unknown; field?: unknown; value?: unknown };
 	try {
 		body = await request.json();
@@ -15,12 +19,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const value = typeof body.value === "string" ? body.value : "";
 
 	const { error: saveErr } = await saveAoiField(
-		{
-			userId: locals.auth.userId,
-			role: locals.auth.role,
-			email: locals.auth.email,
-			divisionId: locals.auth.divisionId,
-		},
+		locals.auth,
 		{ uid, field, value }
 	);
 

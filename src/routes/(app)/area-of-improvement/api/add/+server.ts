@@ -3,6 +3,10 @@ import type { RequestHandler } from "./$types.js";
 import { addAoiItem } from "../../_services/add-aoi-item.server.js";
 
 export const POST: RequestHandler = async ({ request, locals }) => {
+	if (!locals.auth.isAuthenticated) {
+		throw error(401, "Tidak terautentikasi");
+	}
+
 	let body: { year?: unknown; sectionId?: unknown; standarLabel?: unknown; partId?: unknown; levelLabel?: unknown };
 	try {
 		body = await request.json();
@@ -23,12 +27,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	const { data: item, error: addErr } = await addAoiItem(
-		{
-			userId: locals.auth.userId,
-			role: locals.auth.role,
-			email: locals.auth.email,
-			divisionId: locals.auth.divisionId,
-		},
+		locals.auth,
 		{ year, sectionId, standarLabel, partId, levelLabel }
 	);
 

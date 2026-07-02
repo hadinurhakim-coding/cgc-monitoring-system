@@ -1,5 +1,5 @@
 import { createAdminServerClient } from "$lib/server/auth/clients.js";
-import { hasPermission } from "$lib/server/rbac.js";
+import { canAccessDivision, hasPermission, isAdminRole } from "$lib/server/rbac.js";
 import { persistYearSummary } from "../_lib/acgs-summary.server.js";
 
 const ALLOWED_FIELDS = new Set(["implementation", "evidence", "status", "recommendation"]);
@@ -34,12 +34,16 @@ export async function saveAssessmentAnswer(
 	// Ambil year untuk recompute ringkasan (row harus ada)
 	const { data: prevRow, error: prevErr } = await admin
 		.from("acgs_assessments")
-		.select("uid,year,item_id")
+		.select("uid,year,item_id,division_id")
 		.eq("uid", rowUid)
 		.maybeSingle();
 
 	if (prevErr) return { error: new Error(prevErr.message) };
 	if (!prevRow?.uid) return { error: new Error("Row tidak ditemukan") };
+	const rowDivisionId = prevRow.division_id != null ? String(prevRow.division_id) : null;
+	if (!canAccessDivision({ ...auth, isAuthenticated: true }, rowDivisionId)) {
+		return { error: new Error("Izin ditolak") };
+	}
 
 	// UPDATE + audit log ditulis oleh trigger dalam satu transaksi atomik.
 	// Tidak perlu insert manual ke assessment_change_logs.
@@ -59,7 +63,7 @@ export async function saveAssessmentAnswer(
 	// Non-fatal: refresh ringkasan tahun setelah save berhasil.
 	const year = Number(prevRow.year ?? 0);
 	const summaryYear = Number.isFinite(year) && year >= 2000 && year <= 2200 ? year : 0;
-	if (summaryYear) {
+	if (summaryYear && isAdminRole(auth.role)) {
 		const { data: yearQuestions } = await admin
 			.from("acgs_assessments")
 			.select("type,status,evidence,item_id,part_id,part,level,level_label")

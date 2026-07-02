@@ -17,6 +17,7 @@
     selectedYear = $bindable(""),
     availableYears = [],
     onExportPdf,
+    canRecompute = false,
     assessmentQuestions = [] as AssessmentItem[]
   }: {
     searchQuery: string;
@@ -26,6 +27,7 @@
     selectedYear: string;
     availableYears: number[];
     onExportPdf?: () => void;
+    canRecompute?: boolean;
     assessmentQuestions: AssessmentItem[];
   } = $props();
 
@@ -187,21 +189,23 @@
       </DropdownMenu.Content>
     </DropdownMenu.Root>
 
-    <Button
-      variant="outline"
-      size="sm"
-      class="gap-2"
-      disabled={isRecomputing}
-      onclick={handleRecompute}
-    >
-      {#if isRecomputing}
-        <LoaderCircle size={16} class="animate-spin" />
-        Menghitung...
-      {:else}
-        <RefreshCw size={16} />
-        Recompute
-      {/if}
-    </Button>
+    {#if canRecompute}
+      <Button
+        variant="outline"
+        size="sm"
+        class="gap-2"
+        disabled={isRecomputing}
+        onclick={handleRecompute}
+      >
+        {#if isRecomputing}
+          <LoaderCircle size={16} class="animate-spin" />
+          Menghitung...
+        {:else}
+          <RefreshCw size={16} />
+          Recompute
+        {/if}
+      </Button>
+    {/if}
 
     <Button variant="outline" size="sm" class="gap-2" onclick={onExportPdf}>
       <FileDown size={16} />

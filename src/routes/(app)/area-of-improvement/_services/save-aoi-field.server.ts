@@ -1,13 +1,8 @@
 import { createAdminServerClient } from "$lib/server/auth/clients.js";
-import { hasPermission } from "$lib/server/rbac.js";
+import { canAccessDivision, hasPermission, type AuthContext } from "$lib/server/rbac.js";
 import { STATUS_REKOMENDASI_OPTIONS, isValidStatusRekomendasi } from "../_lib/types.js";
 
-export type SaveAoiAuth = {
-	userId: string | null;
-	role: string | null;
-	email: string | null;
-	divisionId: string | null;
-};
+export type SaveAoiAuth = AuthContext;
 
 const ALLOWED_FIELDS = new Set([
 	"fakta_temuan",
@@ -37,6 +32,18 @@ export async function saveAoiField(
 	}
 
 	const admin = createAdminServerClient();
+	const { data: row, error: rowError } = await admin
+		.from("aoi_items")
+		.select("uid,division_id")
+		.eq("uid", uid)
+		.maybeSingle();
+
+	if (rowError) return { error: new Error(rowError.message) };
+	if (!row) return { error: new Error("AOI tidak ditemukan") };
+
+	const rowDivisionId = row.division_id != null ? String(row.division_id) : null;
+	if (!canAccessDivision(auth, rowDivisionId)) return { error: new Error("Izin ditolak") };
+
 	const { error } = await admin
 		.from("aoi_items")
 		.update({

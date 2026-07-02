@@ -6,7 +6,7 @@
 
   let { data }: { data: PageData } = $props();
 
-  const canWrite = $derived(data.authUser.role === "admin" || data.authUser.role === "bpo");
+  const canWrite = $derived(data.authUser.role === "admin");
 </script>
 
 <header

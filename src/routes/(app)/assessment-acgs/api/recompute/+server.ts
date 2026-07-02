@@ -1,6 +1,6 @@
 import { error, json } from "@sveltejs/kit";
 import { createAdminServerClient } from "$lib/server/auth/clients.js";
-import { hasPermission } from "$lib/server/rbac.js";
+import { isAdminRole } from "$lib/server/rbac.js";
 import { getAssessmentPageData } from "../../_services/load-assessment.server.js";
 import { persistYearSummary } from "../../_lib/acgs-summary.server.js";
 import type { RequestHandler } from "./$types.js";
@@ -8,7 +8,7 @@ import type { RequestHandler } from "./$types.js";
 /** On-demand recompute ringkasan tahun — persist ke `acgs_year_summaries`. */
 export const POST: RequestHandler = async ({ request, locals }) => {
 	if (!locals.auth.userId) throw error(401, "Tidak terautentikasi");
-	if (!hasPermission(locals.auth.role, "assessment:write")) throw error(403, "Izin ditolak");
+	if (!isAdminRole(locals.auth.role)) throw error(403, "Recompute ringkasan global hanya untuk admin");
 
 	let year: number;
 	try {
@@ -21,7 +21,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(400, "Parameter year tidak valid");
 	}
 
-	const payload = await getAssessmentPageData(year, {});
+	const payload = await getAssessmentPageData(year, locals.auth, {});
 	if (payload.error) {
 		throw error(500, payload.error.message ?? "Gagal recompute");
 	}

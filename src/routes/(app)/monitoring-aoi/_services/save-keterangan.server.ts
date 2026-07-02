@@ -1,5 +1,5 @@
 import { createAdminServerClient } from "$lib/server/auth/clients.js";
-import { hasPermission } from "$lib/server/rbac.js";
+import { isAdminRole } from "$lib/server/rbac.js";
 import type { SaveAoiAuth } from "../../area-of-improvement/_services/save-aoi-field.server.js";
 
 export async function saveKeterangan(
@@ -7,7 +7,7 @@ export async function saveKeterangan(
 	input: { year: number; partId: string; keterangan: string }
 ): Promise<{ error: Error | null }> {
 	if (!auth.userId) return { error: new Error("Tidak terautentikasi") };
-	if (!hasPermission(auth.role, "assessment:write")) return { error: new Error("Izin ditolak") };
+	if (!isAdminRole(auth.role)) return { error: new Error("Izin ditolak") };
 
 	if (!input.partId?.trim()) return { error: new Error("partId wajib diisi") };
 

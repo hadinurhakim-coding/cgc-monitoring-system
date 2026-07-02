@@ -34,6 +34,7 @@
     isLoading?: boolean;
     currentYear?: number;
     availableYears?: number[];
+    canRecompute?: boolean;
   }
 
   let {
@@ -43,6 +44,7 @@
     isLoading = false,
     currentYear = new Date().getFullYear(),
     availableYears = [],
+    canRecompute = false,
   }: Props = $props();
 
   const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -312,6 +314,7 @@
     syncStatus={syncStatus}
     bind:selectedYear={selectedYear}
     availableYears={availableYears}
+    canRecompute={canRecompute}
     assessmentQuestions={allTableQuestions}
   />
 

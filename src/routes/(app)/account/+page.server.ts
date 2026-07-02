@@ -1,6 +1,6 @@
 import { fail } from "@sveltejs/kit";
 import { createAdminServerClient } from "$lib/server/auth/clients.js";
-import { hasPermission } from "$lib/server/rbac.js";
+import { hasPermission, isAdminRole, type AuthContext } from "$lib/server/rbac.js";
 import type { Actions, PageServerLoad } from "./$types.js";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -90,15 +90,21 @@ function mapUser(
 	};
 }
 
-async function loadDivisions(): Promise<{
+async function loadDivisions(auth: AuthContext): Promise<{
 	divisions: DivisionOption[];
 	error: string | null;
 }> {
 	const admin = createAdminServerClient();
-	const { data, error } = await admin
+	let query = admin
 		.from("divisions")
 		.select("id,name")
 		.order("name", { ascending: true });
+	if (!isAdminRole(auth.role)) {
+		if (!auth.divisionId) return { divisions: [], error: null };
+		query = query.eq("id", auth.divisionId);
+	}
+
+	const { data, error } = await query;
 
 	if (error) return { divisions: [], error: error.message };
 	return { divisions: (data ?? []).map((row) => mapDivision(row as Record<string, unknown>)), error: null };
@@ -169,7 +175,7 @@ async function loadUserRows(): Promise<{
 export const load: PageServerLoad = async ({ locals }) => {
 	const canManageUsers = hasPermission(locals.auth.role, "users:manage");
 
-	const { divisions, error: divisionsError } = await loadDivisions();
+	const { divisions, error: divisionsError } = await loadDivisions(locals.auth);
 	const divisionsById = new Map(divisions.map((division) => [division.id, division.name]));
 	const { row: profileRow, error: profileError } = await loadProfileRow(locals.auth.userId);
 

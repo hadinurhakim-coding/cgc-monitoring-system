@@ -1,4 +1,5 @@
 import { createAdminServerClient } from "$lib/server/auth/clients.js";
+import { canAccessDivision } from "$lib/server/rbac.js";
 import { extractEvidenceFiles } from "$lib/evidence-utils.js";
 
 type EvidenceAuth = App.Locals["auth"];
@@ -37,11 +38,6 @@ function stringField(row: Record<string, unknown>, field: string): string {
 
 function nullableStringField(row: Record<string, unknown>, field: string): string | null {
 	return row[field] != null ? String(row[field]) : null;
-}
-
-function canAccessDivision(auth: EvidenceAuth, rowDivisionId: string | null): boolean {
-	if (auth.role === "admin") return true;
-	return Boolean(auth.divisionId && rowDivisionId === auth.divisionId);
 }
 
 function evidenceHasPath(evidence: string, path: string): boolean {

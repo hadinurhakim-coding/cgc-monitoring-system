@@ -7,6 +7,13 @@ import type { RequestHandler } from "./$types.js";
 
 const MAX_EVIDENCE_BYTES = 15 * 1024 * 1024;
 const ALLOWED_FILETYPE_EXTS = new Set(["pdf", "png", "jpg", "jpeg", "webp"]);
+const ALLOWED_MIME_BY_EXT: Record<string, string> = {
+	pdf: "application/pdf",
+	png: "image/png",
+	jpg: "image/jpeg",
+	jpeg: "image/jpeg",
+	webp: "image/webp"
+};
 const EVIDENCE_BUCKET = "gcg-evidence";
 
 export const POST: RequestHandler = async ({ request, locals }) => {
@@ -44,6 +51,9 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	const ext = body.ext.toLowerCase();
 	if (!ALLOWED_FILETYPE_EXTS.has(ext)) {
 		throw error(400, "Ekstensi file tidak didukung. Unggah PDF, JPG, PNG, atau WEBP.");
+	}
+	if (body.fileType.toLowerCase() !== ALLOWED_MIME_BY_EXT[ext]) {
+		throw error(400, "Tipe file tidak sesuai dengan ekstensi.");
 	}
 
 	const access = await canUploadAoiEvidence(locals.auth, body.year, body.itemUid);

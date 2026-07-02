@@ -36,6 +36,7 @@
 		structureFallbackData={[]}
 		currentYear={data.year}
 		availableYears={data.availableYears || []}
+		canRecompute={data.authUser.role === "admin"}
 		isLoading={false}
 	/>
 </main>

@@ -1,5 +1,6 @@
 import { env } from "$env/dynamic/private";
 import { createAdminServerClient } from "$lib/server/auth/clients.js";
+import { hasPermission, isAdminRole, isAuthenticated, scopedDivisionId, type AuthContext } from "$lib/server/rbac.js";
 import { attachResolvedAcgsHeaders } from "./resolve-headers.server.js";
 import { buildFlatRowsForYear, isAcgsQuestionRow, mergeQuestionDefaultsFromMaster } from "../_data/acgs-defaults.js";
 
@@ -128,11 +129,22 @@ async function ensureYearPopulated(
 
 async function loadAssessmentYearState(
 	adminDb: ReturnType<typeof createAdminServerClient>,
-	year: number
+	year: number,
+	auth: AuthContext
 ): Promise<{ availableYears: number[]; error: Error | null }> {
+	const divisionId = scopedDivisionId(auth);
+	let yearQuery = adminDb.from("acgs_assessments").select("year");
+	let sampleQuery = adminDb.from("acgs_assessments").select("uid").eq("year", year).limit(1);
+
+	if (!isAdminRole(auth.role)) {
+		if (!divisionId) return { availableYears: [], error: null };
+		yearQuery = yearQuery.eq("division_id", divisionId);
+		sampleQuery = sampleQuery.eq("division_id", divisionId);
+	}
+
 	const [{ data: yearRows, error: yearError }, { data: sample, error: sampleErr }] = await Promise.all([
-		adminDb.from("acgs_assessments").select("year"),
-		adminDb.from("acgs_assessments").select("uid").eq("year", year).limit(1)
+		yearQuery,
+		sampleQuery
 	]);
 
 	if (yearError) {
@@ -145,7 +157,7 @@ async function loadAssessmentYearState(
 	let availableYears = distinctYears(yearRows);
 	const yearOk = Number.isFinite(year) && year >= 2000 && year <= 2200;
 
-	if (yearOk && (!sample || sample.length === 0)) {
+	if (isAdminRole(auth.role) && yearOk && (!sample || sample.length === 0)) {
 		const populateErr = await ensureYearPopulated(adminDb, year);
 		if (populateErr) {
 			return { availableYears, error: populateErr };
@@ -162,13 +174,20 @@ async function loadAssessmentYearState(
 
 async function fetchSubtitleTrailRows(
 	adminDb: ReturnType<typeof createAdminServerClient>,
-	year: number
+	year: number,
+	auth: AuthContext
 ): Promise<{ uid?: string; type?: string; name_en?: string; name_id?: string }[]> {
-	const qb = adminDb
+	const divisionId = scopedDivisionId(auth);
+	if (!isAdminRole(auth.role) && !divisionId) return [];
+
+	let qb = adminDb
 		.from("acgs_assessments")
 		.select("uid,type,name_en,name_id,sort_order")
 		.eq("year", year)
 		.order("sort_order", { ascending: true });
+	if (!isAdminRole(auth.role) && divisionId) {
+		qb = qb.eq("division_id", divisionId);
+	}
 	const { data, error } = await qb;
 	if (error) {
 		console.error("fetchSubtitleTrailRows:", error.message);
@@ -199,18 +218,26 @@ function buildSubtitleMapFromTrail(
 /** Semua baris question/acgs untuk tahun (chunked, untuk UI client-side filter). */
 async function fetchAllAssessmentQuestionRowsRaw(
 	adminDb: ReturnType<typeof createAdminServerClient>,
-	year: number
+	year: number,
+	auth: AuthContext
 ): Promise<{ data: Record<string, unknown>[]; error: Error | null }> {
+	const divisionId = scopedDivisionId(auth);
+	if (!isAdminRole(auth.role) && !divisionId) return { data: [], error: null };
+
 	const chunkSize = MAX_ASSESSMENT_QUESTIONS_PAGE_SIZE;
 	const all: Record<string, unknown>[] = [];
 	for (let offset = 0; ; offset += chunkSize) {
-		const { data, error } = await adminDb
+		let query = adminDb
 			.from("acgs_assessments")
 			.select("*")
 			.eq("year", year)
 			.in("type", [...QUESTION_TYPES])
 			.order("sort_order", { ascending: true })
 			.range(offset, offset + chunkSize - 1);
+		if (!isAdminRole(auth.role) && divisionId) {
+			query = query.eq("division_id", divisionId);
+		}
+		const { data, error } = await query;
 		if (error) return { data: [], error: new Error(error.message) };
 		const rows = data ?? [];
 		if (rows.length === 0) break;
@@ -241,14 +268,15 @@ function processQuestionRowsForClient(
 
 async function loadAssessmentQuestions(
 	adminDb: ReturnType<typeof createAdminServerClient>,
-	year: number
+	year: number,
+	auth: AuthContext
 ): Promise<{
 	questions: FlatAssessmentRow[];
 	error: Error | null;
 }> {
 	const [trailRows, pageRes] = await Promise.all([
-		fetchSubtitleTrailRows(adminDb, year),
-		fetchAllAssessmentQuestionRowsRaw(adminDb, year)
+		fetchSubtitleTrailRows(adminDb, year, auth),
+		fetchAllAssessmentQuestionRowsRaw(adminDb, year, auth)
 	]);
 	if (pageRes.error) {
 		return { questions: [], error: pageRes.error };
@@ -271,11 +299,37 @@ export type AssessmentPagePayload = {
 /** Muat seluruh pertanyaan tahun (filter teks di klien). */
 export async function getAssessmentPageData(
 	year: number,
+	auth: AuthContext,
 	opts?: { search?: string }
 ): Promise<AssessmentPagePayload> {
 	const adminDb = createAdminServerClient();
-	const state = await loadAssessmentYearState(adminDb, year);
 	const search = (opts?.search ?? "").trim();
+
+	if (!isAuthenticated(auth)) {
+		return {
+			availableYears: [],
+			questions: [],
+			questionsTotal: 0,
+			questionsOffset: 0,
+			questionsLimit: 0,
+			search,
+			error: new Error("Tidak terautentikasi")
+		};
+	}
+
+	if (!hasPermission(auth.role, "assessment:read")) {
+		return {
+			availableYears: [],
+			questions: [],
+			questionsTotal: 0,
+			questionsOffset: 0,
+			questionsLimit: 0,
+			search,
+			error: new Error("Izin ditolak")
+		};
+	}
+
+	const state = await loadAssessmentYearState(adminDb, year, auth);
 
 	const emptyPayload = (): AssessmentPagePayload => ({
 		availableYears: state.availableYears,
@@ -291,7 +345,7 @@ export async function getAssessmentPageData(
 		return emptyPayload();
 	}
 
-	const { questions, error: loadErr } = await loadAssessmentQuestions(adminDb, year);
+	const { questions, error: loadErr } = await loadAssessmentQuestions(adminDb, year, auth);
 
 	if (loadErr) {
 		return {
@@ -312,18 +366,34 @@ export async function getAssessmentPageData(
 }
 
 /** Seluruh baris tahun (berat). Gunakan harga jika benar-benar perlu data penuh. */
-export async function getAssessmentData(year: number) {
+export async function getAssessmentData(year: number, auth: AuthContext) {
 	const adminDb = createAdminServerClient();
-	const state = await loadAssessmentYearState(adminDb, year);
+	if (!isAuthenticated(auth)) {
+		return { data: [] as FlatAssessmentRow[], availableYears: [], error: new Error("Tidak terautentikasi") };
+	}
+	if (!hasPermission(auth.role, "assessment:read")) {
+		return { data: [] as FlatAssessmentRow[], availableYears: [], error: new Error("Izin ditolak") };
+	}
+
+	const state = await loadAssessmentYearState(adminDb, year, auth);
 	if (state.error) {
 		return { data: [] as FlatAssessmentRow[], availableYears: state.availableYears, error: state.error };
 	}
 
-	const { data, error } = await adminDb
+	const divisionId = scopedDivisionId(auth);
+	if (!isAdminRole(auth.role) && !divisionId) {
+		return { data: [] as FlatAssessmentRow[], availableYears: state.availableYears, error: null };
+	}
+
+	let query = adminDb
 		.from("acgs_assessments")
 		.select("*")
 		.eq("year", year)
 		.order("sort_order", { ascending: true });
+	if (!isAdminRole(auth.role) && divisionId) {
+		query = query.eq("division_id", divisionId);
+	}
+	const { data, error } = await query;
 
 	if (error) {
 		return { data: [] as FlatAssessmentRow[], availableYears: state.availableYears, error };
@@ -333,7 +403,7 @@ export async function getAssessmentData(year: number) {
 		return { data: [], availableYears: state.availableYears, error: null };
 	}
 
-	const trailRows = await fetchSubtitleTrailRows(adminDb, year);
+	const trailRows = await fetchSubtitleTrailRows(adminDb, year, auth);
 	const subMap = buildSubtitleMapFromTrail(trailRows);
 	const normalized = data.map((item) => normalizeRow(item as FlatAssessmentRow));
 	const merged = mergeMasterOnLoadEnabled() ? applyAcgsDefaults(normalized) : normalized;
