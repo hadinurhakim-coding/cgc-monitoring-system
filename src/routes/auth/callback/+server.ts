@@ -2,7 +2,8 @@ import { redirect } from "@sveltejs/kit";
 import { dev } from "$app/environment";
 import {
 	ACCESS_TOKEN_COOKIE,
-	REFRESH_TOKEN_COOKIE
+	REFRESH_TOKEN_COOKIE,
+	clearAuthCookies
 } from "$lib/server/auth/cookies.js";
 import {
 	createAdminServerClient,
@@ -36,7 +37,7 @@ export const GET: RequestHandler = async ({ url, getClientAddress, request, cook
 	const adminClient = createAdminServerClient();
 	const { data: userRow, error: userLookupError } = await adminClient
 		.from("users")
-		.select("id")
+		.select("id,is_active")
 		.eq("id", data.user.id)
 		.maybeSingle();
 
@@ -46,7 +47,13 @@ export const GET: RequestHandler = async ({ url, getClientAddress, request, cook
 	}
 
 	if (!userRow) {
+		clearAuthCookies(cookies);
 		throw redirect(303, "/login?error=Akun+tidak+terdaftar+di+sistem+aplikasi");
+	}
+
+	if (userRow.is_active === false) {
+		clearAuthCookies(cookies);
+		throw redirect(303, "/login?error=Akun+Anda+sedang+nonaktif");
 	}
 
 	const secure = !dev;

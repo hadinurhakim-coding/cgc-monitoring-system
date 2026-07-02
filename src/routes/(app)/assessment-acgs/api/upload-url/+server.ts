@@ -1,6 +1,7 @@
 import { randomUUID } from "node:crypto";
 import { error, json } from "@sveltejs/kit";
 import { createAdminServerClient } from "$lib/server/auth/clients.js";
+import { canUploadAssessmentEvidence } from "$lib/server/evidence-access.server.js";
 import { hasPermission } from "$lib/server/rbac.js";
 import type { RequestHandler } from "./$types.js";
 
@@ -37,13 +38,18 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(400, "Incomplete payload");
 	}
 
-	if (body.fileSize > MAX_EVIDENCE_BYTES) {
+	if (body.fileSize <= 0 || body.fileSize > MAX_EVIDENCE_BYTES) {
 		throw error(400, "Ukuran file bukti maksimal 15 MB.");
 	}
 
 	const ext = body.ext.toLowerCase();
 	if (!ALLOWED_FILETYPE_EXTS.has(ext)) {
 		throw error(400, "Ekstensi file tidak didukung. Unggah PDF, JPG, PNG, atau WEBP.");
+	}
+
+	const access = await canUploadAssessmentEvidence(locals.auth, body.year, body.questionCode);
+	if (!access.allowed) {
+		throw error(access.status, access.message);
 	}
 
 	const objectPath = `assessment/${body.year}/${body.questionCode.replace(/[^a-zA-Z0-9_-]/g, "_")}/${randomUUID()}.${ext}`;

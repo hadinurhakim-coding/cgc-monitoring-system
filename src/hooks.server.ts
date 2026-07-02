@@ -1,15 +1,5 @@
-import { redirect, type Handle } from "@sveltejs/kit";
+import type { Handle } from "@sveltejs/kit";
 import { resolveAuthFromCookies } from "$lib/server/auth/session-resolve.js";
-
-const STATIC_FILE_EXT = /\.(svg|png|jpg|jpeg|webp|ico|json|txt|woff2?)$/i;
-
-function isPublicPath(pathname: string) {
-	if (pathname === "/" || pathname === "/login" || pathname === "/auth/callback") return true;
-	if (pathname.startsWith("/_app/") || pathname === "/_app") return true;
-	if (pathname === "/favicon.svg" || pathname === "/favicon.ico" || pathname === "/robots.txt") return true;
-	if (STATIC_FILE_EXT.test(pathname) && !pathname.startsWith("/api")) return true;
-	return false;
-}
 
 export const handle: Handle = async ({ event, resolve }) => {
 	event.locals.auth = {
@@ -21,16 +11,6 @@ export const handle: Handle = async ({ event, resolve }) => {
 	};
 
 	await resolveAuthFromCookies(event);
-
-	const pathname = event.url.pathname;
-	const isPublic = isPublicPath(pathname);
-	if (!isPublic && !event.locals.auth.isAuthenticated) {
-		throw redirect(303, `/login?redirectTo=${encodeURIComponent(event.url.pathname + event.url.search)}`);
-	}
-
-	if (pathname === "/login" && event.locals.auth.isAuthenticated) {
-		throw redirect(303, "/dashboard");
-	}
 
 	const response = await resolve(event);
 

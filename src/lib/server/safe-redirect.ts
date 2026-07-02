@@ -7,7 +7,13 @@
  * Pendekatan: whitelist prefix path yang diizinkan + decode check.
  */
 
-const ALLOWED_PREFIXES = ["/dashboard", "/assessment-acgs", "/account"];
+const ALLOWED_PREFIXES = [
+	"/dashboard",
+	"/assessment-acgs",
+	"/area-of-improvement",
+	"/monitoring-aoi",
+	"/account"
+];
 
 export function isSafeRedirect(path: string | null | undefined): string {
 	if (!path) return "/dashboard";

@@ -1,5 +1,6 @@
 import { error, redirect } from "@sveltejs/kit";
 import { createAdminServerClient } from "$lib/server/auth/clients.js";
+import { canAccessAssessmentEvidencePath } from "$lib/server/evidence-access.server.js";
 import { hasPermission } from "$lib/server/rbac.js";
 import type { RequestHandler } from "./$types.js";
 
@@ -15,10 +16,15 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	const path = url.searchParams.get("path");
 	if (!path) throw error(400, "Path wajib diisi");
 
+	const access = await canAccessAssessmentEvidencePath(locals.auth, path);
+	if (!access.allowed) {
+		throw error(access.status, access.message);
+	}
+
 	const adminDb = createAdminServerClient();
 	const { data, error: urlError } = await adminDb.storage
 		.from(EVIDENCE_BUCKET)
-		.createSignedUrl(path, 60, {
+		.createSignedUrl(access.path, 60, {
 			download: true
 		});
 

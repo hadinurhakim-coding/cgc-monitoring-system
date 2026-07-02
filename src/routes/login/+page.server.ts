@@ -2,7 +2,8 @@ import { fail, redirect } from "@sveltejs/kit";
 import { dev } from "$app/environment";
 import {
 	ACCESS_TOKEN_COOKIE,
-	REFRESH_TOKEN_COOKIE
+	REFRESH_TOKEN_COOKIE,
+	clearAuthCookies
 } from "$lib/server/auth/cookies.js";
 import {
 	createAdminServerClient,
@@ -58,7 +59,7 @@ export const actions: Actions = {
 
 		const { data: registeredUser, error: lookupError } = await adminClient
 			.from("users")
-			.select("id")
+			.select("id,is_active")
 			.eq("email", email)
 			.maybeSingle();
 
@@ -71,7 +72,7 @@ export const actions: Actions = {
 			});
 		}
 
-		if (!registeredUser) {
+		if (!registeredUser || registeredUser.is_active === false) {
 			return {
 				success: SEND_PIN_GENERIC_SUCCESS,
 				email,
@@ -155,7 +156,7 @@ export const actions: Actions = {
 
 		const { data: userRow, error: appUserError } = await adminClient
 			.from("users")
-			.select("id")
+			.select("id,is_active")
 			.eq("id", data.user.id)
 			.maybeSingle();
 
@@ -165,8 +166,18 @@ export const actions: Actions = {
 		}
 
 		if (!userRow) {
+			clearAuthCookies(cookies);
 			return fail(403, {
 				error: "Akun tidak terdaftar di aplikasi. Hubungi administrator.",
+				email,
+				step: "pin" as const
+			});
+		}
+
+		if (userRow.is_active === false) {
+			clearAuthCookies(cookies);
+			return fail(403, {
+				error: "Akun Anda sedang nonaktif. Hubungi administrator.",
 				email,
 				step: "pin" as const
 			});

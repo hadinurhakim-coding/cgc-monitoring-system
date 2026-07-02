@@ -88,11 +88,11 @@ export async function resolveAuthFromCookies(event: RequestEvent): Promise<void>
 	const adminClient = createAdminServerClient();
 	const { data: userRow } = await adminClient
 		.from("users")
-		.select("id,email,role,division_id")
+		.select("id,email,role,division_id,is_active")
 		.eq("id", authUser.id)
 		.maybeSingle();
 
-	if (!userRow) {
+	if (!userRow || userRow.is_active === false) {
 		clearAuthCookies(event.cookies);
 		return;
 	}

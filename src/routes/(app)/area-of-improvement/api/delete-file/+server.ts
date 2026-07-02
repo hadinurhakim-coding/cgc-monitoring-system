@@ -1,5 +1,6 @@
 import { error, json } from "@sveltejs/kit";
 import { createAdminServerClient } from "$lib/server/auth/clients.js";
+import { canAccessAoiEvidencePath } from "$lib/server/evidence-access.server.js";
 import { hasPermission } from "$lib/server/rbac.js";
 import type { RequestHandler } from "./$types.js";
 
@@ -27,9 +28,14 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(400, "Path file tidak disediakan");
 	}
 
+	const access = await canAccessAoiEvidencePath(locals.auth, body.path);
+	if (!access.allowed) {
+		throw error(access.status, access.message);
+	}
+
 	const { error: deleteError } = await adminDb.storage
 		.from(EVIDENCE_BUCKET)
-		.remove([body.path]);
+		.remove([access.path]);
 
 	if (deleteError) {
 		console.error("Gagal menghapus file dari storage:", deleteError.message);
