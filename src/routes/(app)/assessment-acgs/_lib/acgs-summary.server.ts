@@ -17,18 +17,23 @@ interface GroupScore {
 	scoreTotal: number;
 }
 
+function roundDisplayScore(n: number): number {
+	return Number(n.toFixed(2));
+}
+
 function computeGroup(rows: GcgScoreRow[], scoreMax: number, mode: GroupMode): GroupScore {
 	const total = rows.length;
 	const na = rows.filter(isAcgsNa).length;
 	const ya = rows.filter(isAcgsYes).length;
 	const tidak = Math.max(0, total - na - ya);
 
-	const scoreTotal =
+	const rawScoreTotal =
 		total === 0
 			? 0
 			: mode === "level1"
 				? ((na + ya) / total) * scoreMax
 				: (ya / total) * scoreMax;
+	const scoreTotal = roundDisplayScore(rawScoreTotal);
 
 	return { total, na, tidak, ya, scoreMax, scoreTotal };
 }
@@ -47,6 +52,8 @@ export type AcgsSummaryResult = {
  *   Part A (scoreMax 20), B (15), C (25), D (40) — Level 1: ((na+ya)/total) × scoreMax
  *   Bonus (scoreMax 30), Penalti (scoreMax −67) — Level 2: (ya/total) × scoreMax
  *   score_pct = (overallScore / 130) × 100
+ *
+ * Group scores are rounded to the two-decimal values shown in the UI before being summed.
  */
 export function computeAcgsSummary(questions: GcgScoreRow[]): AcgsSummaryResult {
 	const questionRows = questions.filter((q) => isAcgsQuestionRow(q));
@@ -84,13 +91,9 @@ export function computeAcgsSummary(questions: GcgScoreRow[]): AcgsSummaryResult 
 		"penalti"
 	);
 
-	const overallScore =
-		partA.scoreTotal +
-		partB.scoreTotal +
-		partC.scoreTotal +
-		partD.scoreTotal +
-		bonus.scoreTotal +
-		penalti.scoreTotal;
+	const level1Score = partA.scoreTotal + partB.scoreTotal + partC.scoreTotal + partD.scoreTotal;
+	const level2Score = bonus.scoreTotal + penalti.scoreTotal;
+	const overallScore = level1Score + level2Score;
 
 	const score_pct = question_count === 0 ? 0 : (overallScore / 130) * 100;
 
@@ -101,6 +104,8 @@ export function computeAcgsSummary(questions: GcgScoreRow[]): AcgsSummaryResult 
 		partD,
 		bonus,
 		penalti,
+		level1Score,
+		level2Score,
 		overallScore
 	};
 

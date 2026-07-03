@@ -8,11 +8,15 @@
 
   let { questions = [] }: { questions?: AssessmentItem[] } = $props();
 
-  function fmtComma2(n: number) {
+  function fmtComma2(n: number): string {
     return n.toFixed(2).replace(".", ",");
   }
 
-  function fmtTotalScore(n: number) {
+  function roundDisplayScore(n: number): number {
+    return Number(n.toFixed(2));
+  }
+
+  function fmtTotalScore(n: number): string {
     // Tabel template menampilkan penalti negatif dalam format "(x,xx)".
     if (n < 0) return `(${fmtComma2(Math.abs(n))})`;
     return fmtComma2(n);
@@ -35,7 +39,7 @@
     const ya = rows.filter(isAcgsYes).length;
     const tidak = Math.max(0, total - na - ya);
 
-    const scoreTotal =
+    const rawScoreTotal =
       total === 0
         ? 0
         : mode === "level1"
@@ -44,6 +48,7 @@
             ? (ya / total) * scoreMax
             : // penalti
               (ya / total) * scoreMax;
+    const scoreTotal = roundDisplayScore(rawScoreTotal);
 
     return {
       total,
@@ -102,6 +107,7 @@
       na,
       tidak,
       ya,
+      scoreTotal,
       scoreTotalStr: fmtTotalScore(scoreTotal)
     };
   });
@@ -132,6 +138,7 @@
       na,
       tidak,
       ya,
+      scoreTotal,
       scoreTotalStr: fmtTotalScore(scoreTotal)
     };
   });
@@ -141,19 +148,14 @@
     const na = level1Total().na + level2Total().na;
     const tidak = level1Total().tidak + level2Total().tidak;
     const ya = level1Total().ya + level2Total().ya;
-    const scoreTotal =
-      partA().scoreTotal +
-      partB().scoreTotal +
-      partC().scoreTotal +
-      partD().scoreTotal +
-      bonus().scoreTotal +
-      penalti().scoreTotal;
+    const scoreTotal = level1Total().scoreTotal + level2Total().scoreTotal;
 
     return {
       total,
       na,
       tidak,
       ya,
+      scoreTotal,
       scoreTotalStr: fmtTotalScore(scoreTotal)
     };
   });

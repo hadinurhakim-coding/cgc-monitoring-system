@@ -69,6 +69,10 @@ function fmtComma2(n: number): string {
 	return n.toFixed(2).replace(".", ",");
 }
 
+function roundDisplayScore(n: number): number {
+	return Number(n.toFixed(2));
+}
+
 function fmtTotalScore(n: number): string {
 	if (n < 0) return `(${fmtComma2(Math.abs(n))})`;
 	return fmtComma2(n);
@@ -79,8 +83,9 @@ function computeGroup(rows: GcgScoreRow[], scoreMax: number, mode: GroupMode): G
 	const na = rows.filter(isAcgsNa).length;
 	const ya = rows.filter(isAcgsYes).length;
 	const tidak = Math.max(0, total - na - ya);
-	const scoreTotal =
+	const rawScoreTotal =
 		total === 0 ? 0 : mode === "level1" ? ((na + ya) / total) * scoreMax : (ya / total) * scoreMax;
+	const scoreTotal = roundDisplayScore(rawScoreTotal);
 	return { total, na, tidak, ya, scoreMax, scoreTotal };
 }
 
@@ -145,13 +150,7 @@ function buildSummaryGroups(questions: AssessmentItem[]): {
 		na: level1.na + level2.na,
 		tidak: level1.tidak + level2.tidak,
 		ya: level1.ya + level2.ya,
-		scoreTotal:
-			partA.scoreTotal +
-			partB.scoreTotal +
-			partC.scoreTotal +
-			partD.scoreTotal +
-			bonus.scoreTotal +
-			penalti.scoreTotal
+		scoreTotal: level1.scoreTotal + level2.scoreTotal
 	};
 	return { partA, partB, partC, partD, level1, bonus, penalti, level2, overall };
 }
