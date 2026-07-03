@@ -39,10 +39,12 @@ type GroupScore = {
 	scoreTotal: number;
 };
 
-const PAGE_WIDTH_DXA = 15840;
-const USABLE_WIDTH_DXA = 14640;
-const ACGS_TABLE_WIDTHS = [900, 4400, 2750, 2450, 900, 3240] as const;
-const SUMMARY_TABLE_WIDTHS = [1350, 3450, 1550, 1350, 1250, 1250, 1250, 1250] as const;
+const PAGE_WIDTH_DXA = 11906;
+const PAGE_HEIGHT_DXA = 16838;
+const PAGE_MARGIN_DXA = 720;
+const USABLE_WIDTH_DXA = PAGE_WIDTH_DXA - PAGE_MARGIN_DXA * 2;
+const ACGS_TABLE_WIDTHS = [620, 3580, 2100, 1700, 700, 1766] as const;
+const SUMMARY_TABLE_WIDTHS = [800, 2600, 1350, 1100, 1100, 1100, 1050, 1366] as const;
 const PRIMARY = "12225C";
 const HEADER_BLUE = "002060";
 const LEVEL_FILL = "E2E8F0";
@@ -209,7 +211,7 @@ function cell(
 		columnSpan: opts.columnSpan,
 		verticalAlign: opts.verticalAlign ?? VerticalAlignTable.TOP,
 		shading: opts.fill ? { fill: opts.fill, type: ShadingType.CLEAR, color: "auto" } : undefined,
-		margins: { top: 80, bottom: 80, left: 80, right: 80 },
+		margins: { top: 60, bottom: 60, left: 60, right: 60 },
 		borders: {
 			top: border(),
 			bottom: border(),
@@ -229,20 +231,20 @@ function table(rows: TableRow[], widths: readonly number[]): Table {
 		width: { size: USABLE_WIDTH_DXA, type: WidthType.DXA },
 		columnWidths: widths,
 		layout: TableLayoutType.FIXED,
-		margins: { top: 80, bottom: 80, left: 80, right: 80 }
+		margins: { top: 60, bottom: 60, left: 60, right: 60 }
 	});
 }
 
 function summaryDataRow(labelA: string, labelB: string, group: GroupScore | Omit<GroupScore, "scoreMax">, scoreMax: string): TableRow {
 	return row([
-		cell(labelA, { width: SUMMARY_TABLE_WIDTHS[0], align: AlignmentType.CENTER, size: 18 }),
-		cell(labelB, { width: SUMMARY_TABLE_WIDTHS[1], size: 18 }),
-		cell(String(group.total), { width: SUMMARY_TABLE_WIDTHS[2], align: AlignmentType.RIGHT, size: 18 }),
-		cell(scoreMax, { width: SUMMARY_TABLE_WIDTHS[3], align: AlignmentType.RIGHT, size: 18 }),
-		cell(String(group.na), { width: SUMMARY_TABLE_WIDTHS[4], align: AlignmentType.RIGHT, size: 18 }),
-		cell(String(group.tidak), { width: SUMMARY_TABLE_WIDTHS[5], align: AlignmentType.RIGHT, size: 18 }),
-		cell(String(group.ya), { width: SUMMARY_TABLE_WIDTHS[6], align: AlignmentType.RIGHT, size: 18 }),
-		cell(fmtTotalScore(group.scoreTotal), { width: SUMMARY_TABLE_WIDTHS[7], align: AlignmentType.RIGHT, size: 18 })
+		cell(labelA, { width: SUMMARY_TABLE_WIDTHS[0], align: AlignmentType.CENTER, size: 16 }),
+		cell(labelB, { width: SUMMARY_TABLE_WIDTHS[1], size: 16 }),
+		cell(String(group.total), { width: SUMMARY_TABLE_WIDTHS[2], align: AlignmentType.RIGHT, size: 16 }),
+		cell(scoreMax, { width: SUMMARY_TABLE_WIDTHS[3], align: AlignmentType.RIGHT, size: 16 }),
+		cell(String(group.na), { width: SUMMARY_TABLE_WIDTHS[4], align: AlignmentType.RIGHT, size: 16 }),
+		cell(String(group.tidak), { width: SUMMARY_TABLE_WIDTHS[5], align: AlignmentType.RIGHT, size: 16 }),
+		cell(String(group.ya), { width: SUMMARY_TABLE_WIDTHS[6], align: AlignmentType.RIGHT, size: 16 }),
+		cell(fmtTotalScore(group.scoreTotal), { width: SUMMARY_TABLE_WIDTHS[7], align: AlignmentType.RIGHT, size: 16 })
 	]);
 }
 
@@ -359,8 +361,8 @@ function headersForQuestion(q: AssessmentItem): {
 function questionCell(q: AssessmentItem): TableCell {
 	return cell(
 		[
-			para(cleanText(q.question_en), { size: 15, bold: true }),
-			para(cleanText(q.question_id), { size: 14, color: BLUE_TEXT })
+			para(cleanText(q.question_en), { size: 13, bold: true }),
+			para(cleanText(q.question_id), { size: 12, color: BLUE_TEXT })
 		],
 		{ width: ACGS_TABLE_WIDTHS[1] }
 	);
@@ -370,7 +372,7 @@ function evidenceParagraphs(q: AssessmentItem, origin: string): Paragraph[] {
 	const text = extractEvidenceText(q.evidence);
 	const files = extractEvidenceFiles(q.evidence);
 	const output: Paragraph[] = [];
-	if (text) output.push(para(text, { size: 14 }));
+	if (text) output.push(para(text, { size: 13 }));
 	for (const file of files) {
 		const url = `${origin}/assessment-acgs/api/download?path=${encodeURIComponent(file.path)}`;
 		output.push(
@@ -379,13 +381,13 @@ function evidenceParagraphs(q: AssessmentItem, origin: string): Paragraph[] {
 				children: [
 					new ExternalHyperlink({
 						link: url,
-						children: [textRun(file.name, { color: BLUE_TEXT, size: 14 })]
+						children: [textRun(file.name, { color: BLUE_TEXT, size: 13 })]
 					})
 				]
 			})
 		);
 	}
-	return output.length ? output : [para("", { size: 14 })];
+	return output.length ? output : [para("", { size: 13 })];
 }
 
 function buildAssessmentTable(questions: AssessmentItem[], origin: string): Table {
@@ -432,15 +434,15 @@ function buildAssessmentTable(questions: AssessmentItem[], origin: string): Tabl
 				row([
 					cell(
 						[
-							para(displayCode(part?.item_id ?? part?.id, part?.part_id), { bold: true, size: 15, align: AlignmentType.CENTER }),
-							para(cleanText(part?.name_id), { bold: true, color: BLUE_TEXT, size: 13, align: AlignmentType.CENTER })
+							para(displayCode(part?.item_id ?? part?.id, part?.part_id), { bold: true, size: 13, align: AlignmentType.CENTER }),
+							para(cleanText(part?.name_id), { bold: true, color: BLUE_TEXT, size: 12, align: AlignmentType.CENTER })
 						],
 						{ width: ACGS_TABLE_WIDTHS[0], fill: WHITE, align: AlignmentType.CENTER }
 					),
 					cell(
 						[
-							para(cleanText(part?.full_name_en), { bold: true, size: 14 }),
-							para(cleanText(part?.full_name_id), { bold: true, color: BLUE_TEXT, size: 13 })
+							para(cleanText(part?.full_name_en), { bold: true, size: 13 }),
+							para(cleanText(part?.full_name_id), { bold: true, color: BLUE_TEXT, size: 12 })
 						],
 						{ width: ACGS_TABLE_WIDTHS[1], fill: LIGHT_FILL }
 					),
@@ -459,8 +461,8 @@ function buildAssessmentTable(questions: AssessmentItem[], origin: string): Tabl
 					cell(displayCode(section.item_id, section.id), { width: ACGS_TABLE_WIDTHS[0], fill: LIGHT_FILL, bold: true, align: AlignmentType.CENTER }),
 					cell(
 						[
-							para(cleanText(section.name_en), { bold: true, size: 14 }),
-							para(cleanText(section.name_id), { color: BLUE_TEXT, size: 13 })
+							para(cleanText(section.name_en), { bold: true, size: 13 }),
+							para(cleanText(section.name_id), { color: BLUE_TEXT, size: 12 })
 						],
 						{ width: ACGS_TABLE_WIDTHS[1] }
 					),
@@ -477,8 +479,8 @@ function buildAssessmentTable(questions: AssessmentItem[], origin: string): Tabl
 					cell("", { width: ACGS_TABLE_WIDTHS[0], fill: "EEF2FF" }),
 					cell(
 						[
-							para(cleanText(headers.subtitle.name_en), { bold: true, size: 13 }),
-							para(cleanText(headers.subtitle.name_id), { bold: true, color: BLUE_TEXT, size: 13 })
+							para(cleanText(headers.subtitle.name_en), { bold: true, size: 12 }),
+							para(cleanText(headers.subtitle.name_id), { bold: true, color: BLUE_TEXT, size: 12 })
 						],
 						{ width: ACGS_TABLE_WIDTHS[1], fill: "EEF2FF" }
 					),
@@ -490,12 +492,12 @@ function buildAssessmentTable(questions: AssessmentItem[], origin: string): Tabl
 
 		rows.push(
 			row([
-				cell(displayCode(q.item_id, null), { width: ACGS_TABLE_WIDTHS[0], align: AlignmentType.CENTER, bold: true, color: BLUE_TEXT, size: 14 }),
+				cell(displayCode(q.item_id, null), { width: ACGS_TABLE_WIDTHS[0], align: AlignmentType.CENTER, bold: true, color: BLUE_TEXT, size: 13 }),
 				questionCell(q),
-				cell(cleanText(q.implementation), { width: ACGS_TABLE_WIDTHS[2], size: 14 }),
+				cell(cleanText(q.implementation), { width: ACGS_TABLE_WIDTHS[2], size: 13 }),
 				cell(evidenceParagraphs(q, origin), { width: ACGS_TABLE_WIDTHS[3] }),
-				cell(statusText(q), { width: ACGS_TABLE_WIDTHS[4], align: AlignmentType.CENTER, bold: true, size: 15 }),
-				cell(cleanText(q.recommendation), { width: ACGS_TABLE_WIDTHS[5], size: 14 })
+				cell(statusText(q), { width: ACGS_TABLE_WIDTHS[4], align: AlignmentType.CENTER, bold: true, size: 13 }),
+				cell(cleanText(q.recommendation), { width: ACGS_TABLE_WIDTHS[5], size: 13 })
 			])
 		);
 	}
@@ -516,7 +518,7 @@ export async function buildAcgsAssessmentDocx(params: {
 		styles: {
 			default: {
 				document: {
-					run: { font: "Arial", size: 16 },
+					run: { font: "Arial", size: 14 },
 					paragraph: { spacing: { before: 0, after: 80 } }
 				}
 			}
@@ -525,17 +527,17 @@ export async function buildAcgsAssessmentDocx(params: {
 			{
 				properties: {
 					page: {
-						size: { orientation: PageOrientation.LANDSCAPE, width: PAGE_WIDTH_DXA, height: 12240 },
-						margin: { top: 720, right: 600, bottom: 720, left: 600 }
+						size: { orientation: PageOrientation.PORTRAIT, width: PAGE_WIDTH_DXA, height: PAGE_HEIGHT_DXA },
+						margin: { top: PAGE_MARGIN_DXA, right: PAGE_MARGIN_DXA, bottom: PAGE_MARGIN_DXA, left: PAGE_MARGIN_DXA }
 					}
 				},
 				children: [
-					para(title, { bold: true, size: 28, align: AlignmentType.CENTER, color: BLACK }),
+					para(title, { bold: true, size: 24, align: AlignmentType.CENTER, color: BLACK }),
 					buildSummaryTable(params.questions),
 					new Paragraph({ children: [new PageBreak()] }),
 					para(`Assessment ACGS PT PLN (Persero), Tahun Buku ${params.year}`, {
 						bold: true,
-						size: 24,
+						size: 22,
 						align: AlignmentType.CENTER
 					}),
 					buildAssessmentTable(params.questions, params.origin)
