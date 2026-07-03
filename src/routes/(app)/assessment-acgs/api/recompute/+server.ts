@@ -27,7 +27,7 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 	}
 
 	const adminDb = createAdminServerClient();
-	const { score_pct, error: persistErr } = await persistYearSummary(
+	const { score_pct, overall_score, max_score, error: persistErr } = await persistYearSummary(
 		adminDb,
 		year,
 		payload.questions
@@ -37,5 +37,5 @@ export const POST: RequestHandler = async ({ request, locals }) => {
 		throw error(500, persistErr.message);
 	}
 
-	return json({ ok: true, year, score_pct });
+	return json({ ok: true, year, score_pct, overall_score, max_score });
 };

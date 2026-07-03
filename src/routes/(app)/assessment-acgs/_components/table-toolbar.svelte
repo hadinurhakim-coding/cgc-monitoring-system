@@ -33,6 +33,17 @@
   let isRecomputing = $state(false);
   let isExporting = $state(false);
 
+  type RecomputeResponse = {
+    message?: string;
+    score_pct?: number;
+    overall_score?: number;
+    max_score?: number;
+  };
+
+  function formatDecimal(value: number): string {
+    return value.toFixed(2).replace(".", ",");
+  }
+
   async function handleRecompute() {
     const year = parseInt(selectedYear, 10);
     if (!Number.isFinite(year)) return;
@@ -43,10 +54,13 @@
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ year }),
       });
-      const json = await res.json();
+      const json = (await res.json()) as RecomputeResponse;
       if (!res.ok) throw new Error(json?.message ?? "Gagal recompute");
+      const totalScore = Number(json.overall_score ?? 0);
+      const maxScore = Number(json.max_score ?? 130);
+      const scorePct = Number(json.score_pct ?? 0);
       toast.success(`Recompute selesai — Tahun ${year}`, {
-        description: `Total Skor tersimpan: ${Number(json.score_pct ?? 0).toFixed(2)}`,
+        description: `Ringkasan berhasil diperbarui. Total Skor ACGS: ${formatDecimal(totalScore)} dari Skor Maksimal ${formatDecimal(maxScore)}. Persentase capaian tersimpan: ${formatDecimal(scorePct)}%.`,
       });
     } catch (err) {
       toast.error("Recompute gagal", {

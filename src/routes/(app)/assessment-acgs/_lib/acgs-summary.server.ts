@@ -42,6 +42,8 @@ export type AcgsSummaryResult = {
 	question_count: number;
 	points_sum: number;
 	score_pct: number;
+	overall_score: number;
+	max_score: number;
 	payload: Record<string, unknown>;
 };
 
@@ -94,8 +96,9 @@ export function computeAcgsSummary(questions: GcgScoreRow[]): AcgsSummaryResult 
 	const level1Score = partA.scoreTotal + partB.scoreTotal + partC.scoreTotal + partD.scoreTotal;
 	const level2Score = bonus.scoreTotal + penalti.scoreTotal;
 	const overallScore = level1Score + level2Score;
+	const maxScore = 130;
 
-	const score_pct = question_count === 0 ? 0 : (overallScore / 130) * 100;
+	const score_pct = question_count === 0 ? 0 : (overallScore / maxScore) * 100;
 
 	const payload: Record<string, unknown> = {
 		partA,
@@ -109,7 +112,7 @@ export function computeAcgsSummary(questions: GcgScoreRow[]): AcgsSummaryResult 
 		overallScore
 	};
 
-	return { question_count, points_sum, score_pct, payload };
+	return { question_count, points_sum, score_pct, overall_score: overallScore, max_score: maxScore, payload };
 }
 
 /**
@@ -120,7 +123,7 @@ export async function persistYearSummary(
 	adminDb: ReturnType<typeof createAdminServerClient>,
 	year: number,
 	questions: GcgScoreRow[]
-): Promise<{ score_pct: number; error: Error | null }> {
+): Promise<{ score_pct: number; overall_score: number; max_score: number; error: Error | null }> {
 	const summary = computeAcgsSummary(questions);
 
 	const { error } = await adminDb.from("acgs_year_summaries").upsert(
@@ -136,8 +139,18 @@ export async function persistYearSummary(
 	);
 
 	if (error) {
-		return { score_pct: summary.score_pct, error: new Error(error.message) };
+		return {
+			score_pct: summary.score_pct,
+			overall_score: summary.overall_score,
+			max_score: summary.max_score,
+			error: new Error(error.message)
+		};
 	}
 
-	return { score_pct: summary.score_pct, error: null };
+	return {
+		score_pct: summary.score_pct,
+		overall_score: summary.overall_score,
+		max_score: summary.max_score,
+		error: null
+	};
 }
