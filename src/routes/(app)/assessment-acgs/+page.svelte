@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { navigating } from "$app/state";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import { Separator } from "$lib/components/ui/separator/index.js";
 	import DataTable from "./_components/data-table.svelte";
@@ -6,6 +7,13 @@
 	import type { PageData } from "./$types.js";
 
 	let { data }: { data: PageData } = $props();
+
+	// Skeleton hanya ditampilkan saat navigasi yang mengubah tahun (bukan filter search lokal)
+	const isYearNavigation = $derived(
+		navigating.to !== null &&
+		navigating.to?.url.pathname === navigating.from?.url.pathname &&
+		navigating.to?.url.searchParams.get("year") !== navigating.from?.url.searchParams.get("year")
+	);
 </script>
 
 <header
@@ -37,6 +45,6 @@
 		currentYear={data.year}
 		availableYears={data.availableYears || []}
 		canRecompute={data.authUser.role === "admin"}
-		isLoading={false}
+		isLoading={isYearNavigation}
 	/>
 </main>

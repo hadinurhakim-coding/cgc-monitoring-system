@@ -359,7 +359,24 @@
     <h2 class="text-center text-lg font-bold text-slate-800">
       Tabel Skor Capaian Assessment ACGS PT PLN (Persero), Tahun Buku {selectedYear || currentYear}
     </h2>
-    <ScoreSummaryTable questions={allTableQuestions} />
+    {#if isLoading}
+      <div class="overflow-x-auto w-full border border-border rounded-lg bg-white shadow-sm animate-pulse">
+        <div class="p-4 space-y-2">
+          <Skeleton class="h-5 w-1/3 mx-auto" />
+          {#each Array(4) as _}
+            <div class="flex gap-2">
+              <Skeleton class="h-4 flex-1" />
+              <Skeleton class="h-4 w-16" />
+              <Skeleton class="h-4 w-16" />
+              <Skeleton class="h-4 w-16" />
+              <Skeleton class="h-4 w-16" />
+            </div>
+          {/each}
+        </div>
+      </div>
+    {:else}
+      <ScoreSummaryTable questions={allTableQuestions} />
+    {/if}
   </section>
 
   <TableToolbar 
@@ -387,14 +404,18 @@
       </thead>
       <tbody class="align-top">
         {#if isLoading}
-          {#each Array(5) as _}
+          {#each Array(8) as _}
             <tr class="animate-pulse">
-              <td class="border border-border p-4 text-center align-middle focus-within:ring-0"><Skeleton class="h-4 w-10 mx-auto" /></td>
-              <td class="border border-border p-4"><Skeleton class="h-4 w-3/4 mb-2" /><Skeleton class="h-3 w-full mb-1" /><Skeleton class="h-3 w-2/3" /></td>
-              <td class="border border-border p-3"><Skeleton class="h-24 w-full rounded-md" /></td>
-              <td class="border border-border p-3"><Skeleton class="h-24 w-full rounded-md" /></td>
+              <td class="border border-border p-4 text-center align-middle"><Skeleton class="h-4 w-10 mx-auto" /></td>
+              <td class="border border-border p-4">
+                <Skeleton class="h-4 w-3/4 mb-2" />
+                <Skeleton class="h-3 w-full mb-1" />
+                <Skeleton class="h-3 w-2/3" />
+              </td>
+              <td class="border border-border p-3"><Skeleton class="h-20 w-full rounded-md" /></td>
+              <td class="border border-border p-3"><Skeleton class="h-20 w-full rounded-md" /></td>
               <td class="border border-border p-3 align-middle"><Skeleton class="h-8 w-full rounded-md" /></td>
-              <td class="border border-border p-3"><Skeleton class="h-24 w-full rounded-md" /></td>
+              <td class="border border-border p-3"><Skeleton class="h-20 w-full rounded-md" /></td>
             </tr>
           {/each}
         {:else if pagedQuestions.length > 0}
