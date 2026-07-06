@@ -39,7 +39,7 @@
 
 {#if barVisible}
 	<div
-		class="fixed top-0 left-0 z-[9999] h-[3px] bg-accent transition-all ease-out pointer-events-none"
+		class="fixed top-0 left-0 z-9999 h-[3px] bg-accent transition-all ease-out pointer-events-none"
 		style="width: {barWidth}%; transition-duration: {barWidth === 100 ? '200ms' : '600ms'};"
 	></div>
 {/if}
