@@ -5,8 +5,8 @@ import { STATUS_REKOMENDASI_OPTIONS, isValidStatusRekomendasi } from "../_lib/ty
 export type SaveAoiAuth = AuthContext;
 
 const ALLOWED_FIELDS = new Set([
+	"tindak_lanjut_rekomendasi",
 	"fakta_temuan",
-	"rekomendasi",
 	"pic",
 	"status_rekomendasi",
 	"eviden",

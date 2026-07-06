@@ -12,12 +12,15 @@ export interface AoiItem {
 	year: number;
 	sort_order: number | null;
 	division_id: string | null;
+	aoi_code: string;
+	area_of_improvement: string;
 	level_label: string;
 	part_id: string;
 	section_id: string;
 	standar_label: string;
 	fakta_temuan: string;
 	rekomendasi: string;
+	tindak_lanjut_rekomendasi: string;
 	pic: string;
 	status_rekomendasi: StatusRekomendasi;
 	eviden: string;
