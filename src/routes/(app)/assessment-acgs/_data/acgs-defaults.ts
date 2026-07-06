@@ -68,7 +68,7 @@ export function buildFlatRowsForYear(year: number): Record<string, unknown>[] {
 		question_id: item.question_id ?? null,
 		implementation: item.implementation ?? "",
 		evidence: item.evidence ?? "",
-		status: item.status ?? "",
-		recommendation: item.recommendation ?? ""
+		status: "",
+		recommendation: ""
 	}));
 }

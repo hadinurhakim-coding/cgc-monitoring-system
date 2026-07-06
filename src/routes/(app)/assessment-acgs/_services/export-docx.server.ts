@@ -23,7 +23,7 @@ import {
 	isAcgsQuestionRow,
 	norm
 } from "../_lib/acgs-question-utils.js";
-import { isAcgsNa, isAcgsYes, type GcgScoreRow } from "../_lib/scoring.js";
+import { isAcgsNa, isAcgsNo, isAcgsYes, type GcgScoreRow } from "../_lib/scoring.js";
 import type { AssessmentItem } from "../_lib/types.js";
 
 type DocxCellChild = Paragraph | Table;
@@ -84,7 +84,7 @@ function computeGroup(rows: GcgScoreRow[], scoreMax: number, mode: GroupMode): G
 	const total = rows.length;
 	const na = rows.filter(isAcgsNa).length;
 	const ya = rows.filter(isAcgsYes).length;
-	const tidak = Math.max(0, total - na - ya);
+	const tidak = rows.filter(isAcgsNo).length;
 	const rawScoreTotal =
 		total === 0 ? 0 : mode === "level1" ? ((na + ya) / total) * scoreMax : (ya / total) * scoreMax;
 	const scoreTotal = roundDisplayScore(rawScoreTotal);

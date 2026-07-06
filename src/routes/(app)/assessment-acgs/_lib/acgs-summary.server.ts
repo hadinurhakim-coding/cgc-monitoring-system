@@ -4,7 +4,7 @@
  */
 import { createAdminServerClient } from "$lib/server/auth/clients.js";
 import { canonicalPartIdForAcgsQuestion, isAcgsQuestionRow } from "./acgs-question-utils.js";
-import { gcgQuestionPoint, isAcgsNa, isAcgsYes, type GcgScoreRow } from "./scoring.js";
+import { gcgQuestionPoint, isAcgsNa, isAcgsNo, isAcgsYes, type GcgScoreRow } from "./scoring.js";
 
 type GroupMode = "level1" | "bonus" | "penalti";
 
@@ -25,7 +25,7 @@ function computeGroup(rows: GcgScoreRow[], scoreMax: number, mode: GroupMode): G
 	const total = rows.length;
 	const na = rows.filter(isAcgsNa).length;
 	const ya = rows.filter(isAcgsYes).length;
-	const tidak = Math.max(0, total - na - ya);
+	const tidak = rows.filter(isAcgsNo).length;
 
 	const rawScoreTotal =
 		total === 0

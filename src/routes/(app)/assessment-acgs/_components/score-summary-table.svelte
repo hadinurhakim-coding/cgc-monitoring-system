@@ -4,7 +4,7 @@
     canonicalPartIdForAcgsQuestion,
     isAcgsQuestionRow
   } from "../_data/acgs-defaults.js";
-  import { isAcgsNa, isAcgsYes } from "../_lib/scoring.js";
+  import { isAcgsNa, isAcgsNo, isAcgsYes } from "../_lib/scoring.js";
 
   let { questions = [] }: { questions?: AssessmentItem[] } = $props();
 
@@ -37,7 +37,7 @@
     const total = rows.length;
     const na = rows.filter(isAcgsNa).length;
     const ya = rows.filter(isAcgsYes).length;
-    const tidak = Math.max(0, total - na - ya);
+    const tidak = rows.filter(isAcgsNo).length;
 
     const rawScoreTotal =
       total === 0
