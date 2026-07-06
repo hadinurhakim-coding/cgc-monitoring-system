@@ -22,6 +22,9 @@ export interface AssessmentItem {
 	uid?: string;
 	id?: string;
 	row_uid?: string;
+	item_uid?: string;
+	answer_uid?: string | null;
+	year?: number | null;
 	sort_order?: number | null;
 	acgs_subtitle_context?: { name_en?: string | null; name_id?: string | null } | null;
 	acgs_resolved_level?: { label?: string | null } | null;

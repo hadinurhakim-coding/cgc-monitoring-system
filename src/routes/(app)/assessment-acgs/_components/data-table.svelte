@@ -111,7 +111,11 @@
 
   // Core Data Functions
   function rowKeyOf(q: AssessmentItem): string | undefined {
-    return q.row_uid || q.uid || q.id;
+    return q.row_uid || q.answer_uid || q.item_uid || q.uid || q.id;
+  }
+
+  function itemUidOf(q: AssessmentItem): string | undefined {
+    return q.item_uid || q.uid;
   }
 
   function displayCode(primary?: string | null, fallback?: string | null) {
@@ -206,7 +210,10 @@
     }
 
     syncStatus = "saving";
-    const { error } = await saveAssessmentField(rowKey, field, value);
+    const { data, error } = await saveAssessmentField(rowKey, field, value, {
+      year: currentYear,
+      itemUid: itemUidOf(q)
+    });
     if (error) {
       syncStatus = "error";
       toast.error("Gagal menyimpan: " + error.message);
@@ -218,6 +225,10 @@
       q.recommendation = prevRec;
       return false;
     } else {
+      if (data?.answerUid) {
+        q.answer_uid = data.answerUid;
+        q.row_uid = data.answerUid;
+      }
       syncStatus = "saved";
       return true;
     }

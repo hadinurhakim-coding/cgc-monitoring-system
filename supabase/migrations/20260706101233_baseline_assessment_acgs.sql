@@ -1,3 +1,5 @@
+begin;
+
 create extension if not exists pgcrypto;
 
 create or replace function public.update_updated_at()
@@ -175,3 +177,5 @@ on storage.objects
 for select
 to authenticated
 using (bucket_id = 'gcg-evidence');
+
+commit;

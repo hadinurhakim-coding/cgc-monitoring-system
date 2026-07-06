@@ -20,13 +20,14 @@ export type UploadedEvidenceFile = {
 export async function saveAssessmentField(
 	row_uid: string,
 	field: string,
-	value: string
-): Promise<{ error: Error | null }> {
+	value: string,
+	opts?: { year: number; itemUid?: string | null }
+): Promise<{ data: { answerUid: string | null } | null; error: Error | null }> {
 	const res = await fetch(resolve("/assessment-acgs/api/save"), {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		credentials: "include",
-		body: JSON.stringify({ row_uid, field, value })
+		body: JSON.stringify({ row_uid, item_uid: opts?.itemUid ?? null, year: opts?.year, field, value })
 	});
 	if (!res.ok) {
 		let msg = res.statusText;
@@ -37,9 +38,10 @@ export async function saveAssessmentField(
 			const t = await res.text();
 			if (t) msg = t;
 		}
-		return { error: new Error(msg) };
+		return { data: null, error: new Error(msg) };
 	}
-	return { error: null };
+	const data = (await res.json()) as { answerUid?: string | null };
+	return { data: { answerUid: data.answerUid ?? null }, error: null };
 }
 
 /**

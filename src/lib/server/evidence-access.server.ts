@@ -70,7 +70,7 @@ export async function canAccessAssessmentEvidencePath(
 
 	const admin = createAdminServerClient();
 	const { data, error } = await admin
-		.from("acgs_assessments")
+		.from("acgs_assessment_answers")
 		.select("uid,evidence")
 		.ilike("evidence", `%[FILE:${storagePath}%`)
 		.limit(50);
@@ -124,10 +124,10 @@ export async function canUploadAssessmentEvidence(
 
 	const admin = createAdminServerClient();
 	const { data, error } = await admin
-		.from("acgs_assessments")
+		.from("acgs_items")
 		.select("uid,type")
-		.eq("year", year)
 		.eq("item_id", normalizedQuestionCode)
+		.eq("is_active", true)
 		.in("type", [...QUESTION_TYPES])
 		.limit(1);
 
