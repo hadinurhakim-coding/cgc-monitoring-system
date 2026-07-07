@@ -23,6 +23,7 @@
   import type { AssessmentItem } from "../_lib/types.js";
   import { saveAssessmentField, uploadEvidenceWithSignedUrl, deleteEvidenceFile } from "../_lib/assessment-api-client.js";
   import { canonicalPartIdForAcgsQuestion, canonicalSectionIdForAcgsQuestion, isAcgsQuestionRow, norm } from "../_lib/acgs-question-utils.js";
+  import { canKeepRecommendationForAssessmentItem } from "../_lib/recommendation-rules.js";
   import { buildSearchHaystack } from "../_lib/search-utils.js";
   import { saveScrollPosition, restoreScrollPosition, initScrollTracking } from "../_lib/actions.js";
 
@@ -148,6 +149,7 @@
   }
 
   function recommendationDisabled(q: AssessmentItem): boolean {
+    if (canKeepRecommendationForAssessmentItem(currentYear, q)) return false;
     const status = normalizedStatus(q);
     return status === "YES" || status === "NA";
   }
@@ -218,7 +220,9 @@
     const prevStatus = q.status;
     const statusValue = field === "status" ? value.trim().toUpperCase() : "";
     const shouldClearRecommendation =
-      field === "status" && (statusValue === "YES" || statusValue === "NA");
+      field === "status" &&
+      (statusValue === "YES" || statusValue === "NA") &&
+      !canKeepRecommendationForAssessmentItem(currentYear, q);
     
     if (field === "implementation") q.implementation = value;
     else if (field === "evidence") q.evidence = value;

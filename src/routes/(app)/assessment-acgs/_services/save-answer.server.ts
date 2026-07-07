@@ -2,6 +2,7 @@ import { createAdminServerClient } from "$lib/server/auth/clients.js";
 import { hasPermission, isAdminRole } from "$lib/server/rbac.js";
 import { syncAoiItemsForYear } from "../../area-of-improvement/_services/load-aoi.server.js";
 import { persistYearSummary } from "../_lib/acgs-summary.server.js";
+import { canKeepRecommendationForNonNoStatus } from "../_lib/recommendation-rules.js";
 import { getAssessmentQuestionRowsForYear } from "./assessment-service.server.js";
 
 const ALLOWED_FIELDS = new Set(["implementation", "evidence", "status", "recommendation"]);
@@ -180,6 +181,10 @@ export async function saveAssessmentAnswer(
 		if (!item?.uid || !isQuestionType(item.type)) {
 			return { answerUid: null, error: new Error("Item assessment tidak ditemukan") };
 		}
+		const allowsRecommendationForNonNoStatus = canKeepRecommendationForNonNoStatus({
+			year,
+			itemId: item.item_id
+		});
 
 		const existing = answerFromUid?.item_uid === itemUid && answerFromUid.year === year
 			? answerFromUid
@@ -193,10 +198,17 @@ export async function saveAssessmentAnswer(
 				return { answerUid: null, error: new Error("Status tidak valid") };
 			}
 			valueToSave = normalizedStatus;
-			clearRecommendation = CLEAR_RECOMMENDATION_STATUSES.has(normalizedStatus);
+			clearRecommendation =
+				CLEAR_RECOMMENDATION_STATUSES.has(normalizedStatus) &&
+				!allowsRecommendationForNonNoStatus;
 		}
 
-		if (input.field === "recommendation" && input.value.trim() && !isNoStatus(existing?.status)) {
+		if (
+			input.field === "recommendation" &&
+			input.value.trim() &&
+			!isNoStatus(existing?.status) &&
+			!allowsRecommendationForNonNoStatus
+		) {
 			return {
 				answerUid: null,
 				error: new Error("Rekomendasi hanya bisa diisi ketika status NO")
