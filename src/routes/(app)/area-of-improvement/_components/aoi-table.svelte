@@ -2,14 +2,28 @@
   import { goto } from "$app/navigation";
   import { resolve } from "$app/paths";
   import { toast } from "svelte-sonner";
-  import { Calendar, Check, Cloud, LoaderCircle, CircleAlert, Pencil } from "@lucide/svelte";
+  import {
+    Calendar,
+    Check,
+    ChevronLeft,
+    ChevronRight,
+    ChevronsLeft,
+    ChevronsRight,
+    CircleAlert,
+    Cloud,
+    LoaderCircle,
+    Pencil,
+    Search
+  } from "@lucide/svelte";
   import {
     deleteEncryptedPageCache,
     deleteEncryptedPageCacheByRoute,
     type PageCacheScope
   } from "$lib/client/encrypted-page-cache.js";
+  import { Button } from "$lib/components/ui/button/index.js";
   import * as Dialog from "$lib/components/ui/dialog/index.js";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
+  import { Input } from "$lib/components/ui/input/index.js";
   import { extractEvidenceText, extractEvidenceFiles, reconstructEvidence } from "$lib/evidence-utils.js";
   import type { AoiItem, StatusRekomendasi } from "../_lib/types.js";
   import {
@@ -46,9 +60,19 @@
   let editFaktaTemuan = $state("");
   let editTindakLanjut = $state("");
   let editPic = $state("");
+  let searchQuery = $state("");
+  let pageSize = $state(15);
+  let currentPage = $state(1);
 
   $effect(() => {
     localItems = [...items];
+  });
+
+  $effect(() => {
+    items;
+    searchQuery;
+    currentYear;
+    currentPage = 1;
   });
 
   function setSync(status: "saved" | "saving" | "error"): void {
@@ -201,6 +225,73 @@
     return merged.filter((y) => y.includes(yearQuery));
   });
 
+  function normalizeSearchValue(value: string | number | null | undefined): string {
+    return String(value ?? "").trim().toLowerCase();
+  }
+
+  function itemSearchHaystack(item: AoiItem, index: number): string {
+    return [
+      index + 1,
+      item.aoi_code,
+      item.area_of_improvement,
+      item.fakta_temuan,
+      item.rekomendasi,
+      item.tindak_lanjut_rekomendasi,
+      item.pic,
+      item.status_rekomendasi,
+      extractEvidenceText(item.eviden),
+      item.level_label,
+      item.part_id,
+      item.section_id
+    ].map(normalizeSearchValue).join(" ");
+  }
+
+  const filteredItems = $derived.by(() => {
+    const tokens = normalizeSearchValue(searchQuery).split(/\s+/).filter(Boolean);
+    if (tokens.length === 0) return localItems;
+    return localItems.filter((item, index) => {
+      const haystack = itemSearchHaystack(item, index);
+      return tokens.every((token) => haystack.includes(token));
+    });
+  });
+
+  const totalPages = $derived(Math.max(1, Math.ceil(filteredItems.length / pageSize)));
+  const pageStartIndex = $derived((currentPage - 1) * pageSize);
+  const pageEndIndex = $derived(Math.min(pageStartIndex + pageSize, filteredItems.length));
+  const pagedItems = $derived(filteredItems.slice(pageStartIndex, pageEndIndex));
+
+  const paginationRange = $derived.by(() => {
+    const range: Array<number | "..."> = [];
+    const delta = 1;
+    for (
+      let page = Math.max(2, currentPage - delta);
+      page <= Math.min(totalPages - 1, currentPage + delta);
+      page += 1
+    ) {
+      range.push(page);
+    }
+    if (currentPage - delta > 2) range.unshift("...");
+    if (currentPage + delta < totalPages - 1) range.push("...");
+    range.unshift(1);
+    if (totalPages > 1) range.push(totalPages);
+    return range;
+  });
+
+  $effect(() => {
+    if (currentPage > totalPages) currentPage = totalPages;
+  });
+
+  function handlePageChange(action: "next" | "prev" | "first" | "last" | "jump"): void {
+    if (typeof window === "undefined") return;
+    requestAnimationFrame(() => {
+      if (action === "prev") {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: "instant" });
+      } else {
+        window.scrollTo({ top: 0, behavior: "instant" });
+      }
+    });
+  }
+
   function longestLineLength(value: string): number {
     return value
       .split(/\r?\n/)
@@ -214,30 +305,56 @@
   }
 
   const columnWidths = $derived.by(() => ({
-    no: columnWidth("No", localItems.map((_, idx) => String(idx + 1)), 6, 8),
-    aoiCode: columnWidth("No AOI", localItems.map((item) => item.aoi_code), 10, 18),
+    no: columnWidth("No", filteredItems.map((_, idx) => String(idx + 1)), 6, 8),
+    aoiCode: columnWidth("No AOI", filteredItems.map((item) => item.aoi_code), 10, 18),
     areaOfImprovement: columnWidth(
       "Area of Improvement",
-      localItems.map((item) => item.area_of_improvement),
+      filteredItems.map((item) => item.area_of_improvement),
       34,
       100
     ),
-    faktaTemuan: columnWidth("Fakta Temuan", localItems.map((item) => item.fakta_temuan), 34, 100),
-    rekomendasi: columnWidth("Rekomendasi", localItems.map((item) => item.rekomendasi), 34, 100),
+    faktaTemuan: columnWidth("Fakta Temuan", filteredItems.map((item) => item.fakta_temuan), 34, 100),
+    rekomendasi: columnWidth("Rekomendasi", filteredItems.map((item) => item.rekomendasi), 34, 100),
     tindakLanjut: columnWidth(
       "Tindak Lanjut atas Rekomendasi",
-      localItems.map((item) => item.tindak_lanjut_rekomendasi),
+      filteredItems.map((item) => item.tindak_lanjut_rekomendasi),
       34,
       100
     ),
-    pic: columnWidth("Penanggung Jawab", localItems.map((item) => item.pic), 20, 44),
-    status: columnWidth("Progress Tindak Lanjut", localItems.map((item) => item.status_rekomendasi), 28, 44),
-    eviden: columnWidth("Eviden", localItems.map((item) => item.eviden), 28, 60),
+    pic: columnWidth("Penanggung Jawab", filteredItems.map((item) => item.pic), 20, 44),
+    status: columnWidth("Progress Tindak Lanjut", filteredItems.map((item) => item.status_rekomendasi), 28, 44),
+    eviden: columnWidth("Eviden", filteredItems.map((item) => item.eviden), 28, 60),
   }));
 </script>
 
-<div class="flex flex-col items-center justify-between gap-4 md:flex-row">
-  <div class="flex items-center gap-2">
+<div class="flex flex-col gap-4">
+  <div class="flex flex-col items-stretch justify-between gap-4 lg:flex-row lg:items-center">
+    <form
+      class="relative flex w-full gap-2 lg:w-120"
+      role="search"
+      onsubmit={(event) => {
+        event.preventDefault();
+        currentPage = 1;
+      }}
+    >
+      <div class="relative flex-1">
+        <Search
+          class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+          size={18}
+        />
+        <Input
+          aria-label="Cari atau filter Area of Improvement"
+          placeholder="Cari AOI, rekomendasi, PIC, status, eviden..."
+          class="pl-10 border-border focus:ring-primary"
+          bind:value={searchQuery}
+        />
+      </div>
+      <Button type="submit" variant="secondary" size="sm" class="shrink-0">
+        Cari
+      </Button>
+    </form>
+
+    <div class="flex flex-wrap items-center gap-2">
     <div class="mr-2 flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-[10px] font-medium">
       {#if globalSyncStatus === "saved"}
         <Cloud size={14} class="text-emerald-500" />
@@ -250,9 +367,7 @@
         <span class="text-red-500">Gagal Sinkron</span>
       {/if}
     </div>
-  </div>
 
-  <div class="flex items-center gap-2">
     <DropdownMenu.Root>
       <DropdownMenu.Trigger
         class="inline-flex h-9 items-center justify-center gap-2 rounded-md border border-primary/20 bg-white px-3 text-sm font-medium text-foreground ring-offset-background transition-all hover:border-primary/40 hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
@@ -288,6 +403,21 @@
       </DropdownMenu.Content>
     </DropdownMenu.Root>
   </div>
+  </div>
+
+  <div class="flex flex-wrap items-center justify-between gap-2 text-xs font-medium text-muted-foreground">
+    <span>
+      {#if searchQuery.trim()}
+        <strong>{filteredItems.length}</strong> cocok filter dari <strong>{localItems.length}</strong> AOI
+        <span class="italic">- "{searchQuery.trim()}"</span>
+      {:else}
+        <strong>{localItems.length}</strong> AOI tahun {currentYear}
+      {/if}
+    </span>
+    <span>
+      Tampilan {filteredItems.length > 0 ? pageStartIndex + 1 : 0}-{pageEndIndex} dari {filteredItems.length}
+    </span>
+  </div>
 </div>
 
 <div class="w-full overflow-hidden rounded-lg border border-border bg-white shadow-sm">
@@ -318,9 +448,9 @@
         </tr>
       </thead>
       <tbody class="align-top">
-        {#each localItems as item, idx (item.uid)}
+        {#each pagedItems as item, idx (item.uid)}
           <tr class="transition-colors hover:bg-slate-50">
-            <td class="border border-border p-2 text-center align-middle text-muted-foreground">{idx + 1}</td>
+            <td class="border border-border p-2 text-center align-middle text-muted-foreground">{pageStartIndex + idx + 1}</td>
 
             <td class="border border-border px-2 py-1 align-middle">
               <button
@@ -421,12 +551,101 @@
         {:else}
           <tr>
             <td colspan="9" class="border border-border py-12 text-center text-sm italic text-muted-foreground">
-              Belum ada data rekomendasi Assessment ACGS untuk tahun {currentYear}.
+              {searchQuery.trim()
+                ? `Tidak ada data AOI yang cocok dengan "${searchQuery.trim()}".`
+                : `Belum ada data rekomendasi Assessment ACGS untuk tahun ${currentYear}.`}
             </td>
           </tr>
         {/each}
       </tbody>
     </table>
+  </div>
+</div>
+
+<div class="flex flex-col gap-3 py-2 text-xs font-medium text-slate-600">
+  <div class="flex flex-col items-center justify-between gap-4 md:flex-row">
+    <label class="flex items-center gap-2">
+      <span>Baris tampil per halaman</span>
+      <select
+        class="rounded border border-border bg-white px-2 py-1 outline-none focus:ring-1 focus:ring-primary"
+        bind:value={pageSize}
+        onchange={() => {
+          currentPage = 1;
+        }}
+      >
+        <option value={15}>15</option>
+        <option value={30}>30</option>
+        <option value={50}>50</option>
+        <option value={100}>100</option>
+      </select>
+    </label>
+
+    <nav class="flex items-center gap-1" aria-label="Pagination Area of Improvement">
+      <Button
+        variant="ghost"
+        size="icon"
+        class="h-8 w-8"
+        disabled={currentPage === 1}
+        aria-label="Halaman pertama"
+        onclick={() => { currentPage = 1; handlePageChange("first"); }}
+      >
+        <ChevronsLeft size={16} />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        class="h-8 w-8"
+        disabled={currentPage === 1}
+        aria-label="Halaman sebelumnya"
+        onclick={() => { currentPage -= 1; handlePageChange("prev"); }}
+      >
+        <ChevronLeft size={16} />
+      </Button>
+
+      <div class="mx-2 flex items-center gap-1">
+        {#each paginationRange as page}
+          {#if page === "..."}
+            <span class="px-2 text-slate-400">...</span>
+          {:else}
+            <Button
+              variant={currentPage === page ? "default" : "ghost"}
+              size="icon"
+              class="h-8 w-8 {currentPage === page ? 'bg-accent text-accent-foreground hover:bg-accent/90' : ''}"
+              aria-label={`Halaman ${page}`}
+              aria-current={currentPage === page ? "page" : undefined}
+              onclick={() => { currentPage = page; handlePageChange("jump"); }}
+            >
+              {page}
+            </Button>
+          {/if}
+        {/each}
+      </div>
+
+      <Button
+        variant="ghost"
+        size="icon"
+        class="h-8 w-8"
+        disabled={currentPage === totalPages}
+        aria-label="Halaman berikutnya"
+        onclick={() => { currentPage += 1; handlePageChange("next"); }}
+      >
+        <ChevronRight size={16} />
+      </Button>
+      <Button
+        variant="ghost"
+        size="icon"
+        class="h-8 w-8"
+        disabled={currentPage === totalPages}
+        aria-label="Halaman terakhir"
+        onclick={() => { currentPage = totalPages; handlePageChange("last"); }}
+      >
+        <ChevronsRight size={16} />
+      </Button>
+    </nav>
+
+    <div class="text-muted-foreground">
+      Halaman {currentPage} dari {totalPages}
+    </div>
   </div>
 </div>
 
