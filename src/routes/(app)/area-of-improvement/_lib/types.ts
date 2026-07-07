@@ -22,6 +22,7 @@ export interface AoiItem {
 	rekomendasi: string;
 	tindak_lanjut_rekomendasi: string;
 	pic: string;
+	target_waktu_penyelesaian: string;
 	status_rekomendasi: StatusRekomendasi;
 	eviden: string;
 	created_at: string;

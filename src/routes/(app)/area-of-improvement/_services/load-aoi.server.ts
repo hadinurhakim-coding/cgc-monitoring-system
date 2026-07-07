@@ -47,6 +47,7 @@ type AoiFollowupRow = {
 	fakta_temuan_override: string;
 	tindak_lanjut_rekomendasi: string;
 	pic: string;
+	target_waktu_penyelesaian: string;
 	status_rekomendasi: StatusRekomendasi;
 	eviden: string;
 	updated_at: string;
@@ -100,6 +101,7 @@ function toAoiItem(
 		rekomendasi: source.rekomendasi,
 		tindak_lanjut_rekomendasi: followup?.tindak_lanjut_rekomendasi ?? "",
 		pic: followup?.pic ?? "",
+		target_waktu_penyelesaian: followup?.target_waktu_penyelesaian ?? "",
 		status_rekomendasi: followup?.status_rekomendasi ?? "Belum ditindaklanjuti",
 		eviden: followup?.eviden ?? "",
 		created_at: row.created_at,
@@ -324,7 +326,7 @@ async function getFollowupsByAoiUid(
 
 	const { data, error } = await admin
 		.from("aoi_followups")
-		.select("aoi_item_uid,fakta_temuan_override,tindak_lanjut_rekomendasi,pic,status_rekomendasi,eviden,updated_at")
+		.select("aoi_item_uid,fakta_temuan_override,tindak_lanjut_rekomendasi,pic,target_waktu_penyelesaian,status_rekomendasi,eviden,updated_at")
 		.in("aoi_item_uid", aoiItemUids);
 
 	if (error) return { followups: new Map(), error: new Error(error.message) };
@@ -338,6 +340,7 @@ async function getFollowupsByAoiUid(
 			fakta_temuan_override: norm(raw.fakta_temuan_override),
 			tindak_lanjut_rekomendasi: norm(raw.tindak_lanjut_rekomendasi),
 			pic: norm(raw.pic),
+			target_waktu_penyelesaian: norm(raw.target_waktu_penyelesaian),
 			status_rekomendasi: normalizeStatus(raw.status_rekomendasi),
 			eviden: norm(raw.eviden),
 			updated_at: norm(raw.updated_at),

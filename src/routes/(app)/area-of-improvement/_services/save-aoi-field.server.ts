@@ -8,6 +8,7 @@ const FIELD_TO_COLUMN: Record<string, string> = {
 	fakta_temuan: "fakta_temuan_override",
 	tindak_lanjut_rekomendasi: "tindak_lanjut_rekomendasi",
 	pic: "pic",
+	target_waktu_penyelesaian: "target_waktu_penyelesaian",
 	status_rekomendasi: "status_rekomendasi",
 	eviden: "eviden",
 };
@@ -28,6 +29,9 @@ export async function saveAoiField(
 	if (input.field === "status_rekomendasi" && !isValidStatusRekomendasi(input.value)) {
 		return { error: new Error(`Status tidak valid. Pilih salah satu: ${STATUS_REKOMENDASI_OPTIONS.join(", ")}`) };
 	}
+	if (input.field === "target_waktu_penyelesaian" && input.value && !/^\d{4}-\d{2}-\d{2}$/.test(input.value)) {
+		return { error: new Error("Target waktu wajib memakai format tanggal yang valid") };
+	}
 
 	const admin = createAdminServerClient();
 	const { data: row, error: rowError } = await admin
@@ -43,9 +47,10 @@ export async function saveAoiField(
 	const rowDivisionId = typeof raw.division_id === "string" ? raw.division_id : null;
 	if (!canAccessDivision(auth, rowDivisionId)) return { error: new Error("Izin ditolak") };
 
-	const payload: Record<string, string> = {
+	const value = input.field === "target_waktu_penyelesaian" && input.value === "" ? null : input.value;
+	const payload: Record<string, string | null> = {
 		aoi_item_uid: uid,
-		[column]: input.value,
+		[column]: value,
 		created_by: auth.userId,
 		updated_by: auth.userId,
 	};

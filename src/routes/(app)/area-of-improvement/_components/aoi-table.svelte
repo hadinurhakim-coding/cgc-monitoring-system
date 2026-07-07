@@ -60,6 +60,7 @@
   let editFaktaTemuan = $state("");
   let editTindakLanjut = $state("");
   let editPic = $state("");
+  let editTargetWaktu = $state("");
   let searchQuery = $state("");
   let pageSize = $state(15);
   let currentPage = $state(1);
@@ -95,6 +96,7 @@
     editFaktaTemuan = item.fakta_temuan;
     editTindakLanjut = item.tindak_lanjut_rekomendasi;
     editPic = item.pic;
+    editTargetWaktu = item.target_waktu_penyelesaian;
     editDialogOpen = true;
   }
 
@@ -134,6 +136,11 @@
         previous: editingItem.tindak_lanjut_rekomendasi,
       },
       { field: "pic", value: editPic, previous: editingItem.pic },
+      {
+        field: "target_waktu_penyelesaian",
+        value: editTargetWaktu,
+        previous: editingItem.target_waktu_penyelesaian,
+      },
     ].filter((change) => change.value !== change.previous);
 
     let allSaved = true;
@@ -152,6 +159,17 @@
     const trimmed = value.trim();
     if (!trimmed) return fallback;
     return trimmed;
+  }
+
+  function formatIndonesianDate(value: string): string {
+    if (!value) return "Belum ada target waktu";
+    const date = new Date(`${value}T00:00:00`);
+    if (Number.isNaN(date.getTime())) return "Tanggal tidak valid";
+    return new Intl.DateTimeFormat("id-ID", {
+      day: "2-digit",
+      month: "long",
+      year: "numeric",
+    }).format(date);
   }
 
   function statusPreviewClass(status: StatusRekomendasi): string {
@@ -238,6 +256,7 @@
       item.rekomendasi,
       item.tindak_lanjut_rekomendasi,
       item.pic,
+      formatIndonesianDate(item.target_waktu_penyelesaian),
       item.status_rekomendasi,
       extractEvidenceText(item.eviden),
       item.level_label,
@@ -323,6 +342,12 @@
     ),
     pic: columnWidth("Penanggung Jawab", filteredItems.map((item) => item.pic), 20, 44),
     status: columnWidth("Progress Tindak Lanjut", filteredItems.map((item) => item.status_rekomendasi), 28, 44),
+    targetWaktu: columnWidth(
+      "Target Waktu Penyelesaian",
+      filteredItems.map((item) => formatIndonesianDate(item.target_waktu_penyelesaian)),
+      28,
+      44
+    ),
     eviden: columnWidth("Eviden", filteredItems.map((item) => item.eviden), 28, 60),
   }));
 </script>
@@ -432,6 +457,7 @@
         <col style:width={columnWidths.tindakLanjut} />
         <col style:width={columnWidths.pic} />
         <col style:width={columnWidths.status} />
+        <col style:width={columnWidths.targetWaktu} />
         <col style:width={columnWidths.eviden} />
       </colgroup>
       <thead class="sticky top-0 z-20 bg-primary text-center font-bold text-white">
@@ -444,6 +470,7 @@
           <th class="border border-border p-3 align-middle uppercase leading-tight">Tindak Lanjut atas Rekomendasi</th>
           <th class="border border-border p-3 align-middle uppercase">Penanggung Jawab</th>
           <th class="border border-border p-3 align-middle uppercase leading-tight">Progress Tindak Lanjut</th>
+          <th class="border border-border p-3 align-middle uppercase leading-tight">Target Waktu Penyelesaian</th>
           <th class="border border-border p-3 align-middle uppercase">Eviden</th>
         </tr>
       </thead>
@@ -544,13 +571,27 @@
                 class="block min-h-24 w-full whitespace-pre-wrap break-words p-3 text-left text-xs leading-relaxed text-slate-700 transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 onclick={() => openItemDialog(item)}
               >
+                {#if item.target_waktu_penyelesaian}
+                  {formatIndonesianDate(item.target_waktu_penyelesaian)}
+                {:else}
+                  <span class="italic text-slate-400">Belum ada target waktu</span>
+                {/if}
+              </button>
+            </td>
+
+            <td class="h-1 border border-border p-0 align-top">
+              <button
+                type="button"
+                class="block min-h-24 w-full whitespace-pre-wrap break-words p-3 text-left text-xs leading-relaxed text-slate-700 transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                onclick={() => openItemDialog(item)}
+              >
                 {previewText(extractEvidenceText(item.eviden), "Belum ada eviden")}
               </button>
             </td>
           </tr>
         {:else}
           <tr>
-            <td colspan="9" class="border border-border py-12 text-center text-sm italic text-muted-foreground">
+            <td colspan="10" class="border border-border py-12 text-center text-sm italic text-muted-foreground">
               {searchQuery.trim()
                 ? `Tidak ada data AOI yang cocok dengan "${searchQuery.trim()}".`
                 : `Belum ada data rekomendasi Assessment ACGS untuk tahun ${currentYear}.`}
@@ -706,6 +747,24 @@
             bind:value={editPic}
             disabled={!canWrite}
           />
+        </div>
+
+        <div class="grid gap-2">
+          <label for="aoi-target-waktu" class="text-xs font-semibold uppercase text-slate-600">
+            Target Waktu Penyelesaian
+          </label>
+          <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <input
+              id="aoi-target-waktu"
+              type="date"
+              class="h-10 rounded-md border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:bg-slate-50 disabled:text-slate-500"
+              bind:value={editTargetWaktu}
+              disabled={!canWrite}
+            />
+            <span class="text-xs font-medium text-slate-500">
+              {formatIndonesianDate(editTargetWaktu)}
+            </span>
+          </div>
         </div>
 
         <div class="grid gap-2">
