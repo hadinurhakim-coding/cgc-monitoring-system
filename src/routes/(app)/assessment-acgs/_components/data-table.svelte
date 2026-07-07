@@ -2,6 +2,11 @@
   import { browser } from "$app/environment";
   import { goto } from "$app/navigation";
   import { resolve } from "$app/paths";
+  import {
+    deleteEncryptedPageCache,
+    deleteEncryptedPageCacheByRoute,
+    type PageCacheScope
+  } from "$lib/client/encrypted-page-cache.js";
   import { extractEvidenceFiles, extractEvidenceText, reconstructEvidence } from "$lib/evidence-utils.js";
   import { Skeleton } from "$lib/components/ui/skeleton/index.js";
   import { toast } from "svelte-sonner";
@@ -37,6 +42,8 @@
     currentYear?: number;
     availableYears?: number[];
     canRecompute?: boolean;
+    cacheKey?: string;
+    cacheScope?: PageCacheScope;
   }
 
   let {
@@ -47,6 +54,8 @@
     currentYear = new Date().getFullYear(),
     availableYears = [],
     canRecompute = false,
+    cacheKey,
+    cacheScope,
   }: Props = $props();
 
   const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -153,6 +162,16 @@
     return null;
   }
 
+  async function invalidateRelatedCaches(): Promise<void> {
+    if (cacheKey) await deleteEncryptedPageCache(cacheKey);
+    if (!cacheScope) return;
+    await Promise.all([
+      deleteEncryptedPageCacheByRoute(cacheScope, "/assessment-acgs"),
+      deleteEncryptedPageCacheByRoute(cacheScope, "/area-of-improvement"),
+      deleteEncryptedPageCacheByRoute(cacheScope, "/monitoring-aoi")
+    ]);
+  }
+
   // Wrap the prop in $state so it becomes deeply reactive (making optimistic UI work instantly)
   let localQuestions = $state<AssessmentItem[]>([]);
   $effect(() => {
@@ -229,6 +248,7 @@
         q.answer_uid = data.answerUid;
         q.row_uid = data.answerUid;
       }
+      await invalidateRelatedCaches();
       syncStatus = "saved";
       return true;
     }

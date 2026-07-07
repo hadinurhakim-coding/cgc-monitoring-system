@@ -1,5 +1,6 @@
 import { createAdminServerClient } from "$lib/server/auth/clients.js";
 import { hasPermission, isAdminRole } from "$lib/server/rbac.js";
+import { syncAoiItemsForYear } from "../../area-of-improvement/_services/load-aoi.server.js";
 import { persistYearSummary } from "../_lib/acgs-summary.server.js";
 import { getAssessmentQuestionRowsForYear } from "./assessment-service.server.js";
 
@@ -221,6 +222,19 @@ export async function saveAssessmentAnswer(
 				if (summaryErr) {
 					console.warn("[acgs_year_summaries] upsert failed:", summaryErr.message);
 				}
+			}
+		}
+
+		if (input.field === "implementation" || input.field === "recommendation") {
+			const syncErr = await syncAoiItemsForYear(year, {
+				userId: auth.userId,
+				email: auth.email,
+				role: auth.role,
+				divisionId: auth.divisionId,
+				isAuthenticated: true
+			});
+			if (syncErr) {
+				console.warn("[aoi_items] sync after assessment save failed:", syncErr.message);
 			}
 		}
 

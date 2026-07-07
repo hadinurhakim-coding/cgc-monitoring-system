@@ -324,6 +324,15 @@ export async function getAoiPageData(year: number, auth: AuthContext): Promise<{
 	items: AoiItem[];
 	availableYears: number[];
 	error: Error | null;
+}>;
+export async function getAoiPageData(
+	year: number,
+	auth: AuthContext,
+	opts: { syncFromAssessment?: boolean } = {}
+): Promise<{
+	items: AoiItem[];
+	availableYears: number[];
+	error: Error | null;
 }> {
 	if (!isAuthenticated(auth)) {
 		return { items: [], availableYears: [], error: new Error("Tidak terautentikasi") };
@@ -342,8 +351,10 @@ export async function getAoiPageData(year: number, auth: AuthContext): Promise<{
 	const { sources, error: sourceErr } = await getAssessmentAoiSourceRows(admin, year, sourceDivisionId);
 	if (sourceErr) return { items: [], availableYears: [], error: sourceErr };
 
-	const syncErr = await syncAoiItemsFromAssessment(admin, auth, year, sources);
-	if (syncErr) return { items: [], availableYears: [], error: syncErr };
+	if (opts.syncFromAssessment) {
+		const syncErr = await syncAoiItemsFromAssessment(admin, auth, year, sources);
+		if (syncErr) return { items: [], availableYears: [], error: syncErr };
+	}
 
 	let rowsQuery = admin
 		.from("aoi_items")
@@ -394,4 +405,18 @@ export async function getAoiPageData(year: number, auth: AuthContext): Promise<{
 	const availableYears = [...years].sort((a, b) => b - a);
 
 	return { items, availableYears, error: null };
+}
+
+export async function syncAoiItemsForYear(year: number, auth: AuthContext): Promise<Error | null> {
+	if (!isAuthenticated(auth)) return new Error("Tidak terautentikasi");
+	if (!hasPermission(auth.role, "assessment:write")) return new Error("Izin ditolak");
+
+	const admin = createAdminServerClient();
+	const divisionId = scopedDivisionId(auth);
+	if (!isAdminRole(auth.role) && !divisionId) return null;
+
+	const sourceDivisionId = isAdminRole(auth.role) ? null : divisionId;
+	const { sources, error } = await getAssessmentAoiSourceRows(admin, year, sourceDivisionId);
+	if (error) return error;
+	return syncAoiItemsFromAssessment(admin, auth, year, sources);
 }

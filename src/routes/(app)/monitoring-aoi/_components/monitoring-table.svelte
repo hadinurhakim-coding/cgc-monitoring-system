@@ -3,6 +3,11 @@
   import { resolve } from "$app/paths";
   import { toast } from "svelte-sonner";
   import { Calendar, Check } from "@lucide/svelte";
+  import {
+    deleteEncryptedPageCache,
+    deleteEncryptedPageCacheByRoute,
+    type PageCacheScope
+  } from "$lib/client/encrypted-page-cache.js";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
   import type { AoiLevelGroup, MonitoringGrandTotal } from "../_lib/types.js";
 
@@ -12,9 +17,11 @@
     currentYear: number;
     availableYears: number[];
     canWrite: boolean;
+    cacheKey?: string;
+    cacheScope?: PageCacheScope;
   }
 
-  let { levels, grandTotal, currentYear, availableYears, canWrite }: Props = $props();
+  let { levels, grandTotal, currentYear, availableYears, canWrite, cacheKey, cacheScope }: Props = $props();
 
   // Keterangan lokal — keyed by partId
   let keteranganLocal = $state<Record<string, string>>({});
@@ -40,6 +47,8 @@
         const text = await res.text().catch(() => res.statusText);
         throw new Error(text || `HTTP ${res.status}`);
       }
+      if (cacheKey) await deleteEncryptedPageCache(cacheKey);
+      if (cacheScope) await deleteEncryptedPageCacheByRoute(cacheScope, "/monitoring-aoi");
     } catch (err) {
       toast.error("Gagal menyimpan keterangan: " + (err instanceof Error ? err.message : String(err)));
     }

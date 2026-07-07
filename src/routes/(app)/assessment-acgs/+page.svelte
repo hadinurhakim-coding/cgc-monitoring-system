@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { navigating } from "$app/state";
+	import { refreshCachedPageData } from "$lib/client/cached-page-load.js";
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import { Separator } from "$lib/components/ui/separator/index.js";
 	import DataTable from "./_components/data-table.svelte";
@@ -7,6 +8,34 @@
 	import type { PageData } from "./$types.js";
 
 	let { data }: { data: PageData } = $props();
+	let refreshedData = $state<PageData | null>(null);
+	const viewData = $derived(refreshedData ?? data);
+
+	$effect(() => {
+		data.cacheKey;
+		refreshedData = null;
+	});
+
+	$effect(() => {
+		if (data.cacheState !== "cached") return;
+		let cancelled = false;
+		refreshCachedPageData({
+			url: data.dataUrl,
+			cacheKey: data.cacheKey,
+			scope: data.cacheScope,
+			route: "/assessment-acgs"
+		})
+			.then((fresh) => {
+				if (!cancelled) refreshedData = { ...viewData, ...fresh };
+			})
+			.catch((err: unknown) => {
+				const message = err instanceof Error ? err.message : "Gagal memuat pembaruan";
+				if (!cancelled) refreshedData = { ...viewData, refreshError: message };
+			});
+		return () => {
+			cancelled = true;
+		};
+	});
 
 	// Skeleton hanya ditampilkan saat navigasi yang mengubah tahun (bukan filter search lokal)
 	const isYearNavigation = $derived(
@@ -30,21 +59,31 @@
 <main
 	class="flex flex-1 flex-col gap-4 p-4 md:gap-6 md:p-6 overflow-hidden"
 >
-	{#if data.loadError}
+	{#if viewData.loadError}
 		<div
 			class="rounded-md border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive"
 			role="alert"
 		>
-			{data.loadError}
+			{viewData.loadError}
+		</div>
+	{/if}
+	{#if viewData.cacheState === "cached"}
+		<div class="rounded-md border border-primary/20 bg-primary/5 px-4 py-2 text-xs text-primary" role="status">
+			Menampilkan data tersimpan. Memuat pembaruan di latar belakang.
+			{#if viewData.refreshError}
+				<span class="text-destructive"> {viewData.refreshError}</span>
+			{/if}
 		</div>
 	{/if}
 	<DataTable
-		initialQuestions={(data.assessmentQuestions || []) as AssessmentItem[]}
-		serverSearch={data.search ?? ""}
+		initialQuestions={(viewData.assessmentQuestions || []) as AssessmentItem[]}
+		serverSearch={viewData.search ?? ""}
 		structureFallbackData={[]}
-		currentYear={data.year}
-		availableYears={data.availableYears || []}
-		canRecompute={data.authUser.role === "admin"}
+		currentYear={viewData.year}
+		availableYears={viewData.availableYears || []}
+		canRecompute={viewData.authUser.role === "admin"}
 		isLoading={isYearNavigation}
+		cacheKey={viewData.cacheKey}
+		cacheScope={viewData.cacheScope}
 	/>
 </main>

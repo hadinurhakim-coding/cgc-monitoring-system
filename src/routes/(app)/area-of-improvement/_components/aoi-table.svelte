@@ -3,6 +3,11 @@
   import { resolve } from "$app/paths";
   import { toast } from "svelte-sonner";
   import { Calendar, Check, Cloud, LoaderCircle, CircleAlert, Pencil } from "@lucide/svelte";
+  import {
+    deleteEncryptedPageCache,
+    deleteEncryptedPageCacheByRoute,
+    type PageCacheScope
+  } from "$lib/client/encrypted-page-cache.js";
   import * as Dialog from "$lib/components/ui/dialog/index.js";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
   import { extractEvidenceText, extractEvidenceFiles, reconstructEvidence } from "$lib/evidence-utils.js";
@@ -20,6 +25,8 @@
     currentYear: number;
     availableYears: number[];
     canWrite: boolean;
+    cacheKey?: string;
+    cacheScope?: PageCacheScope;
   }
 
   let {
@@ -27,6 +34,8 @@
     currentYear,
     availableYears,
     canWrite,
+    cacheKey,
+    cacheScope,
   }: Props = $props();
 
   let localItems = $state<AoiItem[]>([]);
@@ -46,6 +55,15 @@
     globalSyncStatus = status;
   }
 
+  async function invalidateRelatedCaches(): Promise<void> {
+    if (cacheKey) await deleteEncryptedPageCache(cacheKey);
+    if (!cacheScope) return;
+    await Promise.all([
+      deleteEncryptedPageCacheByRoute(cacheScope, "/area-of-improvement"),
+      deleteEncryptedPageCacheByRoute(cacheScope, "/monitoring-aoi")
+    ]);
+  }
+
   const editingItem = $derived(localItems.find((item) => item.uid === editingUid) ?? null);
 
   function openItemDialog(item: AoiItem): void {
@@ -63,6 +81,7 @@
       localItems = localItems.map((item) =>
         item.uid === uid ? { ...item, [field]: value } : item
       );
+      await invalidateRelatedCaches();
       setSync("saved");
       return true;
     } catch (err) {
@@ -132,6 +151,7 @@
       localItems = localItems.map((i) => i.uid === item.uid ? { ...i, eviden: combined } : i);
       const { [item.uid]: _, ...rest } = stagedFiles;
       stagedFiles = rest;
+      await invalidateRelatedCaches();
       setSync("saved");
       toast.success("File berhasil diunggah");
     } catch (err) {

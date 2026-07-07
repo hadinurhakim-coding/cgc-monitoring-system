@@ -3,6 +3,7 @@
 	import EllipsisVerticalIcon from "@lucide/svelte/icons/ellipsis-vertical";
 	import UserRoundIcon from "@lucide/svelte/icons/user-round";
 	import LogOutIcon from "@lucide/svelte/icons/log-out";
+	import { clearEncryptedPageCacheForUser } from "$lib/client/encrypted-page-cache.js";
 	import * as Avatar from "$lib/components/ui/avatar/index.js";
 	import { Button } from "$lib/components/ui/button/index.js";
 	import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
@@ -30,6 +31,12 @@
 			.slice(0, 2)
 			.toUpperCase() || "?"
 	);
+
+	async function handleLogout(event: SubmitEvent): Promise<void> {
+		event.preventDefault();
+		await clearEncryptedPageCacheForUser(null);
+		(event.currentTarget as HTMLFormElement).submit();
+	}
 </script>
 
 <Sidebar.Footer>
@@ -76,7 +83,7 @@
 							</DropdownMenu.Item>
 							<DropdownMenu.Item variant="destructive" class="cursor-pointer rounded-lg px-3 py-2.5">
 								{#snippet child({ props })}
-									<form method="POST" action="/logout" class="w-full">
+									<form method="POST" action="/logout" class="w-full" onsubmit={handleLogout}>
 										<button type="submit" class="flex w-full items-center gap-2" {...props}>
 											<LogOutIcon class="size-4" />
 											<span>Logout</span>
