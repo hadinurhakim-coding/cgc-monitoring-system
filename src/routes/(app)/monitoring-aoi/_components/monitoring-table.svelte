@@ -62,6 +62,10 @@
     return label.trim();
   }
 
+  function countText(value: number): string {
+    return String(value);
+  }
+
   // Year selector
   let selectedYear = $state("");
   let yearQuery = $state("");
@@ -176,21 +180,21 @@
 
               <!-- Jumlah AOI -->
               <td class="border border-border px-2 py-2 text-center font-medium">
-                {sec.jumlahAoi || ""}
+                {countText(sec.jumlahAoi)}
               </td>
 
               <!-- 4 status counts -->
               <td class="border border-border px-2 py-2 text-center text-emerald-700 font-medium">
-                {sec.statusCounts.selesai || ""}
+                {countText(sec.statusCounts.selesai)}
               </td>
               <td class="border border-border px-2 py-2 text-center text-blue-700 font-medium">
-                {sec.statusCounts.onProgress || ""}
+                {countText(sec.statusCounts.onProgress)}
               </td>
               <td class="border border-border px-2 py-2 text-center text-amber-700 font-medium">
-                {sec.statusCounts.tidakDapat || ""}
+                {countText(sec.statusCounts.tidakDapat)}
               </td>
               <td class="border border-border px-2 py-2 text-center text-muted-foreground font-medium">
-                {sec.statusCounts.belum || ""}
+                {countText(sec.statusCounts.belum)}
               </td>
 
               {#if si === 0}
@@ -223,11 +227,11 @@
           <td colspan="2" class="border border-border px-3 py-1.5 font-bold text-right text-slate-900 uppercase">
             Total {levelDisplayName(lv.levelLabel)}
           </td>
-          <td class="border border-border px-2 py-1.5 text-center font-bold">{lv.totalAoi || ""}</td>
-          <td class="border border-border px-2 py-1.5 text-center font-bold text-emerald-700">{lv.statusCounts.selesai || ""}</td>
-          <td class="border border-border px-2 py-1.5 text-center font-bold text-blue-700">{lv.statusCounts.onProgress || ""}</td>
-          <td class="border border-border px-2 py-1.5 text-center font-bold text-amber-700">{lv.statusCounts.tidakDapat || ""}</td>
-          <td class="border border-border px-2 py-1.5 text-center font-bold text-muted-foreground">{lv.statusCounts.belum || ""}</td>
+          <td class="border border-border px-2 py-1.5 text-center font-bold">{countText(lv.totalAoi)}</td>
+          <td class="border border-border px-2 py-1.5 text-center font-bold text-emerald-700">{countText(lv.statusCounts.selesai)}</td>
+          <td class="border border-border px-2 py-1.5 text-center font-bold text-blue-700">{countText(lv.statusCounts.onProgress)}</td>
+          <td class="border border-border px-2 py-1.5 text-center font-bold text-amber-700">{countText(lv.statusCounts.tidakDapat)}</td>
+          <td class="border border-border px-2 py-1.5 text-center font-bold text-muted-foreground">{countText(lv.statusCounts.belum)}</td>
           <td class="border border-border"></td>
         </tr>
       {/each}
@@ -235,11 +239,11 @@
       <!-- Grand Total -->
       <tr class="bg-primary text-white font-bold">
         <td colspan="2" class="border border-border px-3 py-2 text-right uppercase">Total</td>
-        <td class="border border-border px-2 py-2 text-center">{grandTotal.jumlahAoi || ""}</td>
-        <td class="border border-border px-2 py-2 text-center">{grandTotal.statusCounts.selesai || ""}</td>
-        <td class="border border-border px-2 py-2 text-center">{grandTotal.statusCounts.onProgress || ""}</td>
-        <td class="border border-border px-2 py-2 text-center">{grandTotal.statusCounts.tidakDapat || ""}</td>
-        <td class="border border-border px-2 py-2 text-center">{grandTotal.statusCounts.belum || ""}</td>
+        <td class="border border-border px-2 py-2 text-center">{countText(grandTotal.jumlahAoi)}</td>
+        <td class="border border-border px-2 py-2 text-center">{countText(grandTotal.statusCounts.selesai)}</td>
+        <td class="border border-border px-2 py-2 text-center">{countText(grandTotal.statusCounts.onProgress)}</td>
+        <td class="border border-border px-2 py-2 text-center">{countText(grandTotal.statusCounts.tidakDapat)}</td>
+        <td class="border border-border px-2 py-2 text-center">{countText(grandTotal.statusCounts.belum)}</td>
         <td class="border border-border"></td>
       </tr>
     </tbody>

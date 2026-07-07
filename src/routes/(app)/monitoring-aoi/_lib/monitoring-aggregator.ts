@@ -1,4 +1,3 @@
-import { assessmentData } from "../../assessment-acgs/_data/assessment-master.js";
 import type { AoiItem } from "../../area-of-improvement/_lib/types.js";
 import {
 	type AoiStatusCounts,
@@ -10,21 +9,35 @@ import {
 	addStatusCounts,
 } from "./types.js";
 
-function statusToKey(status: string): keyof AoiStatusCounts | null {
+export interface MonitoringHierarchyItem {
+	type: "level" | "part" | "section";
+	sortOrder: number;
+	levelLabel: string;
+	partId: string;
+	itemId: string;
+	label: string;
+	nameId: string;
+	fullNameId: string;
+}
+
+function norm(value: string): string {
+	return value.trim();
+}
+
+function statusToKey(status: string): keyof AoiStatusCounts {
 	switch (status) {
 		case "Telah ditindaklanjuti 100%": return "selesai";
 		case "On Progress": return "onProgress";
 		case "Tidak dapat ditindaklanjuti 100%": return "tidakDapat";
 		case "Belum ditindaklanjuti": return "belum";
-		default: return null;
+		default: return "belum";
 	}
 }
 
 function computeStatusCounts(items: AoiItem[]): AoiStatusCounts {
 	const counts = emptyStatusCounts();
 	for (const item of items) {
-		const key = statusToKey(item.status_rekomendasi);
-		if (key) counts[key]++;
+		counts[statusToKey(item.status_rekomendasi)]++;
 	}
 	return counts;
 }
@@ -48,51 +61,52 @@ function partLabelFromId(partId: string): string {
 }
 
 export function buildMonitoringData(
+	hierarchy: MonitoringHierarchyItem[],
 	items: AoiItem[],
 	keteranganMap: Map<string, string>
 ): { levels: AoiLevelGroup[]; grandTotal: MonitoringGrandTotal } {
-	// Bangun index: section_id → items
 	const itemsBySection = new Map<string, AoiItem[]>();
 	for (const item of items) {
-		const key = item.section_id;
+		const key = norm(item.section_id);
 		if (!itemsBySection.has(key)) itemsBySection.set(key, []);
 		itemsBySection.get(key)!.push(item);
 	}
 
-	// Kumpulkan hierarki dari master data secara berurutan
-	const levelMap = new Map<string, { label: string; parts: Map<string, { part: (typeof assessmentData)[number]; sections: (typeof assessmentData)[number][] }> }>();
+	const levelMap = new Map<string, {
+		label: string;
+		parts: Map<string, { part: MonitoringHierarchyItem; sections: MonitoringHierarchyItem[] }>;
+	}>();
 	const levelOrder: string[] = [];
 	const partOrderPerLevel = new Map<string, string[]>();
 
-	for (const item of assessmentData) {
+	for (const item of [...hierarchy].sort((a, b) => a.sortOrder - b.sortOrder)) {
 		if (item.type === "level") {
-			const lbl = item.label ?? "";
-			if (!levelMap.has(lbl)) {
-				levelMap.set(lbl, { label: lbl, parts: new Map() });
-				levelOrder.push(lbl);
-				partOrderPerLevel.set(lbl, []);
-			}
+			const levelLabel = norm(item.label);
+			if (!levelLabel || levelMap.has(levelLabel)) continue;
+			levelMap.set(levelLabel, { label: levelLabel, parts: new Map() });
+			levelOrder.push(levelLabel);
+			partOrderPerLevel.set(levelLabel, []);
 		} else if (item.type === "part") {
-			const lbl = item.level ?? "";
-			const partId = item.id ?? "";
-			if (!levelMap.has(lbl)) {
-				levelMap.set(lbl, { label: lbl, parts: new Map() });
-				levelOrder.push(lbl);
-				partOrderPerLevel.set(lbl, []);
+			const levelLabel = norm(item.levelLabel);
+			const partId = norm(item.itemId);
+			if (!levelLabel || !partId) continue;
+			if (!levelMap.has(levelLabel)) {
+				levelMap.set(levelLabel, { label: levelLabel, parts: new Map() });
+				levelOrder.push(levelLabel);
+				partOrderPerLevel.set(levelLabel, []);
 			}
-			const lv = levelMap.get(lbl)!;
-			if (!lv.parts.has(partId)) {
-				lv.parts.set(partId, { part: item, sections: [] });
-				partOrderPerLevel.get(lbl)!.push(partId);
+			const level = levelMap.get(levelLabel)!;
+			if (!level.parts.has(partId)) {
+				level.parts.set(partId, { part: item, sections: [] });
+				partOrderPerLevel.get(levelLabel)!.push(partId);
 			}
 		} else if (item.type === "section") {
-			const lbl = item.level ?? "";
-			const partId = item.part ?? "";
-			const lv = levelMap.get(lbl);
-			if (!lv) continue;
-			const pt = lv.parts.get(partId);
-			if (!pt) continue;
-			pt.sections.push(item);
+			const levelLabel = norm(item.levelLabel);
+			const partId = norm(item.partId);
+			const level = levelMap.get(levelLabel);
+			const part = level?.parts.get(partId);
+			if (!part) continue;
+			part.sections.push(item);
 		}
 	}
 
@@ -100,45 +114,49 @@ export function buildMonitoringData(
 	let grandTotal: MonitoringGrandTotal = { jumlahAoi: 0, statusCounts: emptyStatusCounts() };
 
 	for (const levelLabel of levelOrder) {
-		const lv = levelMap.get(levelLabel);
-		if (!lv) continue;
+		const level = levelMap.get(levelLabel);
+		if (!level) continue;
 
 		const parts: AoiPartGroup[] = [];
 		let levelTotalAoi = 0;
 		let levelStatusCounts = emptyStatusCounts();
 
-		const partOrder = partOrderPerLevel.get(levelLabel) ?? [];
-		for (const partId of partOrder) {
-			const pt = lv.parts.get(partId);
-			if (!pt) continue;
+		for (const partId of partOrderPerLevel.get(levelLabel) ?? []) {
+			const part = level.parts.get(partId);
+			if (!part) continue;
 
 			const sections: AoiSectionRow[] = [];
 			let partTotalAoi = 0;
 			let partStatusCounts = emptyStatusCounts();
 
-			for (const sec of pt.sections) {
-				const sectionId = sec.id ?? "";
-				const sectionLabel = (sec.name_id ?? "").trim();
+			for (const section of part.sections) {
+				const sectionId = norm(section.itemId);
 				const sectionItems = itemsBySection.get(sectionId) ?? [];
 				const jumlahAoi = sectionItems.length;
 				const statusCounts = computeStatusCounts(sectionItems);
 
-				sections.push({ sectionId, sectionLabel, partId, levelLabel, jumlahAoi, statusCounts });
+				sections.push({
+					sectionId,
+					sectionLabel: norm(section.nameId),
+					partId,
+					levelLabel,
+					jumlahAoi,
+					statusCounts,
+				});
 				partTotalAoi += jumlahAoi;
 				partStatusCounts = addStatusCounts(partStatusCounts, statusCounts);
 			}
 
-			const partGroup: AoiPartGroup = {
+			parts.push({
 				partId,
 				partLabel: partLabelFromId(partId),
-				fullNameId: (pt.part.full_name_id ?? pt.part.name_id ?? "").trim(),
+				fullNameId: norm(part.part.fullNameId || part.part.nameId),
 				levelLabel,
 				sections,
 				totalAoi: partTotalAoi,
 				statusCounts: partStatusCounts,
 				keterangan: keteranganMap.get(partId) ?? "",
-			};
-			parts.push(partGroup);
+			});
 			levelTotalAoi += partTotalAoi;
 			levelStatusCounts = addStatusCounts(levelStatusCounts, partStatusCounts);
 		}

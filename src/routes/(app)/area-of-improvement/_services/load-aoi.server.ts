@@ -34,6 +34,14 @@ type AoiDbRow = {
 	updated_by: string | null;
 };
 
+type ExistingAoiRow = {
+	uid: string;
+	item_uid: string;
+	assessment_answer_uid: string;
+	sort_order: number | null;
+	is_active: boolean;
+};
+
 type AoiFollowupRow = {
 	aoi_item_uid: string;
 	fakta_temuan_override: string;
@@ -41,6 +49,7 @@ type AoiFollowupRow = {
 	pic: string;
 	status_rekomendasi: StatusRekomendasi;
 	eviden: string;
+	updated_at: string;
 };
 
 function norm(value: unknown): string {
@@ -95,6 +104,7 @@ function toAoiItem(
 		eviden: followup?.eviden ?? "",
 		created_at: row.created_at,
 		updated_at: row.updated_at,
+		followup_updated_at: followup?.updated_at ?? row.updated_at,
 		created_by: row.created_by,
 		updated_by: row.updated_by,
 	};
@@ -190,15 +200,11 @@ async function syncAoiItemsFromAssessment(
 	year: number,
 	sources: AssessmentAoiSourceRow[]
 ): Promise<Error | null> {
-	if (sources.length === 0) return null;
-
 	const divisionId = isAdminRole(auth.role) ? null : auth.divisionId;
-	const itemUids = sources.map((source) => source.itemUid);
 	let existingQuery = admin
 		.from("aoi_items")
-		.select("uid,item_uid")
-		.eq("year", year)
-		.in("item_uid", itemUids);
+		.select("uid,item_uid,assessment_answer_uid,sort_order,is_active")
+		.eq("year", year);
 	if (divisionId) {
 		existingQuery = existingQuery.eq("division_id", divisionId);
 	} else {
@@ -208,11 +214,10 @@ async function syncAoiItemsFromAssessment(
 	const { data: existingRows, error: existingErr } = await existingQuery;
 	if (existingErr) return new Error(existingErr.message);
 
-	const existingByItemUid = new Map<string, string>();
-	for (const row of (existingRows ?? []) as Record<string, unknown>[]) {
-		const itemUid = norm(row.item_uid);
-		const uid = norm(row.uid);
-		if (itemUid && uid) existingByItemUid.set(itemUid, uid);
+	const sourceByItemUid = sourceMapByItemUid(sources);
+	const existingByItemUid = new Map<string, ExistingAoiRow>();
+	for (const row of (existingRows ?? []) as ExistingAoiRow[]) {
+		if (row.item_uid && row.uid) existingByItemUid.set(row.item_uid, row);
 	}
 
 	const inserts = sources
@@ -233,8 +238,15 @@ async function syncAoiItemsFromAssessment(
 	}
 
 	for (const source of sources) {
-		const uid = existingByItemUid.get(source.itemUid);
-		if (!uid) continue;
+		const existing = existingByItemUid.get(source.itemUid);
+		if (!existing) continue;
+		if (
+			existing.assessment_answer_uid === source.answerUid &&
+			existing.sort_order === source.sortOrder &&
+			existing.is_active
+		) {
+			continue;
+		}
 
 		const { error } = await admin
 			.from("aoi_items")
@@ -244,7 +256,21 @@ async function syncAoiItemsFromAssessment(
 				is_active: true,
 				updated_by: auth.userId,
 			})
-			.eq("uid", uid);
+			.eq("uid", existing.uid);
+		if (error) return new Error(error.message);
+	}
+
+	const staleUids = [...existingByItemUid.values()]
+		.filter((row) => row.is_active && !sourceByItemUid.has(row.item_uid))
+		.map((row) => row.uid);
+	if (staleUids.length > 0) {
+		const { error } = await admin
+			.from("aoi_items")
+			.update({
+				is_active: false,
+				updated_by: auth.userId,
+			})
+			.in("uid", staleUids);
 		if (error) return new Error(error.message);
 	}
 
@@ -298,7 +324,7 @@ async function getFollowupsByAoiUid(
 
 	const { data, error } = await admin
 		.from("aoi_followups")
-		.select("aoi_item_uid,fakta_temuan_override,tindak_lanjut_rekomendasi,pic,status_rekomendasi,eviden")
+		.select("aoi_item_uid,fakta_temuan_override,tindak_lanjut_rekomendasi,pic,status_rekomendasi,eviden,updated_at")
 		.in("aoi_item_uid", aoiItemUids);
 
 	if (error) return { followups: new Map(), error: new Error(error.message) };
@@ -314,6 +340,7 @@ async function getFollowupsByAoiUid(
 			pic: norm(raw.pic),
 			status_rekomendasi: normalizeStatus(raw.status_rekomendasi),
 			eviden: norm(raw.eviden),
+			updated_at: norm(raw.updated_at),
 		});
 	}
 
@@ -321,6 +348,11 @@ async function getFollowupsByAoiUid(
 }
 
 export async function getAoiPageData(year: number, auth: AuthContext): Promise<{
+	items: AoiItem[];
+	availableYears: number[];
+	error: Error | null;
+}>;
+export async function getAoiPageData(year: number, auth: AuthContext, opts: { syncFromAssessment?: boolean }): Promise<{
 	items: AoiItem[];
 	availableYears: number[];
 	error: Error | null;

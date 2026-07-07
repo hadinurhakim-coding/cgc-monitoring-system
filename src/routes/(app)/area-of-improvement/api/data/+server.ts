@@ -15,7 +15,10 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 	const year = resolveYear(url.searchParams.get("year"));
 	const payload = await getAoiPageData(year, locals.auth);
 	const version = latestIsoVersion(
-		payload.items.map((item) => item.updated_at),
+		[
+			...payload.items.map((item) => item.updated_at),
+			...payload.items.map((item) => item.followup_updated_at),
+		],
 		`${ROUTE}:${year}:${payload.items.length}:${payload.availableYears.join(",")}`
 	);
 

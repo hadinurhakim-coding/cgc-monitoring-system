@@ -26,6 +26,7 @@ export interface AoiItem {
 	eviden: string;
 	created_at: string;
 	updated_at: string;
+	followup_updated_at: string;
 	created_by: string | null;
 	updated_by: string | null;
 }
