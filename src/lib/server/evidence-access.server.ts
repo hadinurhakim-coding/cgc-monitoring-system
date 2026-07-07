@@ -95,16 +95,34 @@ export async function canAccessAoiEvidencePath(
 
 	const admin = createAdminServerClient();
 	const { data, error } = await admin
-		.from("aoi_items")
-		.select("uid,division_id,eviden")
+		.from("aoi_followups")
+		.select("aoi_item_uid,eviden")
 		.ilike("eviden", `%[FILE:${storagePath}%`)
 		.limit(50);
 
 	if (error) return databaseFailure(error.message);
 
-	const rows = (data ?? []) as Record<string, unknown>[];
-	const allowed = rows.some((row) => {
-		const rowDivisionId = nullableStringField(row, "division_id");
+	const followupRows = (data ?? []) as Record<string, unknown>[];
+	const aoiItemUids = followupRows
+		.map((row) => stringField(row, "aoi_item_uid"))
+		.filter((uid) => uid.length > 0);
+	if (aoiItemUids.length === 0) return denied();
+
+	const { data: itemRows, error: itemError } = await admin
+		.from("aoi_items")
+		.select("uid,division_id")
+		.in("uid", aoiItemUids);
+
+	if (itemError) return databaseFailure(itemError.message);
+
+	const divisionByAoiUid = new Map<string, string | null>();
+	for (const row of (itemRows ?? []) as Record<string, unknown>[]) {
+		divisionByAoiUid.set(stringField(row, "uid"), nullableStringField(row, "division_id"));
+	}
+
+	const allowed = followupRows.some((row) => {
+		const aoiItemUid = stringField(row, "aoi_item_uid");
+		const rowDivisionId = divisionByAoiUid.get(aoiItemUid) ?? null;
 		const evidence = stringField(row, "eviden");
 		return canAccessDivision(auth, rowDivisionId) && evidenceHasPath(evidence, storagePath);
 	});

@@ -12,17 +12,17 @@
   } = $props();
 
   const colorMap: Record<StatusRekomendasi, string> = {
-    "Selesai ditindak-lanjuti":           "bg-emerald-500 text-white",
+    "Telah ditindaklanjuti 100%":        "bg-emerald-500 text-white",
     "On Progress":                         "bg-blue-500 text-white",
-    "Tidak dapat ditindak-lanjuti 100%":  "bg-amber-500 text-white",
-    "Belum ditindak-lanjuti":             "bg-slate-300 text-slate-700",
+    "Tidak dapat ditindaklanjuti 100%":   "bg-amber-500 text-white",
+    "Belum ditindaklanjuti":              "bg-slate-300 text-slate-700",
   };
 
   const inactiveMap: Record<StatusRekomendasi, string> = {
-    "Selesai ditindak-lanjuti":           "bg-emerald-50 text-emerald-700 hover:bg-emerald-100",
+    "Telah ditindaklanjuti 100%":        "bg-emerald-50 text-emerald-700 hover:bg-emerald-100",
     "On Progress":                         "bg-blue-50 text-blue-700 hover:bg-blue-100",
-    "Tidak dapat ditindak-lanjuti 100%":  "bg-amber-50 text-amber-700 hover:bg-amber-100",
-    "Belum ditindak-lanjuti":             "bg-slate-50 text-slate-500 hover:bg-slate-100",
+    "Tidak dapat ditindaklanjuti 100%":   "bg-amber-50 text-amber-700 hover:bg-amber-100",
+    "Belum ditindaklanjuti":              "bg-slate-50 text-slate-500 hover:bg-slate-100",
   };
 
   async function select(val: StatusRekomendasi) {

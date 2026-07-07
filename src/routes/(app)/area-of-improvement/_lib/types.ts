@@ -1,8 +1,8 @@
 export const STATUS_REKOMENDASI_OPTIONS = [
-	"Selesai ditindak-lanjuti",
+	"Telah ditindaklanjuti 100%",
 	"On Progress",
-	"Tidak dapat ditindak-lanjuti 100%",
-	"Belum ditindak-lanjuti",
+	"Tidak dapat ditindaklanjuti 100%",
+	"Belum ditindaklanjuti",
 ] as const;
 
 export type StatusRekomendasi = (typeof STATUS_REKOMENDASI_OPTIONS)[number];

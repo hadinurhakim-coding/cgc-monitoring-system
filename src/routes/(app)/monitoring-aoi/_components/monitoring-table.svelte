@@ -129,10 +129,10 @@
         </th>
       </tr>
       <tr class="bg-primary text-white text-center">
-        <th class="border border-border px-2 py-1 leading-snug font-semibold">Selesai<br/>ditindak-lanjuti</th>
+        <th class="border border-border px-2 py-1 leading-snug font-semibold">Telah<br/>ditindaklanjuti<br/>100%</th>
         <th class="border border-border px-2 py-1 leading-snug font-semibold">On<br/>Progress</th>
-        <th class="border border-border px-2 py-1 leading-snug font-semibold">Tidak dapat<br/>ditindak-lanjuti<br/>100%</th>
-        <th class="border border-border px-2 py-1 leading-snug font-semibold">Belum<br/>ditindak-lanjuti</th>
+        <th class="border border-border px-2 py-1 leading-snug font-semibold">Tidak dapat<br/>ditindaklanjuti<br/>100%</th>
+        <th class="border border-border px-2 py-1 leading-snug font-semibold">Belum<br/>ditindaklanjuti</th>
       </tr>
     </thead>
     <tbody class="align-top">

@@ -4,17 +4,13 @@ import { STATUS_REKOMENDASI_OPTIONS, isValidStatusRekomendasi } from "../_lib/ty
 
 export type SaveAoiAuth = AuthContext;
 
-const ALLOWED_FIELDS = new Set([
-	"tindak_lanjut_rekomendasi",
-	"fakta_temuan",
-	"pic",
-	"status_rekomendasi",
-	"eviden",
-	"level_label",
-	"part_id",
-	"section_id",
-	"standar_label",
-]);
+const FIELD_TO_COLUMN: Record<string, string> = {
+	fakta_temuan: "fakta_temuan_override",
+	tindak_lanjut_rekomendasi: "tindak_lanjut_rekomendasi",
+	pic: "pic",
+	status_rekomendasi: "status_rekomendasi",
+	eviden: "eviden",
+};
 
 export async function saveAoiField(
 	auth: SaveAoiAuth,
@@ -25,7 +21,9 @@ export async function saveAoiField(
 
 	const uid = input.uid?.trim();
 	if (!uid) return { error: new Error("uid wajib diisi") };
-	if (!ALLOWED_FIELDS.has(input.field)) return { error: new Error("Field tidak valid") };
+
+	const column = FIELD_TO_COLUMN[input.field];
+	if (!column) return { error: new Error("Field tidak valid") };
 
 	if (input.field === "status_rekomendasi" && !isValidStatusRekomendasi(input.value)) {
 		return { error: new Error(`Status tidak valid. Pilih salah satu: ${STATUS_REKOMENDASI_OPTIONS.join(", ")}`) };
@@ -41,17 +39,20 @@ export async function saveAoiField(
 	if (rowError) return { error: new Error(rowError.message) };
 	if (!row) return { error: new Error("AOI tidak ditemukan") };
 
-	const rowDivisionId = row.division_id != null ? String(row.division_id) : null;
+	const raw = row as Record<string, unknown>;
+	const rowDivisionId = typeof raw.division_id === "string" ? raw.division_id : null;
 	if (!canAccessDivision(auth, rowDivisionId)) return { error: new Error("Izin ditolak") };
 
+	const payload: Record<string, string> = {
+		aoi_item_uid: uid,
+		[column]: input.value,
+		created_by: auth.userId,
+		updated_by: auth.userId,
+	};
+
 	const { error } = await admin
-		.from("aoi_items")
-		.update({
-			[input.field]: input.value,
-			updated_at: new Date().toISOString(),
-			updated_by: auth.userId,
-		})
-		.eq("uid", uid);
+		.from("aoi_followups")
+		.upsert(payload, { onConflict: "aoi_item_uid" });
 
 	if (error) return { error: new Error(error.message) };
 	return { error: null };

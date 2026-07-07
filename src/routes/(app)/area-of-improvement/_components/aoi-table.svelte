@@ -113,10 +113,10 @@
 
   function statusPreviewClass(status: StatusRekomendasi): string {
     const classMap: Record<StatusRekomendasi, string> = {
-      "Selesai ditindak-lanjuti": "border-emerald-300 bg-emerald-100 text-emerald-800",
+      "Telah ditindaklanjuti 100%": "border-emerald-300 bg-emerald-100 text-emerald-800",
       "On Progress": "border-blue-300 bg-blue-100 text-blue-800",
-      "Tidak dapat ditindak-lanjuti 100%": "border-amber-300 bg-amber-100 text-amber-800",
-      "Belum ditindak-lanjuti": "border-slate-300 bg-slate-100 text-slate-700",
+      "Tidak dapat ditindaklanjuti 100%": "border-amber-300 bg-amber-100 text-amber-800",
+      "Belum ditindaklanjuti": "border-slate-300 bg-slate-100 text-slate-700",
     };
     return classMap[status];
   }

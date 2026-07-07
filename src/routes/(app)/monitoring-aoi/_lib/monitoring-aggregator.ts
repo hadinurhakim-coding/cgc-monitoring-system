@@ -12,10 +12,10 @@ import {
 
 function statusToKey(status: string): keyof AoiStatusCounts | null {
 	switch (status) {
-		case "Selesai ditindak-lanjuti": return "selesai";
+		case "Telah ditindaklanjuti 100%": return "selesai";
 		case "On Progress": return "onProgress";
-		case "Tidak dapat ditindak-lanjuti 100%": return "tidakDapat";
-		case "Belum ditindak-lanjuti": return "belum";
+		case "Tidak dapat ditindaklanjuti 100%": return "tidakDapat";
+		case "Belum ditindaklanjuti": return "belum";
 		default: return null;
 	}
 }
