@@ -2,7 +2,7 @@
   import { goto } from "$app/navigation";
   import { resolve } from "$app/paths";
   import { toast } from "svelte-sonner";
-  import { Calendar, Check, Search, X } from "@lucide/svelte";
+  import { Calendar, Check, CircleAlert, Cloud, LoaderCircle, Search, X } from "@lucide/svelte";
   import {
     deleteEncryptedPageCache,
     deleteEncryptedPageCacheByRoute,
@@ -26,6 +26,7 @@
 
   // Keterangan lokal — keyed by partId
   let keteranganLocal = $state<Record<string, string>>({});
+  let syncStatus = $state<"saved" | "saving" | "error">("saved");
 
   $effect(() => {
     const init: Record<string, string> = {};
@@ -37,7 +38,8 @@
     keteranganLocal = init;
   });
 
-  async function saveKeterangan(partId: string) {
+  async function saveKeterangan(partId: string): Promise<void> {
+    syncStatus = "saving";
     try {
       const res = await fetch("/monitoring-aoi/api/save-keterangan", {
         method: "POST",
@@ -50,7 +52,9 @@
       }
       if (cacheKey) await deleteEncryptedPageCache(cacheKey);
       if (cacheScope) await deleteEncryptedPageCacheByRoute(cacheScope, "/monitoring-aoi");
+      syncStatus = "saved";
     } catch (err) {
+      syncStatus = "error";
       toast.error("Gagal menyimpan keterangan: " + (err instanceof Error ? err.message : String(err)));
     }
   }
@@ -240,6 +244,22 @@
       {/if}
     </div>
 
+  <div
+    class="mr-2 flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-[10px] font-medium"
+    aria-live="polite"
+  >
+    {#if syncStatus === "saved"}
+      <Cloud size={14} class="text-emerald-500" />
+      <span class="text-slate-600">Tersimpan</span>
+    {:else if syncStatus === "saving"}
+      <LoaderCircle size={14} class="animate-spin text-primary" />
+      <span class="text-primary">Menyimpan...</span>
+    {:else}
+      <CircleAlert size={14} class="text-red-500" />
+      <span class="text-red-500">Gagal Sinkron</span>
+    {/if}
+  </div>
+
   <DropdownMenu.Root>
     <DropdownMenu.Trigger
       class="inline-flex items-center justify-center gap-2 h-9 px-3 rounded-md bg-white border border-primary/20 hover:border-primary/40 hover:bg-slate-50 transition-all font-medium text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -355,7 +375,7 @@
                 >
                   {#if canWrite}
                     <textarea
-                      class="w-full min-h-16 p-2 text-xs bg-transparent border border-border rounded focus:ring-1 focus:ring-primary focus:outline-none resize-none"
+                      class="min-h-16 w-full resize-none rounded bg-transparent p-2 text-xs outline-none transition focus:ring-1 focus:ring-primary"
                       placeholder="Keterangan..."
                       value={keteranganLocal[pt.partId] ?? ""}
                       oninput={(e) => {

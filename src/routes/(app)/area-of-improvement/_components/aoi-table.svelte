@@ -712,13 +712,15 @@
 </div>
 
 <Dialog.Root bind:open={editDialogOpen}>
-  <Dialog.Content class="max-h-screen overflow-y-auto sm:max-w-3xl">
-    <Dialog.Header>
-      <Dialog.Title class="flex items-center gap-2 text-base font-bold text-slate-900">
-        <Pencil size={18} class="text-primary" />
-        Detail Area of Improvement
+  <Dialog.Content class="max-h-[calc(100vh-2rem)] w-[calc(100vw-2rem)] max-w-none overflow-y-auto rounded-2xl border border-slate-200 bg-white p-0 shadow-2xl shadow-slate-950/10 sm:max-h-[calc(100vh-4rem)] sm:w-[calc(100vw-4rem)] sm:rounded-3xl">
+    <Dialog.Header class="border-b border-slate-100 px-5 pb-4 pt-5 sm:px-8 sm:pb-5 sm:pt-7">
+      <Dialog.Title class="flex items-center gap-3 pr-10 text-lg font-semibold tracking-tight text-slate-950">
+        <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">
+          <Pencil size={18} />
+        </span>
+        <span>Detail Area of Improvement</span>
       </Dialog.Title>
-      <Dialog.Description>
+      <Dialog.Description class="mt-2 max-w-5xl text-sm leading-relaxed text-slate-500">
         {#if editingItem}
           {editingItem.aoi_code} - {editingItem.area_of_improvement}
         {:else}
@@ -728,126 +730,134 @@
     </Dialog.Header>
 
     {#if editingItem}
-      <div class="grid gap-4">
-        <div class="grid gap-3 rounded-lg border border-slate-200 bg-slate-50 p-4">
+      <div class="grid gap-5 px-5 py-5 sm:px-8 sm:py-6">
+        <div class="grid gap-3 rounded-2xl border border-slate-200 bg-slate-50/80 p-4 sm:p-5">
           <div>
-            <div class="text-xs font-semibold uppercase text-slate-500">Rekomendasi</div>
+            <div class="text-sm font-semibold text-slate-950">Rekomendasi</div>
             <p class="mt-1 whitespace-pre-wrap text-sm leading-relaxed text-slate-700">
               {previewText(editingItem.rekomendasi, "Belum ada rekomendasi")}
             </p>
           </div>
         </div>
 
-        <div class="grid gap-2">
-          <label for="aoi-fakta-temuan" class="text-xs font-semibold uppercase text-slate-600">Fakta Temuan</label>
-          <textarea
-            id="aoi-fakta-temuan"
-            class="min-h-28 resize-y rounded-md border border-slate-200 bg-white p-3 text-sm leading-relaxed text-slate-800 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:bg-slate-50 disabled:text-slate-500"
-            bind:value={editFaktaTemuan}
-            disabled={!canWrite}
-          ></textarea>
+        <div class="grid gap-5 xl:grid-cols-2">
+          <div class="grid gap-2">
+            <label for="aoi-fakta-temuan" class="text-sm font-semibold text-slate-950">Fakta Temuan</label>
+            <textarea
+              id="aoi-fakta-temuan"
+              class="min-h-36 resize-y rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm leading-relaxed text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-primary focus:ring-4 focus:ring-primary/15 disabled:bg-slate-50 disabled:text-slate-500"
+              bind:value={editFaktaTemuan}
+              disabled={!canWrite}
+            ></textarea>
+          </div>
+
+          <div class="grid gap-2">
+            <label for="aoi-tindak-lanjut" class="text-sm font-semibold text-slate-950">
+              Tindak Lanjut atas Rekomendasi
+            </label>
+            <textarea
+              id="aoi-tindak-lanjut"
+              class="min-h-36 resize-y rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm leading-relaxed text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-primary focus:ring-4 focus:ring-primary/15 disabled:bg-slate-50 disabled:text-slate-500"
+              bind:value={editTindakLanjut}
+              disabled={!canWrite}
+            ></textarea>
+          </div>
         </div>
 
-        <div class="grid gap-2">
-          <label for="aoi-tindak-lanjut" class="text-xs font-semibold uppercase text-slate-600">
-            Tindak Lanjut atas Rekomendasi
-          </label>
-          <textarea
-            id="aoi-tindak-lanjut"
-            class="min-h-28 resize-y rounded-md border border-slate-200 bg-white p-3 text-sm leading-relaxed text-slate-800 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:bg-slate-50 disabled:text-slate-500"
-            bind:value={editTindakLanjut}
-            disabled={!canWrite}
-          ></textarea>
-        </div>
-
-        <div class="grid gap-2">
-          <label for="aoi-pic" class="text-xs font-semibold uppercase text-slate-600">Penanggung Jawab</label>
-          <input
-            id="aoi-pic"
-            class="h-10 rounded-md border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:bg-slate-50 disabled:text-slate-500"
-            bind:value={editPic}
-            disabled={!canWrite}
-          />
-        </div>
-
-        <div class="grid gap-2">
-          <label for="aoi-target-waktu" class="text-xs font-semibold uppercase text-slate-600">
-            Target Waktu Penyelesaian
-          </label>
-          <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+        <div class="grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(18rem,0.6fr)]">
+          <div class="grid gap-2">
+            <label for="aoi-pic" class="text-sm font-semibold text-slate-950">Penanggung Jawab</label>
             <input
-              id="aoi-target-waktu"
-              type="date"
-              class="h-10 rounded-md border border-slate-200 bg-white px-3 text-sm text-slate-800 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:bg-slate-50 disabled:text-slate-500"
-              bind:value={editTargetWaktu}
+              id="aoi-pic"
+              class="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-primary focus:ring-4 focus:ring-primary/15 disabled:bg-slate-50 disabled:text-slate-500"
+              bind:value={editPic}
               disabled={!canWrite}
             />
-            <span class="text-xs font-medium text-slate-500">
-              {formatIndonesianDate(editTargetWaktu)}
-            </span>
+          </div>
+
+          <div class="grid gap-2">
+            <label for="aoi-target-waktu" class="text-sm font-semibold text-slate-950">
+              Target Waktu Penyelesaian
+            </label>
+            <div class="grid gap-2 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center lg:grid-cols-1 xl:grid-cols-[minmax(0,1fr)_auto]">
+              <input
+                id="aoi-target-waktu"
+                type="date"
+                class="h-12 rounded-2xl border border-slate-200 bg-white px-4 text-sm text-slate-800 outline-none transition focus:border-primary focus:ring-4 focus:ring-primary/15 disabled:bg-slate-50 disabled:text-slate-500"
+                bind:value={editTargetWaktu}
+                disabled={!canWrite}
+              />
+              <span class="text-sm font-medium text-slate-500">
+                {formatIndonesianDate(editTargetWaktu)}
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="grid gap-5 xl:grid-cols-[minmax(18rem,0.45fr)_minmax(0,1fr)]">
+          <div class="grid gap-2">
+            <div class="text-sm font-semibold text-slate-950">Progress Tindak Lanjut</div>
+            <div class="rounded-2xl border border-slate-200 bg-white p-2 shadow-sm shadow-slate-950/5">
+              <AoiStatusButtons
+                status={editingItem.status_rekomendasi}
+                disabled={!canWrite}
+                onSave={(val) => handleSaveStatus(editingItem.uid, val)}
+              />
+            </div>
+          </div>
+
+          <div class="grid gap-2">
+            <div class="text-sm font-semibold text-slate-950">Eviden</div>
+            <div class="min-h-40 rounded-2xl border border-slate-200 bg-white shadow-sm shadow-slate-950/5">
+              <AoiEvidenceCell
+                item={editingItem}
+                disabled={!canWrite}
+                onSave={async (field, val) => {
+                  await handleSaveField(editingItem.uid, field, val);
+                }}
+                onUpload={handleFileUpload}
+                onRemoveFile={handleRemoveFile}
+                onFileSelected={(it, file) => { stagedFiles = { ...stagedFiles, [it.uid]: file }; }}
+                stagedFile={stagedFiles[editingItem.uid] ?? null}
+                onUnstageFile={(it) => {
+                  const { [it.uid]: _, ...rest } = stagedFiles;
+                  stagedFiles = rest;
+                }}
+              />
+            </div>
           </div>
         </div>
 
         <div class="grid gap-2">
-          <div class="text-xs font-semibold uppercase text-slate-600">Progress Tindak Lanjut</div>
-          <div class="rounded-md border border-slate-200 bg-white">
-            <AoiStatusButtons
-              status={editingItem.status_rekomendasi}
-              disabled={!canWrite}
-              onSave={(val) => handleSaveStatus(editingItem.uid, val)}
-            />
-          </div>
-        </div>
-
-        <div class="grid gap-2">
-          <div class="text-xs font-semibold uppercase text-slate-600">Eviden</div>
-          <div class="min-h-32 rounded-md border border-slate-200 bg-white">
-            <AoiEvidenceCell
-              item={editingItem}
-              disabled={!canWrite}
-              onSave={async (field, val) => {
-                await handleSaveField(editingItem.uid, field, val);
-              }}
-              onUpload={handleFileUpload}
-              onRemoveFile={handleRemoveFile}
-              onFileSelected={(it, file) => { stagedFiles = { ...stagedFiles, [it.uid]: file }; }}
-              stagedFile={stagedFiles[editingItem.uid] ?? null}
-              onUnstageFile={(it) => {
-                const { [it.uid]: _, ...rest } = stagedFiles;
-                stagedFiles = rest;
-              }}
-            />
-          </div>
-        </div>
-
-        <div class="grid gap-2">
-          <label for="aoi-keterangan" class="text-xs font-semibold uppercase text-slate-600">Keterangan</label>
+          <label for="aoi-keterangan" class="text-sm font-semibold text-slate-950">Keterangan</label>
           <textarea
             id="aoi-keterangan"
-            class="min-h-24 resize-y rounded-md border border-slate-200 bg-white p-3 text-sm leading-relaxed text-slate-800 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:bg-slate-50 disabled:text-slate-500"
+            class="min-h-28 resize-y rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm leading-relaxed text-slate-800 outline-none transition placeholder:text-slate-400 focus:border-primary focus:ring-4 focus:ring-primary/15 disabled:bg-slate-50 disabled:text-slate-500"
             bind:value={editKeterangan}
             disabled={!canWrite}
           ></textarea>
         </div>
       </div>
 
-      <Dialog.Footer>
-        <button
-          type="button"
-          class="inline-flex h-10 items-center justify-center rounded-md border border-slate-200 bg-white px-4 text-sm font-medium text-slate-700 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-          onclick={() => { editDialogOpen = false; }}
-        >
-          Tutup
-        </button>
-        {#if canWrite}
+      <Dialog.Footer class="border-t border-slate-100 bg-slate-50/70 px-5 py-4 sm:px-8">
+        <div class="flex w-full flex-col-reverse gap-3 sm:flex-row sm:justify-end">
           <button
             type="button"
-            class="inline-flex h-10 items-center justify-center rounded-md bg-primary px-4 text-sm font-semibold text-white transition hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
-            onclick={handleSaveDialog}
+            class="inline-flex h-11 items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 text-sm font-semibold text-slate-700 transition hover:bg-slate-50 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/20"
+            onclick={() => { editDialogOpen = false; }}
           >
-            Simpan Perubahan
+            Tutup
           </button>
-        {/if}
+          {#if canWrite}
+            <button
+              type="button"
+              class="inline-flex h-11 items-center justify-center rounded-2xl bg-primary px-5 text-sm font-semibold text-white shadow-lg shadow-primary/20 transition hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-4 focus-visible:ring-primary/25"
+              onclick={handleSaveDialog}
+            >
+              Simpan Perubahan
+            </button>
+          {/if}
+        </div>
       </Dialog.Footer>
     {/if}
   </Dialog.Content>
