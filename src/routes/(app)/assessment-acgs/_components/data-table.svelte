@@ -389,13 +389,13 @@
 
 <svelte:window onbeforeunload={saveScrollPosition} />
 
-<div class="space-y-4">
+<div class="min-w-0 space-y-4">
   <section class="space-y-3">
     <h2 class="text-center text-lg font-bold text-slate-800">
       Tabel Skor Capaian Assessment ACGS PT PLN (Persero), Tahun Buku {selectedYear || currentYear}
     </h2>
     {#if isLoading}
-      <div class="overflow-x-auto w-full border border-border rounded-lg bg-white shadow-sm animate-pulse">
+      <div class="max-w-full min-w-0 overflow-x-auto rounded-lg border border-border bg-white shadow-sm animate-pulse">
         <div class="p-4 space-y-2">
           <Skeleton class="h-5 w-1/3 mx-auto" />
           {#each Array(4) as _}
@@ -425,8 +425,9 @@
     assessmentQuestions={allTableQuestions}
   />
 
-  <div class="overflow-x-auto w-full border border-border rounded-lg bg-white shadow-sm overflow-hidden">
-    <table class="w-full border-collapse text-[11px] md:text-xs">
+  <div class="w-full max-w-full min-w-0 overflow-hidden rounded-lg border border-border bg-white shadow-sm">
+    <div class="w-full max-w-full overflow-x-auto">
+    <table class="w-full min-w-175 border-collapse text-[11px] md:text-xs">
       <thead class="bg-primary text-white text-center font-bold sticky top-0 z-20">
         <tr>
           <th class="border border-border w-[8%] p-3 align-middle uppercase">ITEM</th>
@@ -567,6 +568,7 @@
         {/if}
       </tbody>
     </table>
+    </div>
   </div>
 
   <TablePagination 

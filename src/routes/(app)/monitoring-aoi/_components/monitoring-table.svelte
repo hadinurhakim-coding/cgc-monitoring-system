@@ -91,7 +91,7 @@
 </script>
 
 <!-- Toolbar -->
-<div class="flex items-center justify-end gap-4 mb-4">
+<div class="mb-4 flex min-w-0 items-center justify-end gap-4">
   <DropdownMenu.Root>
     <DropdownMenu.Trigger
       class="inline-flex items-center justify-center gap-2 h-9 px-3 rounded-md bg-white border border-primary/20 hover:border-primary/40 hover:bg-slate-50 transition-all font-medium text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -124,7 +124,8 @@
 </div>
 
 <!-- Table -->
-<div class="overflow-x-auto w-full border border-border rounded-lg bg-white shadow-sm overflow-hidden">
+<div class="w-full max-w-full min-w-0 overflow-hidden rounded-lg border border-border bg-white shadow-sm">
+  <div class="w-full max-w-full overflow-x-auto">
   <table class="w-full min-w-175 border-collapse text-xs">
     <thead class="bg-primary text-white text-center font-bold sticky top-0 z-20">
       <tr>
@@ -248,4 +249,5 @@
       </tr>
     </tbody>
   </table>
+  </div>
 </div>

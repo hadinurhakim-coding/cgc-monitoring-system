@@ -131,7 +131,7 @@
 	<h1 class="text-lg font-semibold">Account</h1>
 </header>
 
-<main class="flex flex-1 flex-col gap-4 p-4 md:gap-6 md:p-6">
+<main class="flex min-w-0 flex-1 flex-col gap-4 overflow-x-hidden p-4 md:gap-6 md:p-6">
 	{#if data.loadError}
 		<div
 			class="rounded-md border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive"
@@ -157,8 +157,8 @@
 		</div>
 	{/if}
 
-	<section class="grid gap-4 lg:grid-cols-3">
-		<Card.Root class="lg:col-span-2">
+	<section class="grid min-w-0 gap-4 lg:grid-cols-3">
+		<Card.Root class="min-w-0 lg:col-span-2">
 			<Card.Header>
 				<Card.Title>Profil Saya</Card.Title>
 				<Card.Description>Informasi akun yang sedang digunakan.</Card.Description>
@@ -189,7 +189,7 @@
 			</Card.Content>
 		</Card.Root>
 
-		<Card.Root>
+		<Card.Root class="min-w-0">
 			<Card.Header>
 				<Card.Title>Status Akses</Card.Title>
 				<Card.Description>Ringkasan pengguna aplikasi.</Card.Description>
@@ -214,14 +214,14 @@
 	</section>
 
 	{#if !canManageUsers}
-		<Card.Root>
+		<Card.Root class="min-w-0">
 			<Card.Header>
 				<Card.Title>Management Akun</Card.Title>
 				<Card.Description>Hanya admin yang dapat mengelola pengguna dan divisi.</Card.Description>
 			</Card.Header>
 		</Card.Root>
 	{:else}
-		<section class="flex flex-col gap-4">
+		<section class="flex min-w-0 flex-col gap-4">
 			<div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
 				<div class="inline-flex rounded-md border bg-muted/30 p-1">
 					<button
@@ -312,7 +312,7 @@
 			</div>
 
 			{#if activeTab === "users"}
-				<Card.Root>
+				<Card.Root class="min-w-0">
 					<Card.Header>
 						<div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
 							<div>
@@ -331,7 +331,7 @@
 						</div>
 					</Card.Header>
 					<Card.Content>
-						<div class="overflow-x-auto">
+						<div class="max-w-full min-w-0 overflow-x-auto">
 							<table class="w-full border-collapse text-sm">
 								<thead>
 									<tr class="bg-muted/40 text-left">
@@ -403,7 +403,7 @@
 					</Card.Content>
 				</Card.Root>
 			{:else}
-				<Card.Root>
+				<Card.Root class="min-w-0">
 					<Card.Header>
 						<div class="flex flex-col gap-3 md:flex-row md:items-start md:justify-between">
 							<div>
@@ -422,7 +422,7 @@
 						</div>
 					</Card.Header>
 					<Card.Content>
-						<div class="overflow-x-auto">
+						<div class="max-w-full min-w-0 overflow-x-auto">
 							<table class="w-full border-collapse text-sm">
 								<thead>
 									<tr class="bg-muted/40 text-left">

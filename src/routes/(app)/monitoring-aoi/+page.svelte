@@ -46,7 +46,7 @@
   <h1 class="text-lg font-semibold uppercase tracking-tight text-primary">Monitoring Tindak Lanjut AOI</h1>
 </header>
 
-<main class="flex flex-1 flex-col gap-4 p-4 md:gap-6 md:p-6 overflow-hidden">
+<main class="flex min-w-0 flex-1 flex-col gap-4 overflow-x-hidden p-4 md:gap-6 md:p-6">
   {#if viewData.loadError}
     <div
       class="rounded-md border border-destructive/40 bg-destructive/10 px-4 py-3 text-sm text-destructive"

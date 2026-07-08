@@ -64,12 +64,12 @@
 	<h1 class="text-lg font-semibold">Dashboard</h1>
 </header>
 
-<main class="flex flex-1 flex-col gap-4 p-4 md:gap-6 md:p-6">
+<main class="flex min-w-0 flex-1 flex-col gap-4 overflow-x-hidden p-4 md:gap-6 md:p-6">
 
 	<TrendScoreAreaChart trend={data.trend} />
 
 	<!-- Aktivitas terbaru -->
-	<Card.Root>
+	<Card.Root class="min-w-0">
 		<Card.Header>
 			<Card.Title>Aktivitas Terbaru (Audit Log)</Card.Title>
 			<Card.Description>
@@ -82,7 +82,7 @@
 			</Card.Description>
 		</Card.Header>
 		<Card.Content>
-			<div class="overflow-x-auto">
+			<div class="max-w-full min-w-0 overflow-x-auto">
 				<table class="w-full min-w-[900px] border-collapse text-sm">
 					<thead>
 						<tr class="bg-muted/40 text-left">

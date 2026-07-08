@@ -352,7 +352,7 @@
   }));
 </script>
 
-<div class="flex flex-col gap-4">
+<div class="flex min-w-0 flex-col gap-4">
   <div class="flex flex-col items-stretch justify-between gap-4 lg:flex-row lg:items-center">
     <form
       class="relative flex w-full gap-2 lg:w-120"
@@ -445,8 +445,8 @@
   </div>
 </div>
 
-<div class="w-full overflow-hidden rounded-lg border border-border bg-white shadow-sm">
-  <div class="w-full overflow-x-auto">
+<div class="w-full max-w-full min-w-0 overflow-hidden rounded-lg border border-border bg-white shadow-sm">
+  <div class="w-full max-w-full overflow-x-auto">
     <table class="table-fixed border-collapse text-xs">
       <colgroup>
         <col style:width={columnWidths.no} />

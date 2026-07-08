@@ -161,7 +161,7 @@
   });
 </script>
 
-<div class="w-full overflow-x-auto">
+<div class="w-full max-w-full min-w-0 overflow-x-auto">
   <table class="w-full min-w-175 border-collapse border-2 border-black font-sans text-[13px] text-black bg-white">
     <thead>
       <tr class="bg-[#002060] text-white text-center">
