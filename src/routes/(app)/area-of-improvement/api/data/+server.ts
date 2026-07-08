@@ -13,7 +13,7 @@ function resolveYear(value: string | null): number {
 
 export const GET: RequestHandler = async ({ url, locals }) => {
 	const year = resolveYear(url.searchParams.get("year"));
-	const payload = await getAoiPageData(year, locals.auth);
+	const payload = await getAoiPageData(year, locals.auth, { syncFromAssessment: true });
 	const version = latestIsoVersion(
 		[
 			...payload.items.map((item) => item.updated_at),

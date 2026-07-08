@@ -1,4 +1,4 @@
-export const PAGE_CACHE_SCHEMA_VERSION = 1;
+export const PAGE_CACHE_SCHEMA_VERSION = 2;
 
 export type PageCacheMeta = {
 	route: string;
