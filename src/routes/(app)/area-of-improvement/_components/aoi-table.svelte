@@ -712,7 +712,7 @@
 </div>
 
 <Dialog.Root bind:open={editDialogOpen}>
-  <Dialog.Content class="max-h-[calc(100vh-2rem)] w-[calc(100vw-2rem)] max-w-none overflow-y-auto rounded-2xl border border-slate-200 bg-white p-0 shadow-2xl shadow-slate-950/10 sm:max-h-[calc(100vh-4rem)] sm:w-[calc(100vw-4rem)] sm:rounded-3xl">
+  <Dialog.Content class="!max-w-none !w-[calc(100vw-2rem)] max-h-[calc(100vh-2rem)] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-0 shadow-2xl shadow-slate-950/10 sm:!w-[calc(100vw-4rem)] sm:max-h-[calc(100vh-4rem)] sm:rounded-3xl">
     <Dialog.Header class="border-b border-slate-100 px-5 pb-4 pt-5 sm:px-8 sm:pb-5 sm:pt-7">
       <Dialog.Title class="flex items-center gap-3 pr-10 text-lg font-semibold tracking-tight text-slate-950">
         <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">

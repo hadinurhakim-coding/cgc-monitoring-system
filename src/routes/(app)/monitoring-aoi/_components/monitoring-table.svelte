@@ -371,11 +371,11 @@
                 <!-- Keterangan — rowspan seluruh sections dalam part ini -->
                 <td
                   rowspan={pt.sections.length}
-                  class="border border-border p-1 align-top"
+                  class="relative border border-border p-0 align-top"
                 >
                   {#if canWrite}
                     <textarea
-                      class="min-h-16 w-full resize-none rounded bg-transparent p-2 text-xs outline-none transition focus:ring-1 focus:ring-primary"
+                      class="absolute inset-0 h-full min-h-full w-full resize-none bg-transparent p-2 text-xs outline-none transition focus:ring-1 focus:ring-inset focus:ring-primary"
                       placeholder="Keterangan..."
                       value={keteranganLocal[pt.partId] ?? ""}
                       oninput={(e) => {
