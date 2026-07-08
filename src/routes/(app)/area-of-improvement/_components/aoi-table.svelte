@@ -61,6 +61,7 @@
   let editTindakLanjut = $state("");
   let editPic = $state("");
   let editTargetWaktu = $state("");
+  let editKeterangan = $state("");
   let searchQuery = $state("");
   let pageSize = $state(15);
   let currentPage = $state(1);
@@ -97,6 +98,7 @@
     editTindakLanjut = item.tindak_lanjut_rekomendasi;
     editPic = item.pic;
     editTargetWaktu = item.target_waktu_penyelesaian;
+    editKeterangan = item.keterangan;
     editDialogOpen = true;
   }
 
@@ -141,6 +143,7 @@
         value: editTargetWaktu,
         previous: editingItem.target_waktu_penyelesaian,
       },
+      { field: "keterangan", value: editKeterangan, previous: editingItem.keterangan },
     ].filter((change) => change.value !== change.previous);
 
     let allSaved = true;
@@ -259,6 +262,7 @@
       formatIndonesianDate(item.target_waktu_penyelesaian),
       item.status_rekomendasi,
       extractEvidenceText(item.eviden),
+      item.keterangan,
       item.level_label,
       item.part_id,
       item.section_id
@@ -349,6 +353,7 @@
       44
     ),
     eviden: columnWidth("Eviden", filteredItems.map((item) => item.eviden), 28, 60),
+    keterangan: columnWidth("Keterangan", filteredItems.map((item) => item.keterangan), 28, 60),
   }));
 </script>
 
@@ -369,7 +374,7 @@
         />
         <Input
           aria-label="Cari atau filter Area of Improvement"
-          placeholder="Cari AOI, rekomendasi, PIC, status, eviden..."
+          placeholder="Cari AOI, rekomendasi, PIC, status, eviden, keterangan..."
           class="pl-10 border-border focus:ring-primary"
           bind:value={searchQuery}
         />
@@ -459,6 +464,7 @@
         <col style:width={columnWidths.status} />
         <col style:width={columnWidths.targetWaktu} />
         <col style:width={columnWidths.eviden} />
+        <col style:width={columnWidths.keterangan} />
       </colgroup>
       <thead class="sticky top-0 z-20 bg-primary text-center font-bold text-white">
         <tr>
@@ -472,6 +478,7 @@
           <th class="border border-border p-3 align-middle uppercase leading-tight">Progress Tindak Lanjut</th>
           <th class="border border-border p-3 align-middle uppercase leading-tight">Target Waktu Penyelesaian</th>
           <th class="border border-border p-3 align-middle uppercase">Eviden</th>
+          <th class="border border-border p-3 align-middle uppercase">Keterangan</th>
         </tr>
       </thead>
       <tbody class="align-top">
@@ -588,10 +595,24 @@
                 {previewText(extractEvidenceText(item.eviden), "Belum ada eviden")}
               </button>
             </td>
+
+            <td class="h-1 border border-border p-0 align-top">
+              <button
+                type="button"
+                class="block min-h-24 w-full whitespace-pre-wrap break-words p-3 text-left text-xs leading-relaxed text-slate-700 transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                onclick={() => openItemDialog(item)}
+              >
+                {#if item.keterangan.trim()}
+                  {item.keterangan}
+                {:else}
+                  <span class="italic text-slate-400">Belum ada keterangan</span>
+                {/if}
+              </button>
+            </td>
           </tr>
         {:else}
           <tr>
-            <td colspan="10" class="border border-border py-12 text-center text-sm italic text-muted-foreground">
+            <td colspan="11" class="border border-border py-12 text-center text-sm italic text-muted-foreground">
               {searchQuery.trim()
                 ? `Tidak ada data AOI yang cocok dengan "${searchQuery.trim()}".`
                 : `Belum ada data rekomendasi Assessment ACGS untuk tahun ${currentYear}.`}
@@ -797,6 +818,16 @@
               }}
             />
           </div>
+        </div>
+
+        <div class="grid gap-2">
+          <label for="aoi-keterangan" class="text-xs font-semibold uppercase text-slate-600">Keterangan</label>
+          <textarea
+            id="aoi-keterangan"
+            class="min-h-24 resize-y rounded-md border border-slate-200 bg-white p-3 text-sm leading-relaxed text-slate-800 outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:bg-slate-50 disabled:text-slate-500"
+            bind:value={editKeterangan}
+            disabled={!canWrite}
+          ></textarea>
         </div>
       </div>
 

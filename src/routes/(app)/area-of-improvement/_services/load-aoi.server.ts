@@ -50,6 +50,7 @@ type AoiFollowupRow = {
 	target_waktu_penyelesaian: string;
 	status_rekomendasi: StatusRekomendasi;
 	eviden: string;
+	keterangan: string;
 	updated_at: string;
 };
 
@@ -104,6 +105,7 @@ function toAoiItem(
 		target_waktu_penyelesaian: followup?.target_waktu_penyelesaian ?? "",
 		status_rekomendasi: followup?.status_rekomendasi ?? "Belum ditindaklanjuti",
 		eviden: followup?.eviden ?? "",
+		keterangan: followup?.keterangan ?? "",
 		created_at: row.created_at,
 		updated_at: row.updated_at,
 		followup_updated_at: followup?.updated_at ?? row.updated_at,
@@ -326,7 +328,7 @@ async function getFollowupsByAoiUid(
 
 	const { data, error } = await admin
 		.from("aoi_followups")
-		.select("aoi_item_uid,fakta_temuan_override,tindak_lanjut_rekomendasi,pic,target_waktu_penyelesaian,status_rekomendasi,eviden,updated_at")
+		.select("aoi_item_uid,fakta_temuan_override,tindak_lanjut_rekomendasi,pic,target_waktu_penyelesaian,status_rekomendasi,eviden,keterangan,updated_at")
 		.in("aoi_item_uid", aoiItemUids);
 
 	if (error) return { followups: new Map(), error: new Error(error.message) };
@@ -343,6 +345,7 @@ async function getFollowupsByAoiUid(
 			target_waktu_penyelesaian: norm(raw.target_waktu_penyelesaian),
 			status_rekomendasi: normalizeStatus(raw.status_rekomendasi),
 			eviden: norm(raw.eviden),
+			keterangan: norm(raw.keterangan),
 			updated_at: norm(raw.updated_at),
 		});
 	}

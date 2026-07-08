@@ -11,6 +11,7 @@ const FIELD_TO_COLUMN: Record<string, string> = {
 	target_waktu_penyelesaian: "target_waktu_penyelesaian",
 	status_rekomendasi: "status_rekomendasi",
 	eviden: "eviden",
+	keterangan: "keterangan",
 };
 
 export async function saveAoiField(

@@ -2,14 +2,15 @@
   import { goto } from "$app/navigation";
   import { resolve } from "$app/paths";
   import { toast } from "svelte-sonner";
-  import { Calendar, Check } from "@lucide/svelte";
+  import { Calendar, Check, Search, X } from "@lucide/svelte";
   import {
     deleteEncryptedPageCache,
     deleteEncryptedPageCacheByRoute,
     type PageCacheScope
   } from "$lib/client/encrypted-page-cache.js";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
-  import type { AoiLevelGroup, MonitoringGrandTotal } from "../_lib/types.js";
+  import type { AoiLevelGroup, AoiPartGroup, AoiSectionRow, MonitoringGrandTotal } from "../_lib/types.js";
+  import { addStatusCounts, emptyStatusCounts } from "../_lib/types.js";
 
   interface Props {
     levels: AoiLevelGroup[];
@@ -66,6 +67,112 @@
     return String(value);
   }
 
+  function normalizeSearchValue(value: string | number | null | undefined): string {
+    return String(value ?? "").trim().toLowerCase();
+  }
+
+  function sectionSearchHaystack(
+    level: AoiLevelGroup,
+    part: AoiPartGroup,
+    section: AoiSectionRow
+  ): string {
+    return [
+      level.levelLabel,
+      levelDisplayName(level.levelLabel),
+      part.partId,
+      part.partLabel,
+      part.fullNameId,
+      part.keterangan,
+      section.sectionId,
+      section.sectionLabel,
+      section.jumlahAoi,
+      section.statusCounts.selesai,
+      section.statusCounts.onProgress,
+      section.statusCounts.tidakDapat,
+      section.statusCounts.belum
+    ].map(normalizeSearchValue).join(" ");
+  }
+
+  function sectionMatchesQuery(
+    level: AoiLevelGroup,
+    part: AoiPartGroup,
+    section: AoiSectionRow,
+    tokens: string[]
+  ): boolean {
+    if (tokens.length === 0) return true;
+    const haystack = sectionSearchHaystack(level, part, section);
+    return tokens.every((token) => haystack.includes(token));
+  }
+
+  function summarizePart(part: AoiPartGroup, sections: AoiSectionRow[]): AoiPartGroup {
+    const statusCounts = sections.reduce(
+      (total, section) => addStatusCounts(total, section.statusCounts),
+      emptyStatusCounts()
+    );
+    const totalAoi = sections.reduce((total, section) => total + section.jumlahAoi, 0);
+    return { ...part, sections, totalAoi, statusCounts };
+  }
+
+  function summarizeLevel(level: AoiLevelGroup, parts: AoiPartGroup[]): AoiLevelGroup {
+    const statusCounts = parts.reduce(
+      (total, part) => addStatusCounts(total, part.statusCounts),
+      emptyStatusCounts()
+    );
+    const totalAoi = parts.reduce((total, part) => total + part.totalAoi, 0);
+    return { ...level, parts, totalAoi, statusCounts };
+  }
+
+  function summarizeGrandTotal(filteredLevels: AoiLevelGroup[]): MonitoringGrandTotal {
+    return filteredLevels.reduce(
+      (total, level) => ({
+        jumlahAoi: total.jumlahAoi + level.totalAoi,
+        statusCounts: addStatusCounts(total.statusCounts, level.statusCounts)
+      }),
+      { jumlahAoi: 0, statusCounts: emptyStatusCounts() }
+    );
+  }
+
+  let searchQuery = $state("");
+
+  const searchTokens = $derived(
+    normalizeSearchValue(searchQuery).split(/\s+/).filter(Boolean)
+  );
+
+  const filteredLevels = $derived.by(() => {
+    if (searchTokens.length === 0) return levels;
+    return levels
+      .map((level) => {
+        const parts = level.parts
+          .map((part) => {
+            const sections = part.sections.filter((section) =>
+              sectionMatchesQuery(level, part, section, searchTokens)
+            );
+            return sections.length > 0 ? summarizePart(part, sections) : null;
+          })
+          .filter((part): part is AoiPartGroup => part !== null);
+        return parts.length > 0 ? summarizeLevel(level, parts) : null;
+      })
+      .filter((level): level is AoiLevelGroup => level !== null);
+  });
+
+  const filteredGrandTotal = $derived(
+    searchTokens.length === 0 ? grandTotal : summarizeGrandTotal(filteredLevels)
+  );
+
+  const sectionCount = $derived.by(() =>
+    levels.reduce((total, level) =>
+      total + level.parts.reduce((partTotal, part) => partTotal + part.sections.length, 0),
+      0
+    )
+  );
+
+  const filteredSectionCount = $derived.by(() =>
+    filteredLevels.reduce((total, level) =>
+      total + level.parts.reduce((partTotal, part) => partTotal + part.sections.length, 0),
+      0
+    )
+  );
+
   // Year selector
   let selectedYear = $state("");
   let yearQuery = $state("");
@@ -91,7 +198,48 @@
 </script>
 
 <!-- Toolbar -->
-<div class="mb-4 flex min-w-0 items-center justify-end gap-4">
+<div class="mb-4 flex min-w-0 flex-col items-stretch justify-between gap-3 lg:flex-row lg:items-center">
+  <form
+    class="relative flex w-full gap-2 lg:w-120"
+    role="search"
+    onsubmit={(event) => {
+      event.preventDefault();
+    }}
+  >
+    <div class="relative flex-1">
+      <Search
+        class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+        size={18}
+      />
+      <input
+        type="search"
+        aria-label="Cari atau filter monitoring AOI"
+        placeholder="Cari standar, bagian, section, status..."
+        class="h-9 w-full rounded-md border border-border bg-white pl-10 pr-10 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
+        bind:value={searchQuery}
+      />
+      {#if searchQuery.trim()}
+        <button
+          type="button"
+          class="absolute right-1 top-1/2 inline-flex h-7 w-7 -translate-y-1/2 items-center justify-center rounded-md text-slate-500 transition hover:bg-slate-100 hover:text-slate-700 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+          aria-label="Bersihkan pencarian"
+          onclick={() => { searchQuery = ""; }}
+        >
+          <X size={16} />
+        </button>
+      {/if}
+    </div>
+  </form>
+
+  <div class="flex flex-wrap items-center justify-between gap-3 lg:justify-end">
+    <div class="text-xs font-medium text-muted-foreground" aria-live="polite">
+      {#if searchQuery.trim()}
+        <strong>{filteredSectionCount}</strong> cocok dari <strong>{sectionCount}</strong> section
+      {:else}
+        <strong>{sectionCount}</strong> section monitoring
+      {/if}
+    </div>
+
   <DropdownMenu.Root>
     <DropdownMenu.Trigger
       class="inline-flex items-center justify-center gap-2 h-9 px-3 rounded-md bg-white border border-primary/20 hover:border-primary/40 hover:bg-slate-50 transition-all font-medium text-sm text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
@@ -121,6 +269,7 @@
       </div>
     </DropdownMenu.Content>
   </DropdownMenu.Root>
+  </div>
 </div>
 
 <!-- Table -->
@@ -150,7 +299,7 @@
       </tr>
     </thead>
     <tbody class="align-top">
-      {#each levels as lv}
+      {#each filteredLevels as lv}
         <!-- Level header row -->
         <tr class="bg-[#e2e8f0]">
           <td colspan="8" class="border border-border p-2 font-bold text-slate-900 uppercase align-middle text-center">
@@ -235,16 +384,22 @@
           <td class="border border-border px-2 py-1.5 text-center font-bold text-muted-foreground">{countText(lv.statusCounts.belum)}</td>
           <td class="border border-border"></td>
         </tr>
+      {:else}
+        <tr>
+          <td colspan="8" class="border border-border py-12 text-center text-sm italic text-muted-foreground">
+            Tidak ada data monitoring yang cocok dengan "{searchQuery.trim()}".
+          </td>
+        </tr>
       {/each}
 
       <!-- Grand Total -->
       <tr class="bg-primary text-white font-bold">
         <td colspan="2" class="border border-border px-3 py-2 text-right uppercase">Total</td>
-        <td class="border border-border px-2 py-2 text-center">{countText(grandTotal.jumlahAoi)}</td>
-        <td class="border border-border px-2 py-2 text-center">{countText(grandTotal.statusCounts.selesai)}</td>
-        <td class="border border-border px-2 py-2 text-center">{countText(grandTotal.statusCounts.onProgress)}</td>
-        <td class="border border-border px-2 py-2 text-center">{countText(grandTotal.statusCounts.tidakDapat)}</td>
-        <td class="border border-border px-2 py-2 text-center">{countText(grandTotal.statusCounts.belum)}</td>
+        <td class="border border-border px-2 py-2 text-center">{countText(filteredGrandTotal.jumlahAoi)}</td>
+        <td class="border border-border px-2 py-2 text-center">{countText(filteredGrandTotal.statusCounts.selesai)}</td>
+        <td class="border border-border px-2 py-2 text-center">{countText(filteredGrandTotal.statusCounts.onProgress)}</td>
+        <td class="border border-border px-2 py-2 text-center">{countText(filteredGrandTotal.statusCounts.tidakDapat)}</td>
+        <td class="border border-border px-2 py-2 text-center">{countText(filteredGrandTotal.statusCounts.belum)}</td>
         <td class="border border-border"></td>
       </tr>
     </tbody>
