@@ -132,15 +132,26 @@
 		scrollbar-width: thin;
 	}
 	*::-webkit-scrollbar {
-		width: 0.5rem;
-		height: 0.5rem;
+		width: 0.375rem;
+		height: 0.375rem;
 	}
-	*::-webkit-scrollbar-button {
+	*::-webkit-scrollbar-button,
+	*::-webkit-scrollbar-button:single-button,
+	*::-webkit-scrollbar-button:double-button,
+	*::-webkit-scrollbar-button:vertical:start:decrement,
+	*::-webkit-scrollbar-button:vertical:end:increment,
+	*::-webkit-scrollbar-button:horizontal:start:decrement,
+	*::-webkit-scrollbar-button:horizontal:end:increment {
+		-webkit-appearance: none;
 		display: none;
 		width: 0;
 		height: 0;
+		background: transparent;
 	}
 	*::-webkit-scrollbar-track {
+		background: transparent;
+	}
+	*::-webkit-scrollbar-track-piece {
 		background: transparent;
 	}
 	*::-webkit-scrollbar-thumb {
@@ -148,20 +159,24 @@
 		background-image: linear-gradient(
 			to bottom,
 			transparent,
-			rgb(18 34 92 / 22%) 18%,
-			rgb(18 34 92 / 22%) 82%,
+			rgb(18 34 92 / 8%) 12%,
+			rgb(18 34 92 / 24%) 28%,
+			rgb(18 34 92 / 24%) 72%,
+			rgb(18 34 92 / 8%) 88%,
 			transparent
 		);
 		background-clip: padding-box;
-		border: 0.125rem solid transparent;
+		border: 0.0625rem solid transparent;
 		border-radius: 9999px;
 	}
 	*::-webkit-scrollbar-thumb:hover {
 		background-image: linear-gradient(
 			to bottom,
 			transparent,
-			rgb(18 34 92 / 38%) 18%,
-			rgb(18 34 92 / 38%) 82%,
+			rgb(18 34 92 / 16%) 12%,
+			rgb(18 34 92 / 42%) 28%,
+			rgb(18 34 92 / 42%) 72%,
+			rgb(18 34 92 / 16%) 88%,
 			transparent
 		);
 	}
