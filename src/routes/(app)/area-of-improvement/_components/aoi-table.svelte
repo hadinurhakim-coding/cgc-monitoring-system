@@ -499,7 +499,7 @@
             <td class="h-1 border border-border p-0 align-top">
               <button
                 type="button"
-                class="block min-h-24 w-full whitespace-pre-wrap break-words p-3 text-left text-xs leading-relaxed text-slate-700 transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                class="block min-h-24 w-full whitespace-pre-wrap wrap-break-word p-3 text-left text-xs leading-relaxed text-slate-700 transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 onclick={() => openItemDialog(item)}
               >{item.area_of_improvement}</button>
             </td>
@@ -507,7 +507,7 @@
             <td class="h-1 border border-border p-0 align-top">
               <button
                 type="button"
-                class="block min-h-24 w-full whitespace-pre-wrap break-words p-3 text-left text-xs leading-relaxed text-slate-700 transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                class="block min-h-24 w-full whitespace-pre-wrap wrap-break-word p-3 text-left text-xs leading-relaxed text-slate-700 transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 onclick={() => openItemDialog(item)}
               >
                 {#if item.fakta_temuan.trim()}
@@ -521,7 +521,7 @@
             <td class="h-1 border border-border p-0 align-top">
               <button
                 type="button"
-                class="block min-h-24 w-full whitespace-pre-wrap break-words p-3 text-left text-xs leading-relaxed text-slate-700 transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                class="block min-h-24 w-full whitespace-pre-wrap wrap-break-word p-3 text-left text-xs leading-relaxed text-slate-700 transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 onclick={() => openItemDialog(item)}
               >
                 {#if item.rekomendasi.trim()}
@@ -535,7 +535,7 @@
             <td class="h-1 border border-border p-0 align-top">
               <button
                 type="button"
-                class="block min-h-24 w-full whitespace-pre-wrap break-words p-3 text-left text-xs leading-relaxed text-slate-700 transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                class="block min-h-24 w-full whitespace-pre-wrap wrap-break-word p-3 text-left text-xs leading-relaxed text-slate-700 transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 onclick={() => openItemDialog(item)}
               >
                 {#if item.tindak_lanjut_rekomendasi.trim()}
@@ -549,7 +549,7 @@
             <td class="h-1 border border-border p-0 align-top">
               <button
                 type="button"
-                class="block min-h-24 w-full whitespace-pre-wrap break-words p-3 text-left text-xs leading-relaxed text-slate-700 transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                class="block min-h-24 w-full whitespace-pre-wrap wrap-break-word p-3 text-left text-xs leading-relaxed text-slate-700 transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 onclick={() => openItemDialog(item)}
               >
                 {#if item.pic.trim()}
@@ -575,7 +575,7 @@
             <td class="h-1 border border-border p-0 align-top">
               <button
                 type="button"
-                class="block min-h-24 w-full whitespace-pre-wrap break-words p-3 text-left text-xs leading-relaxed text-slate-700 transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                class="block min-h-24 w-full whitespace-pre-wrap wrap-break-word p-3 text-left text-xs leading-relaxed text-slate-700 transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 onclick={() => openItemDialog(item)}
               >
                 {#if item.target_waktu_penyelesaian}
@@ -589,7 +589,7 @@
             <td class="h-1 border border-border p-0 align-top">
               <button
                 type="button"
-                class="block min-h-24 w-full whitespace-pre-wrap break-words p-3 text-left text-xs leading-relaxed text-slate-700 transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                class="block min-h-24 w-full whitespace-pre-wrap wrap-break-word p-3 text-left text-xs leading-relaxed text-slate-700 transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 onclick={() => openItemDialog(item)}
               >
                 {previewText(extractEvidenceText(item.eviden), "Belum ada eviden")}
@@ -599,7 +599,7 @@
             <td class="h-1 border border-border p-0 align-top">
               <button
                 type="button"
-                class="block min-h-24 w-full whitespace-pre-wrap break-words p-3 text-left text-xs leading-relaxed text-slate-700 transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                class="block min-h-24 w-full whitespace-pre-wrap wrap-break-word p-3 text-left text-xs leading-relaxed text-slate-700 transition-colors hover:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary"
                 onclick={() => openItemDialog(item)}
               >
                 {#if item.keterangan.trim()}
@@ -712,7 +712,7 @@
 </div>
 
 <Dialog.Root bind:open={editDialogOpen}>
-  <Dialog.Content class="!max-w-none !w-[calc(100vw-2rem)] max-h-[calc(100vh-2rem)] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-0 shadow-2xl shadow-slate-950/10 sm:!w-[calc(100vw-4rem)] sm:max-h-[calc(100vh-4rem)] sm:rounded-3xl">
+  <Dialog.Content class="max-w-none! w-[calc(100vw-2rem)]! max-h-[calc(100vh-2rem)] overflow-y-auto rounded-2xl border border-slate-200 bg-white p-0 shadow-2xl shadow-slate-950/10 sm:w-[calc(100vw-4rem)]! sm:max-h-[calc(100vh-4rem)] sm:rounded-3xl">
     <Dialog.Header class="border-b border-slate-100 px-5 pb-4 pt-5 sm:px-8 sm:pb-5 sm:pt-7">
       <Dialog.Title class="flex items-center gap-3 pr-10 text-lg font-semibold tracking-tight text-slate-950">
         <span class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-primary/10 text-primary">

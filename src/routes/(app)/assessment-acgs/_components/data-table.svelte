@@ -106,15 +106,21 @@
   let pageSize = $state(15);
   let currentPage = $state(1);
   let activeMarkerKey = $state<string | null>(null);
+  let previewMarkerKey = $state<string | null>(null);
   let tableShell: HTMLDivElement | null = $state(null);
-  let markerPositions = $state<Record<string, number>>({});
-  let visibleMarkerKeys = $state<Set<string>>(new Set());
+  let minimapRail: HTMLDivElement | null = $state(null);
+  let minimapRailHeight = $state(0);
 
   interface MarkerItem {
     key: string;
     question: AssessmentItem;
     itemCode: string;
     index: number;
+  }
+
+  interface VisibleMarkerItem extends MarkerItem {
+    visualTop: number;
+    visualWidth: number;
   }
 
   let lastYear: number | undefined = undefined;
@@ -182,25 +188,48 @@
       window.scrollTo({ top: targetTop, behavior: "smooth" });
     });
     activeMarkerKey = markerKey;
+    previewMarkerKey = null;
   }
 
-  function calculateMarkerPositions(): void {
-    if (!browser) return;
-    const maxScrollTop = Math.max(
-      document.documentElement.scrollHeight - window.innerHeight,
-      0
-    );
-    const nextPositions: Record<string, number> = {};
+  function markerTopForIndex(index: number, total: number, railHeight: number): number {
+    const safeRailHeight = Math.max(railHeight, 1);
+    if (total <= 1) return safeRailHeight / 2;
 
-    for (const marker of markerItems) {
-      const targetTop = scrollTopForQuestion(marker.key);
-      if (targetTop === null) continue;
-      nextPositions[marker.key] = maxScrollTop === 0
-        ? 0
-        : clamp((targetTop / maxScrollTop) * 100, 0, 100);
+    const usableHeight = safeRailHeight * 0.72;
+    const gap = clamp(usableHeight / (total - 1), 6, 12);
+    const stackHeight = gap * (total - 1);
+    const start = (safeRailHeight - stackHeight) / 2;
+    return clamp(start + index * gap, 0, safeRailHeight);
+  }
+
+  function markerWidthForIndex(
+    index: number,
+    total: number,
+    activeIndex: number,
+    isActive: boolean
+  ): number {
+    if (isActive) return 32;
+
+    const baseWidth = total > 96 ? 8 : total > 56 ? 10 : total > 28 ? 12 : 14;
+    if (activeIndex >= 0) {
+      const distance = Math.abs(index - activeIndex);
+      if (distance === 1) return baseWidth + 10;
+      if (distance === 2) return baseWidth + 6;
+      if (distance === 3) return baseWidth + 3;
     }
 
-    markerPositions = nextPositions;
+    const rhythmWidth = index % 8 === 0 ? 4 : index % 5 === 0 ? 2 : 0;
+    return clamp(baseWidth + rhythmWidth, 8, 24);
+  }
+
+  function showMarkerPreview(markerKey: string): void {
+    activeMarkerKey = markerKey;
+    previewMarkerKey = markerKey;
+  }
+
+  function hideMarkerPreview(markerKey: string): void {
+    if (previewMarkerKey === markerKey) previewMarkerKey = null;
+    if (activeMarkerKey === markerKey) activeMarkerKey = null;
   }
 
   function partGroupKey(row: AssessmentItem | null | undefined) {
@@ -284,21 +313,42 @@
     }))
   );
 
+  const maxVisibleMarkerCount = $derived.by(() => {
+    const railHeight = minimapRailHeight || 520;
+    return clamp(Math.floor((railHeight * 0.72) / 7) + 1, 24, 140);
+  });
+
   const markerStep = $derived.by(() =>
-    markerItems.length > 140 ? Math.ceil(markerItems.length / 140) : 1
+    markerItems.length > maxVisibleMarkerCount ? Math.ceil(markerItems.length / maxVisibleMarkerCount) : 1
   );
 
-  $effect(() => {
-    visibleMarkerKeys = new Set(
-      markerItems
-        .filter((marker, index) =>
-          markerItems.length <= 140 ||
-          index % markerStep === 0 ||
-          index === markerItems.length - 1 ||
-          activeMarkerKey === marker.key
-        )
-        .map((marker) => marker.key)
+  const visibleMarkerItems = $derived.by<VisibleMarkerItem[]>(() => {
+    const selectedMarkers = markerItems.filter((marker, index) =>
+      markerItems.length <= maxVisibleMarkerCount ||
+      index % markerStep === 0 ||
+      index === markerItems.length - 1 ||
+      activeMarkerKey === marker.key ||
+      previewMarkerKey === marker.key
     );
+    const activeIndex = selectedMarkers.findIndex((marker) =>
+      marker.key === activeMarkerKey || marker.key === previewMarkerKey
+    );
+
+    const railHeight = minimapRailHeight || 520;
+    return selectedMarkers.map((marker, index) => {
+      const isActive = marker.key === activeMarkerKey || marker.key === previewMarkerKey;
+      return {
+        ...marker,
+        visualTop: markerTopForIndex(index, selectedMarkers.length, railHeight),
+        visualWidth: markerWidthForIndex(index, selectedMarkers.length, activeIndex, isActive)
+      };
+    });
+  });
+
+  $effect(() => {
+    const keys = new Set(markerItems.map((marker) => marker.key));
+    if (activeMarkerKey && !keys.has(activeMarkerKey)) activeMarkerKey = null;
+    if (previewMarkerKey && !keys.has(previewMarkerKey)) previewMarkerKey = null;
   });
 
   $effect(() => {
@@ -308,30 +358,30 @@
     debouncedFilterText;
     isLoading;
     tableShell;
+    minimapRail;
 
     let frame = 0;
-    const scheduleRecalculate = (): void => {
+    const scheduleMeasure = (): void => {
       if (frame) return;
       frame = requestAnimationFrame(() => {
         frame = 0;
-        calculateMarkerPositions();
+        minimapRailHeight = minimapRail?.clientHeight ?? Math.round(window.innerHeight * 0.72);
       });
     };
 
-    scheduleRecalculate();
+    scheduleMeasure();
 
-    const resizeObserver = new ResizeObserver(scheduleRecalculate);
+    const resizeObserver = new ResizeObserver(scheduleMeasure);
     if (tableShell) resizeObserver.observe(tableShell);
+    if (minimapRail) resizeObserver.observe(minimapRail);
     resizeObserver.observe(document.documentElement);
 
-    window.addEventListener("scroll", scheduleRecalculate, { passive: true });
-    window.addEventListener("resize", scheduleRecalculate);
+    window.addEventListener("resize", scheduleMeasure);
 
     return () => {
       if (frame) cancelAnimationFrame(frame);
       resizeObserver.disconnect();
-      window.removeEventListener("scroll", scheduleRecalculate);
-      window.removeEventListener("resize", scheduleRecalculate);
+      window.removeEventListener("resize", scheduleMeasure);
     };
   });
 
@@ -557,26 +607,31 @@
       class="fixed right-4 top-1/2 z-40 hidden h-[72vh] w-10 -translate-y-1/2 lg:block"
       aria-label="Navigasi cepat item Assessment ACGS"
     >
-      <div class="relative h-full px-1 py-2">
-        {#each markerItems as marker}
-          {#if visibleMarkerKeys.has(marker.key) && markerPositions[marker.key] !== undefined}
-            <div
-              class="group absolute right-1 flex -translate-y-1/2 items-center justify-end"
-              style={`top: ${markerPositions[marker.key]}%;`}
+      <div bind:this={minimapRail} class="relative h-full px-1">
+        {#each visibleMarkerItems as marker}
+          <div
+            class="absolute right-0 flex -translate-y-1/2 items-center justify-end"
+            style={`top: ${marker.visualTop}px;`}
+          >
+            <button
+              type="button"
+              class="flex h-3 w-9 items-center justify-end rounded-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-900/20"
+              aria-label="Ke item {marker.itemCode || marker.index + 1}"
+              onclick={() => scrollToQuestion(marker.key)}
+              onmouseenter={() => showMarkerPreview(marker.key)}
+              onmouseleave={() => hideMarkerPreview(marker.key)}
+              onfocus={() => showMarkerPreview(marker.key)}
+              onblur={() => hideMarkerPreview(marker.key)}
             >
-              <button
-                type="button"
-                class="h-px rounded-full transition-all duration-150 hover:w-7 hover:bg-slate-100 focus-visible:w-7 focus-visible:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-100/30 {activeMarkerKey === marker.key ? 'w-7 bg-slate-100' : 'w-2.5 bg-slate-500/55'}"
-                aria-label="Ke item {marker.itemCode || marker.index + 1}"
-                onclick={() => scrollToQuestion(marker.key)}
-                onmouseenter={() => { activeMarkerKey = marker.key; }}
-                onmouseleave={() => { activeMarkerKey = null; }}
-                onfocus={() => { activeMarkerKey = marker.key; }}
-                onblur={() => { activeMarkerKey = null; }}
-              ></button>
+              <span
+                class="h-0.5 rounded-full transition-all duration-150 {activeMarkerKey === marker.key || previewMarkerKey === marker.key ? 'bg-slate-950/90 opacity-100' : 'bg-slate-500/55 opacity-90'}"
+                style={`width: ${marker.visualWidth}px;`}
+              ></span>
+            </button>
 
+            {#if previewMarkerKey === marker.key}
               <div
-                class="pointer-events-none absolute right-full top-1/2 mr-3 hidden w-80 -translate-y-1/2 rounded-2xl border border-white/10 bg-slate-950/95 p-3 text-left text-white shadow-2xl shadow-slate-950/30 backdrop-blur group-focus-within:block group-hover:block"
+                class="pointer-events-none absolute right-full top-1/2 mr-3 w-80 -translate-y-1/2 rounded-2xl border border-white/10 bg-slate-950/95 p-3 text-left text-white shadow-2xl shadow-slate-950/30 backdrop-blur"
               >
                 <div class="text-sm font-semibold leading-snug text-white">No Item {marker.itemCode || marker.index + 1}</div>
                 <div class="mt-2 space-y-1.5">
@@ -591,8 +646,8 @@
                   STANDAR TATA KELOLA PERUSAHAAN
                 </div>
               </div>
-            </div>
-          {/if}
+            {/if}
+          </div>
         {/each}
       </div>
     </nav>
