@@ -76,6 +76,7 @@
   let fixedHeaderHeight = $state(0);
   let fixedHeaderTableWidth = $state(0);
   let fixedHeaderScrollLeft = $state(0);
+  let fixedHeaderColumnWidths = $state<number[]>([]);
 
   $effect(() => {
     localItems = [...items];
@@ -334,7 +335,11 @@
 
     const shellRect = tableShell.getBoundingClientRect();
     const headerRect = tableHeader.getBoundingClientRect();
-    const tableRect = tableElement.getBoundingClientRect();
+    const headerCells = Array.from(tableHeader.querySelectorAll("th"));
+    const measuredColumnWidths = headerCells.map((cell) =>
+      Math.ceil(cell.getBoundingClientRect().width)
+    );
+    const measuredTableWidth = measuredColumnWidths.reduce((total, width) => total + width, 0);
     const headerHeight = Math.ceil(headerRect.height) + 1;
     const shouldFixHeader = headerRect.top <= 0 && shellRect.bottom > headerHeight;
 
@@ -342,8 +347,9 @@
     fixedHeaderLeft = shellRect.left;
     fixedHeaderWidth = shellRect.width;
     fixedHeaderHeight = headerHeight;
-    fixedHeaderTableWidth = Math.ceil(tableRect.width);
+    fixedHeaderTableWidth = measuredTableWidth || Math.ceil(tableElement.getBoundingClientRect().width);
     fixedHeaderScrollLeft = tableScroller.scrollLeft;
+    fixedHeaderColumnWidths = measuredColumnWidths;
   }
 
   function longestLineLength(value: string): number {
@@ -534,17 +540,9 @@
       style={`width: ${fixedHeaderTableWidth}px; transform: translateX(-${fixedHeaderScrollLeft}px);`}
     >
       <colgroup>
-        <col style:width={columnWidths.no} />
-        <col style:width={columnWidths.aoiCode} />
-        <col style:width={columnWidths.areaOfImprovement} />
-        <col style:width={columnWidths.faktaTemuan} />
-        <col style:width={columnWidths.rekomendasi} />
-        <col style:width={columnWidths.tindakLanjut} />
-        <col style:width={columnWidths.pic} />
-        <col style:width={columnWidths.status} />
-        <col style:width={columnWidths.targetWaktu} />
-        <col style:width={columnWidths.eviden} />
-        <col style:width={columnWidths.keterangan} />
+        {#each fixedHeaderColumnWidths as width}
+          <col style:width={`${width}px`} />
+        {/each}
       </colgroup>
       <thead class="bg-primary text-center font-bold text-white">
         <tr>
