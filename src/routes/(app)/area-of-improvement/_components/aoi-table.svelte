@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { browser } from "$app/environment";
   import { goto } from "$app/navigation";
   import { resolve } from "$app/paths";
   import { toast } from "svelte-sonner";
@@ -65,6 +66,16 @@
   let searchQuery = $state("");
   let pageSize = $state(15);
   let currentPage = $state(1);
+  let tableShell: HTMLDivElement | null = $state(null);
+  let tableScroller: HTMLDivElement | null = $state(null);
+  let tableElement: HTMLTableElement | null = $state(null);
+  let tableHeader: HTMLTableSectionElement | null = $state(null);
+  let isColumnHeaderFixed = $state(false);
+  let fixedHeaderLeft = $state(0);
+  let fixedHeaderWidth = $state(0);
+  let fixedHeaderHeight = $state(0);
+  let fixedHeaderTableWidth = $state(0);
+  let fixedHeaderScrollLeft = $state(0);
 
   $effect(() => {
     localItems = [...items];
@@ -315,6 +326,26 @@
     });
   }
 
+  function syncFixedColumnHeader(): void {
+    if (!browser || !tableShell || !tableScroller || !tableElement || !tableHeader) {
+      isColumnHeaderFixed = false;
+      return;
+    }
+
+    const shellRect = tableShell.getBoundingClientRect();
+    const headerRect = tableHeader.getBoundingClientRect();
+    const tableRect = tableElement.getBoundingClientRect();
+    const headerHeight = Math.ceil(headerRect.height) + 1;
+    const shouldFixHeader = headerRect.top <= 0 && shellRect.bottom > headerHeight;
+
+    isColumnHeaderFixed = shouldFixHeader;
+    fixedHeaderLeft = shellRect.left;
+    fixedHeaderWidth = shellRect.width;
+    fixedHeaderHeight = headerHeight;
+    fixedHeaderTableWidth = Math.ceil(tableRect.width);
+    fixedHeaderScrollLeft = tableScroller.scrollLeft;
+  }
+
   function longestLineLength(value: string): number {
     return value
       .split(/\r?\n/)
@@ -355,6 +386,48 @@
     eviden: columnWidth("Eviden", filteredItems.map((item) => item.eviden), 28, 60),
     keterangan: columnWidth("Keterangan", filteredItems.map((item) => item.keterangan), 28, 60),
   }));
+
+  $effect(() => {
+    if (!browser) return;
+    pagedItems;
+    currentPage;
+    searchQuery;
+    columnWidths;
+    tableShell;
+    tableScroller;
+    tableElement;
+    tableHeader;
+
+    let frame = 0;
+    const scheduleSync = (): void => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        syncFixedColumnHeader();
+      });
+    };
+
+    scheduleSync();
+
+    const resizeObserver = new ResizeObserver(scheduleSync);
+    if (tableShell) resizeObserver.observe(tableShell);
+    if (tableScroller) resizeObserver.observe(tableScroller);
+    if (tableElement) resizeObserver.observe(tableElement);
+    if (tableHeader) resizeObserver.observe(tableHeader);
+    resizeObserver.observe(document.documentElement);
+
+    window.addEventListener("scroll", scheduleSync, { passive: true });
+    window.addEventListener("resize", scheduleSync);
+    tableScroller?.addEventListener("scroll", scheduleSync, { passive: true });
+
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      resizeObserver.disconnect();
+      window.removeEventListener("scroll", scheduleSync);
+      window.removeEventListener("resize", scheduleSync);
+      tableScroller?.removeEventListener("scroll", scheduleSync);
+    };
+  });
 </script>
 
 <div class="flex min-w-0 flex-col gap-4">
@@ -450,9 +523,16 @@
   </div>
 </div>
 
-<div class="w-full max-w-full min-w-0 overflow-hidden rounded-lg border border-border bg-white shadow-sm">
-  <div class="w-full max-w-full overflow-x-auto">
-    <table class="table-fixed border-collapse text-xs">
+{#if isColumnHeaderFixed}
+  <div
+    aria-hidden="true"
+    class="pointer-events-none fixed top-0 z-50 overflow-x-hidden rounded-t-lg shadow-lg shadow-slate-950/10"
+    style={`left: ${fixedHeaderLeft}px; width: ${fixedHeaderWidth}px; height: ${fixedHeaderHeight}px;`}
+  >
+    <table
+      class="table-fixed border-collapse text-xs"
+      style={`width: ${fixedHeaderTableWidth}px; transform: translateX(-${fixedHeaderScrollLeft}px);`}
+    >
       <colgroup>
         <col style:width={columnWidths.no} />
         <col style:width={columnWidths.aoiCode} />
@@ -466,7 +546,42 @@
         <col style:width={columnWidths.eviden} />
         <col style:width={columnWidths.keterangan} />
       </colgroup>
-      <thead class="sticky top-0 z-20 bg-primary text-center font-bold text-white">
+      <thead class="bg-primary text-center font-bold text-white">
+        <tr>
+          <th class="border border-border p-3 align-middle uppercase">No</th>
+          <th class="border border-border p-3 align-middle uppercase">No AOI</th>
+          <th class="border border-border p-3 align-middle leading-tight uppercase">Area of Improvement</th>
+          <th class="border border-border p-3 align-middle uppercase">Fakta Temuan</th>
+          <th class="border border-border p-3 align-middle uppercase">Rekomendasi</th>
+          <th class="border border-border p-3 align-middle leading-tight uppercase">Tindak Lanjut atas Rekomendasi</th>
+          <th class="border border-border p-3 align-middle uppercase">Penanggung Jawab</th>
+          <th class="border border-border p-3 align-middle leading-tight uppercase">Progress Tindak Lanjut</th>
+          <th class="border border-border p-3 align-middle leading-tight uppercase">Target Waktu Penyelesaian</th>
+          <th class="border border-border p-3 align-middle uppercase">Eviden</th>
+          <th class="border border-border p-3 align-middle uppercase">Keterangan</th>
+        </tr>
+      </thead>
+    </table>
+  </div>
+{/if}
+
+<div bind:this={tableShell} class="w-full max-w-full min-w-0 overflow-hidden rounded-lg border border-border bg-white shadow-sm">
+  <div bind:this={tableScroller} class="w-full max-w-full overflow-x-auto">
+    <table bind:this={tableElement} class="table-fixed border-collapse text-xs">
+      <colgroup>
+        <col style:width={columnWidths.no} />
+        <col style:width={columnWidths.aoiCode} />
+        <col style:width={columnWidths.areaOfImprovement} />
+        <col style:width={columnWidths.faktaTemuan} />
+        <col style:width={columnWidths.rekomendasi} />
+        <col style:width={columnWidths.tindakLanjut} />
+        <col style:width={columnWidths.pic} />
+        <col style:width={columnWidths.status} />
+        <col style:width={columnWidths.targetWaktu} />
+        <col style:width={columnWidths.eviden} />
+        <col style:width={columnWidths.keterangan} />
+      </colgroup>
+      <thead bind:this={tableHeader} class="sticky top-0 z-20 bg-primary text-center font-bold text-white">
         <tr>
           <th class="border border-border p-3 align-middle uppercase">No</th>
           <th class="border border-border p-3 align-middle uppercase">No AOI</th>

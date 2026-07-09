@@ -108,8 +108,16 @@
   let activeMarkerKey = $state<string | null>(null);
   let previewMarkerKey = $state<string | null>(null);
   let tableShell: HTMLDivElement | null = $state(null);
+  let tableScroller: HTMLDivElement | null = $state(null);
+  let tableHeader: HTMLTableSectionElement | null = $state(null);
   let minimapRail: HTMLDivElement | null = $state(null);
   let minimapRailHeight = $state(0);
+  let isColumnHeaderFixed = $state(false);
+  let fixedHeaderLeft = $state(0);
+  let fixedHeaderWidth = $state(0);
+  let fixedHeaderHeight = $state(0);
+  let fixedHeaderTableWidth = $state(0);
+  let fixedHeaderScrollLeft = $state(0);
 
   interface MarkerItem {
     key: string;
@@ -230,6 +238,25 @@
   function hideMarkerPreview(markerKey: string): void {
     if (previewMarkerKey === markerKey) previewMarkerKey = null;
     if (activeMarkerKey === markerKey) activeMarkerKey = null;
+  }
+
+  function syncFixedColumnHeader(): void {
+    if (!browser || !tableShell || !tableScroller || !tableHeader) {
+      isColumnHeaderFixed = false;
+      return;
+    }
+
+    const shellRect = tableShell.getBoundingClientRect();
+    const headerRect = tableHeader.getBoundingClientRect();
+    const headerHeight = tableHeader.offsetHeight;
+    const shouldFixHeader = headerRect.top <= 0 && shellRect.bottom > headerHeight;
+
+    isColumnHeaderFixed = shouldFixHeader;
+    fixedHeaderLeft = shellRect.left;
+    fixedHeaderWidth = shellRect.width;
+    fixedHeaderHeight = headerHeight;
+    fixedHeaderTableWidth = tableScroller.scrollWidth;
+    fixedHeaderScrollLeft = tableScroller.scrollLeft;
   }
 
   function partGroupKey(row: AssessmentItem | null | undefined) {
@@ -382,6 +409,46 @@
       if (frame) cancelAnimationFrame(frame);
       resizeObserver.disconnect();
       window.removeEventListener("resize", scheduleMeasure);
+    };
+  });
+
+  $effect(() => {
+    if (!browser) return;
+    pagedQuestions;
+    currentPage;
+    debouncedFilterText;
+    isLoading;
+    tableShell;
+    tableScroller;
+    tableHeader;
+
+    let frame = 0;
+    const scheduleSync = (): void => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        syncFixedColumnHeader();
+      });
+    };
+
+    scheduleSync();
+
+    const resizeObserver = new ResizeObserver(scheduleSync);
+    if (tableShell) resizeObserver.observe(tableShell);
+    if (tableScroller) resizeObserver.observe(tableScroller);
+    if (tableHeader) resizeObserver.observe(tableHeader);
+    resizeObserver.observe(document.documentElement);
+
+    window.addEventListener("scroll", scheduleSync, { passive: true });
+    window.addEventListener("resize", scheduleSync);
+    tableScroller?.addEventListener("scroll", scheduleSync, { passive: true });
+
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      resizeObserver.disconnect();
+      window.removeEventListener("scroll", scheduleSync);
+      window.removeEventListener("resize", scheduleSync);
+      tableScroller?.removeEventListener("scroll", scheduleSync);
     };
   });
 
@@ -653,17 +720,41 @@
     </nav>
   {/if}
 
+  {#if isColumnHeaderFixed}
+    <div
+      aria-hidden="true"
+      class="pointer-events-none fixed top-0 z-50 overflow-hidden rounded-t-lg shadow-lg shadow-slate-950/10"
+      style={`left: ${fixedHeaderLeft}px; width: ${fixedHeaderWidth}px; height: ${fixedHeaderHeight}px;`}
+    >
+      <table
+        class="border-collapse text-[11px] md:text-xs"
+        style={`width: ${fixedHeaderTableWidth}px; transform: translateX(-${fixedHeaderScrollLeft}px);`}
+      >
+        <thead class="bg-primary text-center font-bold text-white">
+          <tr>
+            <th class="w-[8%] border border-border p-3 align-middle uppercase">ITEM</th>
+            <th class="w-[42%] border border-border p-3 align-middle leading-tight uppercase">STANDAR TATA KELOLA<br />PERUSAHAAN</th>
+            <th class="w-[15%] border border-border p-3 align-middle uppercase">IMPLEMENTASI</th>
+            <th class="w-[15%] border border-border p-3 align-middle uppercase">EVIDENCE</th>
+            <th class="w-[5%] border border-border p-3 align-middle leading-tight uppercase">STATUS<br />YES OR NO</th>
+            <th class="w-[15%] border border-border p-3 align-middle uppercase">REKOMENDASI</th>
+          </tr>
+        </thead>
+      </table>
+    </div>
+  {/if}
+
   <div bind:this={tableShell} class="w-full max-w-full min-w-0 overflow-hidden rounded-lg border border-border bg-white shadow-sm">
-    <div class="w-full max-w-full overflow-x-auto">
+    <div bind:this={tableScroller} class="w-full max-w-full overflow-x-auto">
     <table class="w-full min-w-175 border-collapse text-[11px] md:text-xs">
-      <thead class="bg-primary text-white text-center font-bold sticky top-0 z-20">
+      <thead bind:this={tableHeader} class="sticky top-0 z-20 bg-primary text-center font-bold text-white">
         <tr>
-          <th class="border border-border w-[8%] p-3 align-middle uppercase">ITEM</th>
-          <th class="border border-border w-[42%] p-3 align-middle uppercase leading-tight">STANDAR TATA KELOLA<br />PERUSAHAAN</th>
-          <th class="border border-border w-[15%] p-3 align-middle uppercase">IMPLEMENTASI</th>
-          <th class="border border-border w-[15%] p-3 align-middle uppercase">EVIDENCE</th>
-          <th class="border border-border w-[5%] p-3 align-middle uppercase leading-tight">STATUS<br />YES OR NO</th>
-          <th class="border border-border w-[15%] p-3 align-middle uppercase">REKOMENDASI</th>
+          <th class="w-[8%] border border-border p-3 align-middle uppercase">ITEM</th>
+          <th class="w-[42%] border border-border p-3 align-middle leading-tight uppercase">STANDAR TATA KELOLA<br />PERUSAHAAN</th>
+          <th class="w-[15%] border border-border p-3 align-middle uppercase">IMPLEMENTASI</th>
+          <th class="w-[15%] border border-border p-3 align-middle uppercase">EVIDENCE</th>
+          <th class="w-[5%] border border-border p-3 align-middle leading-tight uppercase">STATUS<br />YES OR NO</th>
+          <th class="w-[15%] border border-border p-3 align-middle uppercase">REKOMENDASI</th>
         </tr>
       </thead>
       <tbody class="align-top">
