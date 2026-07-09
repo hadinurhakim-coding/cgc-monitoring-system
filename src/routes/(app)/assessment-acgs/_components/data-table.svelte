@@ -106,6 +106,16 @@
   let pageSize = $state(15);
   let currentPage = $state(1);
   let activeMarkerKey = $state<string | null>(null);
+  let tableShell: HTMLDivElement | null = $state(null);
+  let markerPositions = $state<Record<string, number>>({});
+  let visibleMarkerKeys = $state<Set<string>>(new Set());
+
+  interface MarkerItem {
+    key: string;
+    question: AssessmentItem;
+    itemCode: string;
+    index: number;
+  }
 
   let lastYear: number | undefined = undefined;
   let lastSearch: string | undefined = undefined;
@@ -145,12 +155,52 @@
     return `assessment-row-${markerKey.replace(/[^a-zA-Z0-9_-]/g, "-")}`;
   }
 
+  function clamp(value: number, min: number, max: number): number {
+    return Math.min(Math.max(value, min), max);
+  }
+
+  function scrollTopForQuestion(markerKey: string): number | null {
+    if (!browser) return null;
+    const row = document.getElementById(questionRowId(markerKey));
+    if (!row) return null;
+
+    const rect = row.getBoundingClientRect();
+    const maxScrollTop = Math.max(
+      document.documentElement.scrollHeight - window.innerHeight,
+      0
+    );
+    const rowTop = window.scrollY + rect.top;
+    const centeredTop = rowTop - (window.innerHeight - rect.height) / 2;
+    return clamp(centeredTop, 0, maxScrollTop);
+  }
+
   function scrollToQuestion(markerKey: string): void {
     if (!browser) return;
-    document
-      .getElementById(questionRowId(markerKey))
-      ?.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+    const targetTop = scrollTopForQuestion(markerKey);
+    if (targetTop === null) return;
+    requestAnimationFrame(() => {
+      window.scrollTo({ top: targetTop, behavior: "smooth" });
+    });
     activeMarkerKey = markerKey;
+  }
+
+  function calculateMarkerPositions(): void {
+    if (!browser) return;
+    const maxScrollTop = Math.max(
+      document.documentElement.scrollHeight - window.innerHeight,
+      0
+    );
+    const nextPositions: Record<string, number> = {};
+
+    for (const marker of markerItems) {
+      const targetTop = scrollTopForQuestion(marker.key);
+      if (targetTop === null) continue;
+      nextPositions[marker.key] = maxScrollTop === 0
+        ? 0
+        : clamp((targetTop / maxScrollTop) * 100, 0, 100);
+    }
+
+    markerPositions = nextPositions;
   }
 
   function partGroupKey(row: AssessmentItem | null | undefined) {
@@ -224,6 +274,66 @@
   });
 
   const pagedQuestions = $derived(filteredTableQuestions.slice((currentPage - 1) * pageSize, currentPage * pageSize));
+
+  const markerItems = $derived.by<MarkerItem[]>(() =>
+    pagedQuestions.map((question, index) => ({
+      key: markerKeyOf(question, index),
+      question,
+      itemCode: displayCode(question.item_id, null),
+      index
+    }))
+  );
+
+  const markerStep = $derived.by(() =>
+    markerItems.length > 140 ? Math.ceil(markerItems.length / 140) : 1
+  );
+
+  $effect(() => {
+    visibleMarkerKeys = new Set(
+      markerItems
+        .filter((marker, index) =>
+          markerItems.length <= 140 ||
+          index % markerStep === 0 ||
+          index === markerItems.length - 1 ||
+          activeMarkerKey === marker.key
+        )
+        .map((marker) => marker.key)
+    );
+  });
+
+  $effect(() => {
+    if (!browser) return;
+    pagedQuestions;
+    currentPage;
+    debouncedFilterText;
+    isLoading;
+    tableShell;
+
+    let frame = 0;
+    const scheduleRecalculate = (): void => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        calculateMarkerPositions();
+      });
+    };
+
+    scheduleRecalculate();
+
+    const resizeObserver = new ResizeObserver(scheduleRecalculate);
+    if (tableShell) resizeObserver.observe(tableShell);
+    resizeObserver.observe(document.documentElement);
+
+    window.addEventListener("scroll", scheduleRecalculate, { passive: true });
+    window.addEventListener("resize", scheduleRecalculate);
+
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      resizeObserver.disconnect();
+      window.removeEventListener("scroll", scheduleRecalculate);
+      window.removeEventListener("resize", scheduleRecalculate);
+    };
+  });
 
   // Async Operations
   async function persistField(q: AssessmentItem, field: string, value: string): Promise<boolean> {
@@ -444,46 +554,52 @@
 
   {#if !isLoading && pagedQuestions.length > 0}
     <nav
-      class="fixed right-4 top-1/2 z-40 hidden -translate-y-1/2 flex-col items-end gap-1 rounded-full bg-white/55 px-1.5 py-3 shadow-lg shadow-slate-950/10 ring-1 ring-slate-900/5 backdrop-blur lg:flex"
+      class="fixed right-4 top-1/2 z-40 hidden h-[68vh] w-12 -translate-y-1/2 lg:block"
       aria-label="Navigasi cepat item Assessment ACGS"
     >
-      {#each pagedQuestions as markerQuestion, markerIndex}
-        {@const markerKey = markerKeyOf(markerQuestion, markerIndex)}
-        {@const itemCode = displayCode(markerQuestion.item_id, null)}
-        <div class="group relative flex h-3 items-center justify-end">
-          <button
-            type="button"
-            class="h-0.5 rounded-full bg-primary/45 transition-all duration-150 hover:w-8 hover:bg-primary focus-visible:w-8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 {activeMarkerKey === markerKey ? 'w-8 bg-primary' : 'w-2'}"
-            aria-label="Ke item {itemCode || markerIndex + 1}"
-            onclick={() => scrollToQuestion(markerKey)}
-            onmouseenter={() => { activeMarkerKey = markerKey; }}
-            onmouseleave={() => { activeMarkerKey = null; }}
-            onfocus={() => { activeMarkerKey = markerKey; }}
-            onblur={() => { activeMarkerKey = null; }}
-          ></button>
+      <div class="relative h-full rounded-full bg-white/55 px-1.5 py-3 shadow-lg shadow-slate-950/10 ring-1 ring-slate-900/5 backdrop-blur">
+        <div class="absolute inset-y-3 right-2 w-px rounded-full bg-primary/10"></div>
+        {#each markerItems as marker}
+          {#if visibleMarkerKeys.has(marker.key) && markerPositions[marker.key] !== undefined}
+            <div
+              class="group absolute right-2 flex -translate-y-1/2 items-center justify-end"
+              style={`top: ${markerPositions[marker.key]}%;`}
+            >
+              <button
+                type="button"
+                class="h-0.5 rounded-full bg-primary/45 transition-all duration-150 hover:w-8 hover:bg-primary focus-visible:w-8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 {activeMarkerKey === marker.key ? 'w-8 bg-primary' : 'w-2'}"
+                aria-label="Ke item {marker.itemCode || marker.index + 1}"
+                onclick={() => scrollToQuestion(marker.key)}
+                onmouseenter={() => { activeMarkerKey = marker.key; }}
+                onmouseleave={() => { activeMarkerKey = null; }}
+                onfocus={() => { activeMarkerKey = marker.key; }}
+                onblur={() => { activeMarkerKey = null; }}
+              ></button>
 
-          <div
-            class="pointer-events-none absolute right-full top-1/2 mr-3 hidden w-80 -translate-y-1/2 rounded-2xl border border-white/10 bg-slate-950/95 p-3 text-left text-white shadow-2xl shadow-slate-950/30 backdrop-blur group-focus-within:block group-hover:block"
-          >
-            <div class="text-sm font-semibold leading-snug text-white">No Item {itemCode || markerIndex + 1}</div>
-            <div class="mt-2 space-y-1.5">
-              {#if norm(markerQuestion.question_en)}
-                <p class="line-clamp-3 text-xs leading-relaxed text-slate-200">{norm(markerQuestion.question_en)}</p>
-              {/if}
-              {#if norm(markerQuestion.question_id)}
-                <p class="line-clamp-3 text-xs leading-relaxed text-slate-400">{norm(markerQuestion.question_id)}</p>
-              {/if}
+              <div
+                class="pointer-events-none absolute right-full top-1/2 mr-3 hidden w-80 -translate-y-1/2 rounded-2xl border border-white/10 bg-slate-950/95 p-3 text-left text-white shadow-2xl shadow-slate-950/30 backdrop-blur group-focus-within:block group-hover:block"
+              >
+                <div class="text-sm font-semibold leading-snug text-white">No Item {marker.itemCode || marker.index + 1}</div>
+                <div class="mt-2 space-y-1.5">
+                  {#if norm(marker.question.question_en)}
+                    <p class="line-clamp-3 text-xs leading-relaxed text-slate-200">{norm(marker.question.question_en)}</p>
+                  {/if}
+                  {#if norm(marker.question.question_id)}
+                    <p class="line-clamp-3 text-xs leading-relaxed text-slate-400">{norm(marker.question.question_id)}</p>
+                  {/if}
+                </div>
+                <div class="mt-3 border-t border-white/10 pt-2 text-xs font-medium text-slate-400">
+                  STANDAR TATA KELOLA PERUSAHAAN
+                </div>
+              </div>
             </div>
-            <div class="mt-3 border-t border-white/10 pt-2 text-xs font-medium text-slate-400">
-              STANDAR TATA KELOLA PERUSAHAAN
-            </div>
-          </div>
-        </div>
-      {/each}
+          {/if}
+        {/each}
+      </div>
     </nav>
   {/if}
 
-  <div class="w-full max-w-full min-w-0 overflow-hidden rounded-lg border border-border bg-white shadow-sm">
+  <div bind:this={tableShell} class="w-full max-w-full min-w-0 overflow-hidden rounded-lg border border-border bg-white shadow-sm">
     <div class="w-full max-w-full overflow-x-auto">
     <table class="w-full min-w-175 border-collapse text-[11px] md:text-xs">
       <thead class="bg-primary text-white text-center font-bold sticky top-0 z-20">
