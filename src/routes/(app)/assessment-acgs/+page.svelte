@@ -67,12 +67,9 @@
 			{viewData.loadError}
 		</div>
 	{/if}
-	{#if viewData.cacheState === "cached"}
-		<div class="rounded-md border border-primary/20 bg-primary/5 px-4 py-2 text-xs text-primary" role="status">
-			Menampilkan data tersimpan. Memuat pembaruan di latar belakang.
-			{#if viewData.refreshError}
-				<span class="text-destructive"> {viewData.refreshError}</span>
-			{/if}
+	{#if viewData.cacheState === "cached" && viewData.refreshError}
+		<div class="rounded-md border border-destructive/40 bg-destructive/10 px-4 py-2 text-xs text-destructive" role="status">
+			{viewData.refreshError}
 		</div>
 	{/if}
 	<DataTable

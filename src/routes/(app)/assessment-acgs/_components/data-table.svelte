@@ -17,7 +17,6 @@
   import StatusButtons from "./status-buttons.svelte";
   import EvidenceCell from "./evidence-cell.svelte";
   import EditableCell from "./editable-cell.svelte";
-  import ItemPreviewHoverCard from "./item-preview-hover-card.svelte";
   import ScoreSummaryTable from "./score-summary-table.svelte";
 
   // Lib & Utils
@@ -106,6 +105,7 @@
   let stagedFiles = $state<Record<string, File>>({});
   let pageSize = $state(15);
   let currentPage = $state(1);
+  let activeMarkerKey = $state<string | null>(null);
 
   let lastYear: number | undefined = undefined;
   let lastSearch: string | undefined = undefined;
@@ -135,6 +135,22 @@
     const f = norm(fallback);
     if (f && !UUID_RE.test(f)) return f;
     return p || f || "";
+  }
+
+  function markerKeyOf(q: AssessmentItem, index: number): string {
+    return rowKeyOf(q) ?? `${currentYear}-${currentPage}-${index}`;
+  }
+
+  function questionRowId(markerKey: string): string {
+    return `assessment-row-${markerKey.replace(/[^a-zA-Z0-9_-]/g, "-")}`;
+  }
+
+  function scrollToQuestion(markerKey: string): void {
+    if (!browser) return;
+    document
+      .getElementById(questionRowId(markerKey))
+      ?.scrollIntoView({ behavior: "smooth", block: "center", inline: "nearest" });
+    activeMarkerKey = markerKey;
   }
 
   function partGroupKey(row: AssessmentItem | null | undefined) {
@@ -426,6 +442,47 @@
     assessmentQuestions={allTableQuestions}
   />
 
+  {#if !isLoading && pagedQuestions.length > 0}
+    <nav
+      class="fixed right-4 top-1/2 z-40 hidden -translate-y-1/2 flex-col items-end gap-1 rounded-full bg-white/55 px-1.5 py-3 shadow-lg shadow-slate-950/10 ring-1 ring-slate-900/5 backdrop-blur lg:flex"
+      aria-label="Navigasi cepat item Assessment ACGS"
+    >
+      {#each pagedQuestions as markerQuestion, markerIndex}
+        {@const markerKey = markerKeyOf(markerQuestion, markerIndex)}
+        {@const itemCode = displayCode(markerQuestion.item_id, null)}
+        <div class="group relative flex h-3 items-center justify-end">
+          <button
+            type="button"
+            class="h-0.5 rounded-full bg-primary/45 transition-all duration-150 hover:w-8 hover:bg-primary focus-visible:w-8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 {activeMarkerKey === markerKey ? 'w-8 bg-primary' : 'w-2'}"
+            aria-label="Ke item {itemCode || markerIndex + 1}"
+            onclick={() => scrollToQuestion(markerKey)}
+            onmouseenter={() => { activeMarkerKey = markerKey; }}
+            onmouseleave={() => { activeMarkerKey = null; }}
+            onfocus={() => { activeMarkerKey = markerKey; }}
+            onblur={() => { activeMarkerKey = null; }}
+          ></button>
+
+          <div
+            class="pointer-events-none absolute right-full top-1/2 mr-3 hidden w-80 -translate-y-1/2 rounded-2xl border border-white/10 bg-slate-950/95 p-3 text-left text-white shadow-2xl shadow-slate-950/30 backdrop-blur group-focus-within:block group-hover:block"
+          >
+            <div class="text-sm font-semibold leading-snug text-white">No Item {itemCode || markerIndex + 1}</div>
+            <div class="mt-2 space-y-1.5">
+              {#if norm(markerQuestion.question_en)}
+                <p class="line-clamp-3 text-xs leading-relaxed text-slate-200">{norm(markerQuestion.question_en)}</p>
+              {/if}
+              {#if norm(markerQuestion.question_id)}
+                <p class="line-clamp-3 text-xs leading-relaxed text-slate-400">{norm(markerQuestion.question_id)}</p>
+              {/if}
+            </div>
+            <div class="mt-3 border-t border-white/10 pt-2 text-xs font-medium text-slate-400">
+              STANDAR TATA KELOLA PERUSAHAAN
+            </div>
+          </div>
+        </div>
+      {/each}
+    </nav>
+  {/if}
+
   <div class="w-full max-w-full min-w-0 overflow-hidden rounded-lg border border-border bg-white shadow-sm">
     <div class="w-full max-w-full overflow-x-auto">
     <table class="w-full min-w-175 border-collapse text-[11px] md:text-xs">
@@ -510,18 +567,21 @@
               </tr>
             {/if}
 
-            <tr class="hover:bg-slate-50 transition-colors">
-              <td class="border border-border bg-white p-2 text-center align-middle">
-                <ItemPreviewHoverCard
-                  itemCode={displayCode(q.item_id, null)}
-                  standardEn={norm(q.question_en)}
-                  standardId={norm(q.question_id)}
-                />
-              </td>
+            {@const markerKey = markerKeyOf(q, i)}
+            <tr
+              id={questionRowId(markerKey)}
+              class="transition-colors hover:bg-slate-50 {activeMarkerKey === markerKey ? 'bg-slate-50' : ''}"
+              onmouseenter={() => { activeMarkerKey = markerKey; }}
+              onmouseleave={() => { activeMarkerKey = null; }}
+            >
+              <td class="border border-border p-2 align-middle bg-white"></td>
               <td class="border border-border p-0 align-stretch">
-                <div class="min-w-0 p-2 leading-tight text-left">
-                  <div class="mb-1 text-justify text-[11px] font-medium text-slate-900 md:text-xs">{norm(q.question_en)}</div>
-                  <div class="text-justify text-[10px] font-normal leading-snug text-blue-700 md:text-[11px]">{norm(q.question_id)}</div>
+                <div class="flex min-h-full w-full">
+                  <div class="w-13 md:w-17 shrink-0 border-r border-border p-2 align-top text-center font-bold text-blue-700 text-[10px] md:text-[11px] leading-snug">{displayCode(q.item_id, null)}</div>
+                  <div class="min-w-0 flex-1 p-2 align-top leading-tight text-left">
+                    <div class="text-slate-900 mb-1 text-justify font-medium text-[11px] md:text-xs">{norm(q.question_en)}</div>
+                    <div class="text-blue-700 text-justify text-[10px] md:text-[11px] leading-snug font-normal">{norm(q.question_id)}</div>
+                  </div>
                 </div>
               </td>
               <td class="border border-border p-0 align-top h-1">
