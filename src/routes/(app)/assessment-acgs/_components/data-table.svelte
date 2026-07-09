@@ -554,20 +554,19 @@
 
   {#if !isLoading && pagedQuestions.length > 0}
     <nav
-      class="fixed right-4 top-1/2 z-40 hidden h-[68vh] w-12 -translate-y-1/2 lg:block"
+      class="fixed right-4 top-1/2 z-40 hidden h-[72vh] w-10 -translate-y-1/2 lg:block"
       aria-label="Navigasi cepat item Assessment ACGS"
     >
-      <div class="relative h-full rounded-full bg-white/55 px-1.5 py-3 shadow-lg shadow-slate-950/10 ring-1 ring-slate-900/5 backdrop-blur">
-        <div class="absolute inset-y-3 right-2 w-px rounded-full bg-primary/10"></div>
+      <div class="relative h-full px-1 py-2">
         {#each markerItems as marker}
           {#if visibleMarkerKeys.has(marker.key) && markerPositions[marker.key] !== undefined}
             <div
-              class="group absolute right-2 flex -translate-y-1/2 items-center justify-end"
+              class="group absolute right-1 flex -translate-y-1/2 items-center justify-end"
               style={`top: ${markerPositions[marker.key]}%;`}
             >
               <button
                 type="button"
-                class="h-0.5 rounded-full bg-primary/45 transition-all duration-150 hover:w-8 hover:bg-primary focus-visible:w-8 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary/30 {activeMarkerKey === marker.key ? 'w-8 bg-primary' : 'w-2'}"
+                class="h-px rounded-full transition-all duration-150 hover:w-7 hover:bg-slate-100 focus-visible:w-7 focus-visible:bg-slate-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-slate-100/30 {activeMarkerKey === marker.key ? 'w-7 bg-slate-100' : 'w-2.5 bg-slate-500/55'}"
                 aria-label="Ke item {marker.itemCode || marker.index + 1}"
                 onclick={() => scrollToQuestion(marker.key)}
                 onmouseenter={() => { activeMarkerKey = marker.key; }}
