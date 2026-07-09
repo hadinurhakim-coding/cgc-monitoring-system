@@ -17,6 +17,7 @@
   import StatusButtons from "./status-buttons.svelte";
   import EvidenceCell from "./evidence-cell.svelte";
   import EditableCell from "./editable-cell.svelte";
+  import ItemPreviewHoverCard from "./item-preview-hover-card.svelte";
   import ScoreSummaryTable from "./score-summary-table.svelte";
 
   // Lib & Utils
@@ -510,14 +511,17 @@
             {/if}
 
             <tr class="hover:bg-slate-50 transition-colors">
-              <td class="border border-border p-2 align-middle bg-white"></td>
+              <td class="border border-border bg-white p-2 text-center align-middle">
+                <ItemPreviewHoverCard
+                  itemCode={displayCode(q.item_id, null)}
+                  standardEn={norm(q.question_en)}
+                  standardId={norm(q.question_id)}
+                />
+              </td>
               <td class="border border-border p-0 align-stretch">
-                <div class="flex min-h-full w-full">
-                  <div class="w-13 md:w-17 shrink-0 border-r border-border p-2 align-top text-center font-bold text-blue-700 text-[10px] md:text-[11px] leading-snug">{displayCode(q.item_id, null)}</div>
-                  <div class="min-w-0 flex-1 p-2 align-top leading-tight text-left">
-                    <div class="text-slate-900 mb-1 text-justify font-medium text-[11px] md:text-xs">{norm(q.question_en)}</div>
-                    <div class="text-blue-700 text-justify text-[10px] md:text-[11px] leading-snug font-normal">{norm(q.question_id)}</div>
-                  </div>
+                <div class="min-w-0 p-2 leading-tight text-left">
+                  <div class="mb-1 text-justify text-[11px] font-medium text-slate-900 md:text-xs">{norm(q.question_en)}</div>
+                  <div class="text-justify text-[10px] font-normal leading-snug text-blue-700 md:text-[11px]">{norm(q.question_id)}</div>
                 </div>
               </td>
               <td class="border border-border p-0 align-top h-1">
