@@ -60,6 +60,99 @@ function partLabelFromId(partId: string): string {
 	return map[partId] ?? partId;
 }
 
+const levelOnePartNames: Record<string, string> = {
+	"PART A": "Hak-hak dan Perlakuan Setara terhadap Pemegang Saham",
+	"PART B": "Keberlanjutan dan Ketahanan",
+	"PART C": "Transparansi dan Pengungkapan",
+	"PART D": "Tanggung Jawab Dewan",
+};
+
+function levelKind(label: string): "level1" | "bonus" | "penalti" | "other" {
+	const normalized = norm(label).toUpperCase();
+	if (normalized.includes("BONUS")) return "bonus";
+	if (normalized.includes("PENALTY") || normalized.includes("PENALTI")) return "penalti";
+	if (normalized.includes("LEVEL 1")) return "level1";
+	return "other";
+}
+
+function summarizeParts(
+	partId: string,
+	partLabel: string,
+	fullNameId: string,
+	parts: AoiPartGroup[],
+	keteranganMap: Map<string, string>
+): AoiPartGroup {
+	const statusCounts = parts.reduce(
+		(total, part) => addStatusCounts(total, part.statusCounts),
+		emptyStatusCounts()
+	);
+	const fallbackKeterangan = [...new Set(parts.map((part) => part.keterangan).filter(Boolean))].join("\n");
+
+	return {
+		partId,
+		partLabel,
+		fullNameId,
+		levelLabel: "LEVEL 2",
+		sections: parts.flatMap((part) => part.sections),
+		totalAoi: parts.reduce((total, part) => total + part.totalAoi, 0),
+		statusCounts,
+		keterangan: keteranganMap.get(partId) ?? fallbackKeterangan,
+	};
+}
+
+function summarizeLevel(levelLabel: string, parts: AoiPartGroup[]): AoiLevelGroup {
+	return {
+		levelLabel,
+		parts,
+		totalAoi: parts.reduce((total, part) => total + part.totalAoi, 0),
+		statusCounts: parts.reduce(
+			(total, part) => addStatusCounts(total, part.statusCounts),
+			emptyStatusCounts()
+		),
+	};
+}
+
+function toMajorPointLevels(
+	levels: AoiLevelGroup[],
+	keteranganMap: Map<string, string>
+): AoiLevelGroup[] {
+	const levelOneParts = levels
+		.filter((level) => levelKind(level.levelLabel) === "level1")
+		.flatMap((level) => level.parts)
+		.map((part) => ({
+			...part,
+			partLabel: partLabelFromId(part.partId),
+			fullNameId: levelOnePartNames[part.partId] ?? part.fullNameId,
+			levelLabel: "LEVEL 1",
+		}));
+
+	const bonusParts = levels
+		.filter((level) => levelKind(level.levelLabel) === "bonus")
+		.flatMap((level) => level.parts);
+	const penaltiParts = levels
+		.filter((level) => levelKind(level.levelLabel) === "penalti")
+		.flatMap((level) => level.parts);
+
+	const result: AoiLevelGroup[] = [];
+	if (levelOneParts.length > 0) result.push(summarizeLevel("LEVEL 1", levelOneParts));
+
+	const levelTwoParts: AoiPartGroup[] = [];
+	if (bonusParts.length > 0) {
+		levelTwoParts.push(summarizeParts("LEVEL 2 BONUS", "", "Bonus", bonusParts, keteranganMap));
+	}
+	if (penaltiParts.length > 0) {
+		levelTwoParts.push(summarizeParts("LEVEL 2 PENALTI", "", "Penalti", penaltiParts, keteranganMap));
+	}
+	if (levelTwoParts.length > 0) result.push(summarizeLevel("LEVEL 2", levelTwoParts));
+
+	result.push(
+		...levels.filter(
+			(level) => levelKind(level.levelLabel) === "other" && level.parts.length > 0
+		)
+	);
+	return result;
+}
+
 export function buildMonitoringData(
 	hierarchy: MonitoringHierarchyItem[],
 	items: AoiItem[],
@@ -168,5 +261,5 @@ export function buildMonitoringData(
 		};
 	}
 
-	return { levels, grandTotal };
+	return { levels: toMajorPointLevels(levels, keteranganMap), grandTotal };
 }

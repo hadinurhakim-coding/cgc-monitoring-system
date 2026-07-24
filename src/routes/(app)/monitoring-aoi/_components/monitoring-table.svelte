@@ -9,7 +9,7 @@
     type PageCacheScope
   } from "$lib/client/encrypted-page-cache.js";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
-  import type { AoiLevelGroup, AoiPartGroup, AoiSectionRow, MonitoringGrandTotal } from "../_lib/types.js";
+  import type { AoiLevelGroup, AoiPartGroup, MonitoringGrandTotal } from "../_lib/types.js";
   import { addStatusCounts, emptyStatusCounts } from "../_lib/types.js";
 
   interface Props {
@@ -61,9 +61,8 @@
 
   function levelDisplayName(label: string): string {
     const t = label.trim().toUpperCase();
-    if (t.includes("BONUS")) return "LEVEL 2 — BONUS";
-    if (t.includes("PENALTY") || t.includes("PENALTI")) return "LEVEL 2 — PENALTI";
     if (t.includes("LEVEL 1")) return "LEVEL 1";
+    if (t.includes("LEVEL 2")) return "LEVEL 2";
     return label.trim();
   }
 
@@ -75,10 +74,9 @@
     return String(value ?? "").trim().toLowerCase();
   }
 
-  function sectionSearchHaystack(
+  function partSearchHaystack(
     level: AoiLevelGroup,
-    part: AoiPartGroup,
-    section: AoiSectionRow
+    part: AoiPartGroup
   ): string {
     return [
       level.levelLabel,
@@ -87,34 +85,23 @@
       part.partLabel,
       part.fullNameId,
       part.keterangan,
-      section.sectionId,
-      section.sectionLabel,
-      section.jumlahAoi,
-      section.statusCounts.selesai,
-      section.statusCounts.onProgress,
-      section.statusCounts.tidakDapat,
-      section.statusCounts.belum
+      part.totalAoi,
+      part.statusCounts.selesai,
+      part.statusCounts.onProgress,
+      part.statusCounts.tidakDapat,
+      part.statusCounts.belum,
+      ...part.sections.flatMap((section) => [section.sectionId, section.sectionLabel])
     ].map(normalizeSearchValue).join(" ");
   }
 
-  function sectionMatchesQuery(
+  function partMatchesQuery(
     level: AoiLevelGroup,
     part: AoiPartGroup,
-    section: AoiSectionRow,
     tokens: string[]
   ): boolean {
     if (tokens.length === 0) return true;
-    const haystack = sectionSearchHaystack(level, part, section);
+    const haystack = partSearchHaystack(level, part);
     return tokens.every((token) => haystack.includes(token));
-  }
-
-  function summarizePart(part: AoiPartGroup, sections: AoiSectionRow[]): AoiPartGroup {
-    const statusCounts = sections.reduce(
-      (total, section) => addStatusCounts(total, section.statusCounts),
-      emptyStatusCounts()
-    );
-    const totalAoi = sections.reduce((total, section) => total + section.jumlahAoi, 0);
-    return { ...part, sections, totalAoi, statusCounts };
   }
 
   function summarizeLevel(level: AoiLevelGroup, parts: AoiPartGroup[]): AoiLevelGroup {
@@ -146,14 +133,9 @@
     if (searchTokens.length === 0) return levels;
     return levels
       .map((level) => {
-        const parts = level.parts
-          .map((part) => {
-            const sections = part.sections.filter((section) =>
-              sectionMatchesQuery(level, part, section, searchTokens)
-            );
-            return sections.length > 0 ? summarizePart(part, sections) : null;
-          })
-          .filter((part): part is AoiPartGroup => part !== null);
+        const parts = level.parts.filter((part) =>
+          partMatchesQuery(level, part, searchTokens)
+        );
         return parts.length > 0 ? summarizeLevel(level, parts) : null;
       })
       .filter((level): level is AoiLevelGroup => level !== null);
@@ -163,18 +145,12 @@
     searchTokens.length === 0 ? grandTotal : summarizeGrandTotal(filteredLevels)
   );
 
-  const sectionCount = $derived.by(() =>
-    levels.reduce((total, level) =>
-      total + level.parts.reduce((partTotal, part) => partTotal + part.sections.length, 0),
-      0
-    )
+  const pointCount = $derived.by(() =>
+    levels.reduce((total, level) => total + level.parts.length, 0)
   );
 
-  const filteredSectionCount = $derived.by(() =>
-    filteredLevels.reduce((total, level) =>
-      total + level.parts.reduce((partTotal, part) => partTotal + part.sections.length, 0),
-      0
-    )
+  const filteredPointCount = $derived.by(() =>
+    filteredLevels.reduce((total, level) => total + level.parts.length, 0)
   );
 
   // Year selector
@@ -218,7 +194,7 @@
       <input
         type="search"
         aria-label="Cari atau filter monitoring AOI"
-        placeholder="Cari standar, bagian, section, status..."
+        placeholder="Cari standar, bagian, bonus, penalti..."
         class="h-9 w-full rounded-md border border-border bg-white pl-10 pr-10 text-sm text-foreground outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20"
         bind:value={searchQuery}
       />
@@ -238,9 +214,9 @@
   <div class="flex flex-wrap items-center justify-between gap-3 lg:justify-end">
     <div class="text-xs font-medium text-muted-foreground" aria-live="polite">
       {#if searchQuery.trim()}
-        <strong>{filteredSectionCount}</strong> cocok dari <strong>{sectionCount}</strong> section
+        <strong>{filteredPointCount}</strong> cocok dari <strong>{pointCount}</strong> poin besar
       {:else}
-        <strong>{sectionCount}</strong> section monitoring
+        <strong>{pointCount}</strong> poin besar monitoring
       {/if}
     </div>
 
@@ -328,68 +304,44 @@
         </tr>
 
         {#each lv.parts as pt}
-          {#each pt.sections as sec, si}
-            <tr class="hover:bg-slate-50 transition-colors">
-              {#if si === 0}
-                <!-- Part label — rowspan seluruh sections dalam part ini -->
-                <td
-                  rowspan={pt.sections.length}
-                  class="border border-border p-2 font-bold text-center align-middle bg-white text-slate-900 uppercase w-16"
-                >
-                  {pt.partLabel}
-                </td>
+          <tr class="transition-colors hover:bg-slate-50">
+            <td class="w-16 border border-border bg-white p-2 text-center align-middle font-medium text-slate-900">
+              {pt.partLabel}
+            </td>
+            <td class="border border-border px-3 py-2 align-middle font-medium text-slate-900">
+              {pt.fullNameId}
+            </td>
+            <td class="border border-border px-2 py-2 text-center font-medium">
+              {countText(pt.totalAoi)}
+            </td>
+            <td class="border border-border px-2 py-2 text-center font-medium text-emerald-700">
+              {countText(pt.statusCounts.selesai)}
+            </td>
+            <td class="border border-border px-2 py-2 text-center font-medium text-blue-700">
+              {countText(pt.statusCounts.onProgress)}
+            </td>
+            <td class="border border-border px-2 py-2 text-center font-medium text-amber-700">
+              {countText(pt.statusCounts.tidakDapat)}
+            </td>
+            <td class="border border-border px-2 py-2 text-center font-medium text-muted-foreground">
+              {countText(pt.statusCounts.belum)}
+            </td>
+            <td class="border border-border p-0 align-top">
+              {#if canWrite}
+                <textarea
+                  class="min-h-16 w-full resize-y bg-transparent p-2 text-xs outline-none transition focus:ring-1 focus:ring-inset focus:ring-primary"
+                  placeholder="Keterangan..."
+                  value={keteranganLocal[pt.partId] ?? ""}
+                  oninput={(e) => {
+                    keteranganLocal = { ...keteranganLocal, [pt.partId]: (e.currentTarget as HTMLTextAreaElement).value };
+                  }}
+                  onblur={() => saveKeterangan(pt.partId)}
+                ></textarea>
+              {:else}
+                <p class="p-2 text-xs whitespace-pre-wrap text-slate-600">{keteranganLocal[pt.partId] || ""}</p>
               {/if}
-
-              <!-- Section label -->
-              <td class="border border-border px-3 py-2 align-middle">
-                <div class="font-bold text-slate-900">{sec.sectionId}</div>
-                {#if sec.sectionLabel}
-                  <div class="text-blue-700 text-[10px] mt-0.5 leading-snug">{sec.sectionLabel}</div>
-                {/if}
-              </td>
-
-              <!-- Jumlah AOI -->
-              <td class="border border-border px-2 py-2 text-center font-medium">
-                {countText(sec.jumlahAoi)}
-              </td>
-
-              <!-- 4 status counts -->
-              <td class="border border-border px-2 py-2 text-center text-emerald-700 font-medium">
-                {countText(sec.statusCounts.selesai)}
-              </td>
-              <td class="border border-border px-2 py-2 text-center text-blue-700 font-medium">
-                {countText(sec.statusCounts.onProgress)}
-              </td>
-              <td class="border border-border px-2 py-2 text-center text-amber-700 font-medium">
-                {countText(sec.statusCounts.tidakDapat)}
-              </td>
-              <td class="border border-border px-2 py-2 text-center text-muted-foreground font-medium">
-                {countText(sec.statusCounts.belum)}
-              </td>
-
-              {#if si === 0}
-                <!-- Keterangan — rowspan seluruh sections dalam part ini -->
-                <td
-                  rowspan={pt.sections.length}
-                  class="relative border border-border p-0 align-top"
-                >
-                  {#if canWrite}
-                    <textarea
-                      class="absolute inset-0 h-full min-h-full w-full resize-none bg-transparent p-2 text-xs outline-none transition focus:ring-1 focus:ring-inset focus:ring-primary"
-                      placeholder="Keterangan..."
-                      value={keteranganLocal[pt.partId] ?? ""}
-                      oninput={(e) => {
-                        keteranganLocal = { ...keteranganLocal, [pt.partId]: (e.currentTarget as HTMLTextAreaElement).value };
-                      }}
-                      onblur={() => saveKeterangan(pt.partId)}
-                    ></textarea>
-                  {:else}
-                    <p class="p-2 text-xs text-slate-600 whitespace-pre-wrap">{keteranganLocal[pt.partId] || ""}</p>
-                  {/if}
-                </td>
-              {/if}
-            </tr>
-          {/each}
+            </td>
+          </tr>
         {/each}
 
         <!-- Level subtotal -->
