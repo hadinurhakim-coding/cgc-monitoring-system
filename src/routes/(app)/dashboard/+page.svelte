@@ -33,15 +33,20 @@
 		return {
 			id,
 			created_at: String(value.created_at ?? ""),
-			user_id: String(value.user_id ?? ""),
-			user_email: String(value.user_email ?? ""),
+			actor_user_id: nullableString(value.actor_user_id),
+			actor_email: String(value.actor_email ?? ""),
+			actor_role: nullableString(value.actor_role),
 			division_id: nullableString(value.division_id),
-			assessment_uid: String(value.assessment_uid ?? ""),
+			page_path: String(value.page_path ?? ""),
+			action: String(value.action ?? ""),
+			entity_type: String(value.entity_type ?? ""),
+			entity_id: String(value.entity_id ?? ""),
+			entity_label: nullableString(value.entity_label),
 			year,
-			item_id: nullableString(value.item_id),
 			field: String(value.field ?? ""),
 			old_value: nullableString(value.old_value),
-			new_value: nullableString(value.new_value)
+			new_value: nullableString(value.new_value),
+			metadata: isRecord(value.metadata) ? value.metadata : {}
 		};
 	}
 
@@ -67,7 +72,7 @@
 				.channel(`audit-log-${selectedYear}`)
 				.on(
 					"postgres_changes",
-					{ event: "INSERT", schema: "public", table: "assessment_change_logs" },
+					{ event: "INSERT", schema: "public", table: "application_audit_logs" },
 					(payload) => {
 						const row = parseRealtimeActivity(payload.new);
 						if (!row) return;
@@ -113,6 +118,8 @@
 		rows={activity}
 		selectedYear={data.selectedYear}
 		search={data.search}
+		sourceFilter={data.sourceFilter}
+		fieldFilter={data.fieldFilter}
 		limitedByDivision={data.limitedByDivision}
 		{realtimeStatus}
 	/>
