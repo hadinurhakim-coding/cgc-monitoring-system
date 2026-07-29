@@ -20,9 +20,10 @@ export const GET: RequestHandler = async ({ url, locals }) => {
 
 	const items = filterAoiItems(payload.items, query);
 	const file = await createAoiExcelFile(year, query, items);
+	const responseBody = Uint8Array.from(file);
 	const filename = `area-of-improvement-${year}${query ? "-filtered" : ""}.xlsx`;
 
-	return new Response(file, {
+	return new Response(responseBody, {
 		headers: {
 			"Cache-Control": "private, no-store",
 			"Content-Disposition": `attachment; filename="${filename}"`,

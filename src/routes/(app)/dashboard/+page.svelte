@@ -1,52 +1,93 @@
 <script lang="ts">
 	import * as Sidebar from "$lib/components/ui/sidebar/index.js";
 	import { Separator } from "$lib/components/ui/separator/index.js";
-	import * as Card from "$lib/components/ui/card/index.js";
-	import { page } from "$app/state";
 	import type { PageData } from "./$types.js";
+	import AuditLogTable from "./_components/audit-log-table.svelte";
 	import TrendScoreAreaChart from "./_components/trend-score-area-chart.svelte";
 
 	let { data }: { data: PageData } = $props();
 
-	function fmtDateTime(iso: string) {
-		const d = new Date(iso);
-		if (Number.isNaN(d.getTime())) return iso;
-		return d.toLocaleString();
-	}
-
 	// ── Realtime audit log ─────────────────────────────────────
 	type ActivityRow = (typeof data.activity)[number];
+	type RealtimeStatus = "connecting" | "live" | "error" | "unavailable";
 
 	let activity = $state<ActivityRow[]>([]);
+	let realtimeStatus = $state<RealtimeStatus>("unavailable");
 	$effect(() => { activity = data.activity ?? []; });
+
+	function isRecord(value: unknown): value is Record<string, unknown> {
+		return typeof value === "object" && value !== null;
+	}
+
+	function nullableString(value: unknown): string | null {
+		return value == null ? null : String(value);
+	}
+
+	function parseRealtimeActivity(value: unknown): ActivityRow | null {
+		if (!isRecord(value)) return null;
+
+		const id = Number(value.id);
+		const year = Number(value.year);
+		if (!Number.isFinite(id) || !Number.isFinite(year)) return null;
+
+		return {
+			id,
+			created_at: String(value.created_at ?? ""),
+			user_id: String(value.user_id ?? ""),
+			user_email: String(value.user_email ?? ""),
+			division_id: nullableString(value.division_id),
+			assessment_uid: String(value.assessment_uid ?? ""),
+			year,
+			item_id: nullableString(value.item_id),
+			field: String(value.field ?? ""),
+			old_value: nullableString(value.old_value),
+			new_value: nullableString(value.new_value)
+		};
+	}
 
 	$effect(() => {
 		const token = data.accessToken;
 		const selectedYear = data.selectedYear;
-		if (!token) return;
+		if (!token) {
+			realtimeStatus = "unavailable";
+			return;
+		}
 
 		let cancelled = false;
 		let removeChannel: (() => void) | null = null;
+		realtimeStatus = "connecting";
 
 		// Dynamic import — hindari Supabase createClient dieksekusi saat SSR
-		import("$lib/supabase-browser.js").then(({ createBrowserSupabase }) => {
+		import("$lib/supabase-browser.js").then(async ({ createBrowserSupabase }) => {
 			if (cancelled) return;
 
-			const client = createBrowserSupabase(token);
+			const client = await createBrowserSupabase(token);
+			if (cancelled) return;
 			const channel = client
 				.channel(`audit-log-${selectedYear}`)
 				.on(
 					"postgres_changes",
 					{ event: "INSERT", schema: "public", table: "assessment_change_logs" },
 					(payload) => {
-						const row = payload.new as ActivityRow;
+						const row = parseRealtimeActivity(payload.new);
+						if (!row) return;
 						if (Number(row.year) !== selectedYear) return;
 						activity = [row, ...activity].slice(0, 20);
 					}
 				)
-				.subscribe();
+				.subscribe((status, realtimeError) => {
+					if (cancelled) return;
+					if (status === "SUBSCRIBED") realtimeStatus = "live";
+					else if (status === "CHANNEL_ERROR" || status === "TIMED_OUT") {
+						realtimeStatus = "error";
+						console.warn("[dashboard] realtime subscription failed:", realtimeError);
+					}
+					else realtimeStatus = "connecting";
+				});
 
-			removeChannel = () => { client.removeChannel(channel); };
+			removeChannel = () => { void client.removeChannel(channel); };
+		}).catch(() => {
+			if (!cancelled) realtimeStatus = "error";
 		});
 
 		return () => {
@@ -68,54 +109,11 @@
 
 	<TrendScoreAreaChart trend={data.trend} />
 
-	<!-- Aktivitas terbaru -->
-	<Card.Root class="min-w-0">
-		<Card.Header>
-			<Card.Title>Aktivitas Terbaru (Audit Log)</Card.Title>
-			<Card.Description>
-				20 perubahan terakhir untuk tahun {data.selectedYear}.
-				{#if page.data.authUser?.role !== "admin"}(dibatasi divisi){/if}
-				<span class="ml-2 inline-flex items-center gap-1 text-emerald-600 text-[10px] font-medium">
-					<span class="inline-block h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-					Realtime
-				</span>
-			</Card.Description>
-		</Card.Header>
-		<Card.Content>
-			<div class="max-w-full min-w-0 overflow-x-auto">
-				<table class="w-full min-w-[900px] border-collapse text-sm">
-					<thead>
-						<tr class="bg-muted/40 text-left">
-							<th class="border-b p-2">Waktu</th>
-							<th class="border-b p-2">User</th>
-							<th class="border-b p-2">Item</th>
-							<th class="border-b p-2">Field</th>
-							<th class="border-b p-2">Old</th>
-							<th class="border-b p-2">New</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#if activity.length}
-							{#each activity as row (row.id)}
-								<tr class="hover:bg-muted/20 transition-colors">
-									<td class="border-b p-2 whitespace-nowrap">{fmtDateTime(row.created_at)}</td>
-									<td class="border-b p-2">{row.user_email}</td>
-									<td class="border-b p-2">{row.item_id ?? "-"}</td>
-									<td class="border-b p-2">{row.field}</td>
-									<td class="border-b p-2 max-w-[240px] truncate" title={row.old_value ?? ""}>{row.old_value ?? ""}</td>
-									<td class="border-b p-2 max-w-[240px] truncate" title={row.new_value ?? ""}>{row.new_value ?? ""}</td>
-								</tr>
-							{/each}
-						{:else}
-							<tr>
-								<td colspan="6" class="p-6 text-center text-muted-foreground">
-									Tidak ada aktivitas untuk filter ini.
-								</td>
-							</tr>
-						{/if}
-					</tbody>
-				</table>
-			</div>
-		</Card.Content>
-	</Card.Root>
+	<AuditLogTable
+		rows={activity}
+		selectedYear={data.selectedYear}
+		search={data.search}
+		limitedByDivision={data.limitedByDivision}
+		{realtimeStatus}
+	/>
 </main>

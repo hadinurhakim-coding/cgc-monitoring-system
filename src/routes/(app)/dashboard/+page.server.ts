@@ -37,6 +37,15 @@ function sanitizeAuditSearch(value: string): string {
 		.trim();
 }
 
+function auditFieldAlias(value: string): string | null {
+	const normalized = value.trim().toLocaleLowerCase("id-ID");
+	if (["implementasi", "penerapan"].some((term) => normalized.includes(term))) return "implementation";
+	if (["bukti", "dokumen"].some((term) => normalized.includes(term))) return "evidence";
+	if (normalized.includes("status")) return "status";
+	if (normalized.includes("rekomendasi")) return "recommendation";
+	return null;
+}
+
 export const load: PageServerLoad = async ({ url, locals, cookies }) => {
 	if (!hasPermission(locals.auth.role, "dashboard:read")) {
 		throw error(403, "Akses dashboard ditolak");
@@ -48,7 +57,7 @@ export const load: PageServerLoad = async ({ url, locals, cookies }) => {
 	const nowYear = new Date().getFullYear();
 	const yearStr = url.searchParams.get("year") ?? String(nowYear);
 	const selectedYear = /^\d{4}$/.test(yearStr) ? parseInt(yearStr, 10) : nowYear;
-	const search = (url.searchParams.get("q") ?? "").trim();
+	const search = sanitizeAuditSearch(url.searchParams.get("q") ?? "");
 
 	const canAct = locals.auth.role === "admin" || locals.auth.role === "bpo";
 	const isAdmin = isAdminRole(locals.auth.role);
@@ -97,9 +106,18 @@ export const load: PageServerLoad = async ({ url, locals, cookies }) => {
 	if (search) {
 		// Search fokus untuk audit table.
 		// supabase-js: or() pakai string filter.
-		const q = sanitizeAuditSearch(search);
+		const q = search;
 		if (q) {
-			auditQ = auditQ.or(`user_email.ilike.%${q}%,field.ilike.%${q}%,item_id.ilike.%${q}%`);
+			const fieldAlias = auditFieldAlias(q);
+			const filters = [
+				`user_email.ilike.%${q}%`,
+				`field.ilike.%${q}%`,
+				`item_id.ilike.%${q}%`,
+				`old_value.ilike.%${q}%`,
+				`new_value.ilike.%${q}%`
+			];
+			if (fieldAlias) filters.push(`field.eq.${fieldAlias}`);
+			auditQ = auditQ.or(filters.join(","));
 		}
 	}
 
@@ -124,6 +142,7 @@ export const load: PageServerLoad = async ({ url, locals, cookies }) => {
 		canAct,
 		selectedYear,
 		search,
+		limitedByDivision: !isAdmin,
 		trend,
 		activity,
 		accessToken
