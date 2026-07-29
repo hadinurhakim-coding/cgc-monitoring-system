@@ -3,6 +3,8 @@ import { norm } from "./acgs-question-utils.js";
 
 const SPECIAL_RECOMMENDATION_ITEM_ID = "(P)B.1.1";
 const SPECIAL_RECOMMENDATION_YEAR = 2024;
+const SPECIAL_2025_RECOMMENDATION_ITEM_ID = "D.3.8";
+const SPECIAL_2025_RECOMMENDATION_YEAR = 2025;
 
 export function canKeepRecommendationForNonNoStatus(params: {
 	year: number;
@@ -17,8 +19,11 @@ export function canKeepRecommendationForNonNoStatus(params: {
 	const isSpecial2024Item =
 		params.year === SPECIAL_RECOMMENDATION_YEAR &&
 		itemId === norm(SPECIAL_RECOMMENDATION_ITEM_ID);
+	const isSpecial2025Item =
+		params.year === SPECIAL_2025_RECOMMENDATION_YEAR &&
+		itemId === norm(SPECIAL_2025_RECOMMENDATION_ITEM_ID);
 
-	return isPenaltyItem || isSpecial2024Item;
+	return isPenaltyItem || isSpecial2024Item || isSpecial2025Item;
 }
 
 export function canKeepRecommendationForAssessmentItem(year: number, item: AssessmentItem): boolean {

@@ -19,6 +19,7 @@ export async function saveKeterangan(
 				year: input.year,
 				part_id: input.partId,
 				keterangan: input.keterangan,
+				audit_field: "keterangan",
 				updated_at: new Date().toISOString(),
 				updated_by: auth.userId,
 			},

@@ -106,6 +106,7 @@ async function saveAnswerValue(params: {
 	const now = new Date().toISOString();
 	const patch: Record<string, unknown> = {
 		[params.field]: params.value,
+		audit_field: params.field,
 		updated_by: params.auth.userId,
 		updated_at: now
 	};
@@ -136,6 +137,7 @@ async function saveAnswerValue(params: {
 		updated_by: params.auth.userId,
 		created_at: now,
 		updated_at: now,
+		audit_field: params.field,
 		[params.field]: params.value
 	};
 	if (params.clearRecommendation) insertRow.recommendation = "";

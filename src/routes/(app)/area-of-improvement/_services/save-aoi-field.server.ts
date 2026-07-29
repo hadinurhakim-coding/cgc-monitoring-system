@@ -52,6 +52,7 @@ export async function saveAoiField(
 	const payload: Record<string, string | null> = {
 		aoi_item_uid: uid,
 		[column]: value,
+		audit_field: input.field,
 		created_by: auth.userId,
 		updated_by: auth.userId,
 	};
