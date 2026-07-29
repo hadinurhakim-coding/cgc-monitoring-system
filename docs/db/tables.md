@@ -11,6 +11,16 @@
 - **Metrik utama**: `question_count`, `points_sum`, `score_pct`
 - **Ekstra**: `payload` (jsonb) untuk metrik tambahan seperti answered_count/yes_with_evidence_count/na_count.
 
+## `application_audit_logs`
+- **Tujuan**: audit terpadu untuk setiap perubahan pengguna pada Assessment ACGS, Area of Improvement, dan Monitoring AOI.
+- **PK**: `id` (identity bigint).
+- **Pelaku**: `actor_user_id`, `actor_email`, `actor_role`, dan `division_id` disimpan sebagai snapshot saat perubahan terjadi.
+- **Konteks**: `page_path`, `action`, `entity_type`, `entity_id`, `entity_label`, dan `year` menunjukkan lokasi serta objek perubahan.
+- **Perubahan**: `field`, `old_value`, dan `new_value` menyimpan atribut beserta nilai sebelum dan sesudah.
+- **Metadata**: `metadata.change_origin` membedakan perubahan pengguna dari efek aturan bisnis otomatis.
+- **Keamanan**: RLS memberikan akses global kepada admin; BPO/viewer hanya dapat membaca log divisinya.
+- **Realtime**: tabel menjadi anggota publication `supabase_realtime` agar dashboard menerima aktivitas baru.
+
 ## `assessment_change_logs`
 - **Tujuan**: audit log “siapa mengubah apa, kapan” untuk dashboard.
 - **PK**: `id`

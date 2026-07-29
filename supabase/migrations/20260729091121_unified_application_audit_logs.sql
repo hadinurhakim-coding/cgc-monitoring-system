@@ -58,6 +58,7 @@ declare
 begin
 	if new.audit_field is null
 		or new.audit_field not in ('implementation', 'evidence', 'status', 'recommendation') then
+		new.audit_field := null;
 		return new;
 	end if;
 
@@ -78,6 +79,7 @@ begin
 	if tg_op = 'UPDATE' then
 		v_old_value := to_jsonb(old) ->> new.audit_field;
 		if v_new_value is not distinct from v_old_value then
+			new.audit_field := null;
 			return new;
 		end if;
 	end if;
@@ -152,6 +154,7 @@ begin
 		);
 	end if;
 
+	new.audit_field := null;
 	return new;
 end;
 $$;
@@ -186,6 +189,7 @@ begin
 	end;
 
 	if v_column is null then
+		new.audit_field := null;
 		return new;
 	end if;
 
@@ -207,6 +211,7 @@ begin
 	if tg_op = 'UPDATE' then
 		v_old_value := to_jsonb(old) ->> v_column;
 		if v_new_value is not distinct from v_old_value then
+			new.audit_field := null;
 			return new;
 		end if;
 	end if;
@@ -244,6 +249,7 @@ begin
 		jsonb_build_object('followup_uid', new.uid, 'change_origin', 'user')
 	);
 
+	new.audit_field := null;
 	return new;
 end;
 $$;
@@ -261,6 +267,7 @@ declare
 	v_action text;
 begin
 	if new.audit_field is distinct from 'keterangan' then
+		new.audit_field := null;
 		return new;
 	end if;
 
@@ -273,6 +280,7 @@ begin
 	if tg_op = 'UPDATE' then
 		v_old_value := old.keterangan;
 		if new.keterangan is not distinct from old.keterangan then
+			new.audit_field := null;
 			return new;
 		end if;
 	end if;
@@ -310,23 +318,24 @@ begin
 		jsonb_build_object('part_id', new.part_id, 'change_origin', 'user')
 	);
 
+	new.audit_field := null;
 	return new;
 end;
 $$;
 
 drop trigger if exists capture_assessment_answer_audit on public.acgs_assessment_answers;
 create trigger capture_assessment_answer_audit
-after insert or update on public.acgs_assessment_answers
+before insert or update on public.acgs_assessment_answers
 for each row execute function public.capture_assessment_answer_audit();
 
 drop trigger if exists capture_aoi_followup_audit on public.aoi_followups;
 create trigger capture_aoi_followup_audit
-after insert or update on public.aoi_followups
+before insert or update on public.aoi_followups
 for each row execute function public.capture_aoi_followup_audit();
 
 drop trigger if exists capture_monitoring_aoi_audit on public.aoi_monitoring_keterangan;
 create trigger capture_monitoring_aoi_audit
-after insert or update on public.aoi_monitoring_keterangan
+before insert or update on public.aoi_monitoring_keterangan
 for each row execute function public.capture_monitoring_aoi_audit();
 
 revoke execute on function public.capture_assessment_answer_audit() from public, anon, authenticated;

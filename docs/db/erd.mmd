@@ -1,9 +1,8 @@
 erDiagram
   divisions ||--o{ users : has
   users ||--|| auth_login_audits : has
-  acgs_assessments ||--o{ assessment_change_logs : changes
-  users ||--o{ assessment_change_logs : writes
-  divisions ||--o{ assessment_change_logs : scopes
+  users ||--o{ application_audit_logs : acts
+  divisions ||--o{ application_audit_logs : scopes
 
   divisions {
     uuid id PK
@@ -56,17 +55,22 @@ erDiagram
     timestamptz updated_at
   }
 
-  assessment_change_logs {
-    bigserial id PK
+  application_audit_logs {
+    bigint id PK
     timestamptz created_at
-    uuid user_id FK
-    text user_email
+    uuid actor_user_id FK
+    text actor_email
+    text actor_role
     uuid division_id FK
-    uuid assessment_uid FK
+    text page_path
+    text action
+    text entity_type
+    text entity_id
+    text entity_label
     int year
-    text item_id
     text field
     text old_value
     text new_value
+    jsonb metadata
   }
 
