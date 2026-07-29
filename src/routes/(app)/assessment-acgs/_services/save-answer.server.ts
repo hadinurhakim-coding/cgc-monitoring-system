@@ -181,11 +181,6 @@ export async function saveAssessmentAnswer(
 		if (!item?.uid || !isQuestionType(item.type)) {
 			return { answerUid: null, error: new Error("Item assessment tidak ditemukan") };
 		}
-		const allowsRecommendationForNonNoStatus = canKeepRecommendationForNonNoStatus({
-			year,
-			itemId: item.item_id
-		});
-
 		const existing = answerFromUid?.item_uid === itemUid && answerFromUid.year === year
 			? answerFromUid
 			: await findAnswerForItemYear(admin, itemUid, year);
@@ -200,14 +195,22 @@ export async function saveAssessmentAnswer(
 			valueToSave = normalizedStatus;
 			clearRecommendation =
 				CLEAR_RECOMMENDATION_STATUSES.has(normalizedStatus) &&
-				!allowsRecommendationForNonNoStatus;
+				!canKeepRecommendationForNonNoStatus({
+					year,
+					itemId: item.item_id,
+					status: normalizedStatus
+				});
 		}
 
 		if (
 			input.field === "recommendation" &&
 			input.value.trim() &&
 			!isNoStatus(existing?.status) &&
-			!allowsRecommendationForNonNoStatus
+			!canKeepRecommendationForNonNoStatus({
+				year,
+				itemId: item.item_id,
+				status: existing?.status
+			})
 		) {
 			return {
 				answerUid: null,
