@@ -12,6 +12,7 @@
     ChevronsRight,
     CircleAlert,
     Cloud,
+    Download,
     LoaderCircle,
     Pencil,
     Search
@@ -26,6 +27,7 @@
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
   import { Input } from "$lib/components/ui/input/index.js";
   import { extractEvidenceText, extractEvidenceFiles, reconstructEvidence } from "$lib/evidence-utils.js";
+  import { filterAoiItems, formatAoiDate } from "../_lib/aoi-filter.js";
   import type { AoiItem, StatusRekomendasi } from "../_lib/types.js";
   import {
     saveAoiField,
@@ -55,6 +57,7 @@
 
   let localItems = $state<AoiItem[]>([]);
   let globalSyncStatus = $state<"saved" | "saving" | "error">("saved");
+  let isExporting = $state(false);
   let stagedFiles = $state<Record<string, File>>({});
   let editDialogOpen = $state(false);
   let editingUid = $state<string | null>(null);
@@ -176,15 +179,42 @@
     return trimmed;
   }
 
-  function formatIndonesianDate(value: string): string {
-    if (!value) return "Belum ada target waktu";
-    const date = new Date(`${value}T00:00:00`);
-    if (Number.isNaN(date.getTime())) return "Tanggal tidak valid";
-    return new Intl.DateTimeFormat("id-ID", {
-      day: "2-digit",
-      month: "long",
-      year: "numeric",
-    }).format(date);
+  async function handleExportExcel(): Promise<void> {
+    if (!browser || isExporting) return;
+    if (filteredItems.length === 0) {
+      toast.error("Tidak ada data AOI untuk diekspor");
+      return;
+    }
+
+    isExporting = true;
+    try {
+      const exportUrl = new URL(resolve("/area-of-improvement/api/export-excel"), window.location.origin);
+      exportUrl.searchParams.set("year", String(currentYear));
+      if (searchQuery.trim()) exportUrl.searchParams.set("q", searchQuery.trim());
+
+      const response = await fetch(exportUrl);
+      if (!response.ok) {
+        const message = await response.text().catch(() => response.statusText);
+        throw new Error(message || `HTTP ${response.status}`);
+      }
+
+      const exportedRows = Number.parseInt(response.headers.get("X-Exported-Rows") ?? "", 10);
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = objectUrl;
+      anchor.download = `area-of-improvement-${currentYear}${searchQuery.trim() ? "-filtered" : ""}.xlsx`;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 0);
+      const rowCount = Number.isFinite(exportedRows) ? exportedRows : filteredItems.length;
+      toast.success(`${rowCount} data AOI tahun ${currentYear} berhasil diekspor ke Excel`);
+    } catch (err) {
+      toast.error("Gagal mengekspor Excel: " + (err instanceof Error ? err.message : String(err)));
+    } finally {
+      isExporting = false;
+    }
   }
 
   function statusPreviewClass(status: StatusRekomendasi): string {
@@ -258,37 +288,7 @@
     return merged.filter((y) => y.includes(yearQuery));
   });
 
-  function normalizeSearchValue(value: string | number | null | undefined): string {
-    return String(value ?? "").trim().toLowerCase();
-  }
-
-  function itemSearchHaystack(item: AoiItem, index: number): string {
-    return [
-      index + 1,
-      item.aoi_code,
-      item.area_of_improvement,
-      item.fakta_temuan,
-      item.rekomendasi,
-      item.tindak_lanjut_rekomendasi,
-      item.pic,
-      formatIndonesianDate(item.target_waktu_penyelesaian),
-      item.status_rekomendasi,
-      extractEvidenceText(item.eviden),
-      item.keterangan,
-      item.level_label,
-      item.part_id,
-      item.section_id
-    ].map(normalizeSearchValue).join(" ");
-  }
-
-  const filteredItems = $derived.by(() => {
-    const tokens = normalizeSearchValue(searchQuery).split(/\s+/).filter(Boolean);
-    if (tokens.length === 0) return localItems;
-    return localItems.filter((item, index) => {
-      const haystack = itemSearchHaystack(item, index);
-      return tokens.every((token) => haystack.includes(token));
-    });
-  });
+  const filteredItems = $derived(filterAoiItems(localItems, searchQuery));
 
   const totalPages = $derived(Math.max(1, Math.ceil(filteredItems.length / pageSize)));
   const pageStartIndex = $derived((currentPage - 1) * pageSize);
@@ -385,7 +385,7 @@
     status: columnWidth("Progress Tindak Lanjut", filteredItems.map((item) => item.status_rekomendasi), 28, 44),
     targetWaktu: columnWidth(
       "Target Waktu Penyelesaian",
-      filteredItems.map((item) => formatIndonesianDate(item.target_waktu_penyelesaian)),
+      filteredItems.map((item) => formatAoiDate(item.target_waktu_penyelesaian)),
       28,
       44
     ),
@@ -464,6 +464,23 @@
     </form>
 
     <div class="flex flex-wrap items-center gap-2">
+    <Button
+      type="button"
+      variant="outline"
+      class="h-9 border-primary/20 bg-white text-primary hover:border-primary/40 hover:bg-primary/5"
+      disabled={isExporting || filteredItems.length === 0}
+      aria-label={`Export ${filteredItems.length} data Area of Improvement ke Excel`}
+      onclick={handleExportExcel}
+    >
+      {#if isExporting}
+        <LoaderCircle size={16} class="animate-spin" />
+        Mengekspor...
+      {:else}
+        <Download size={16} />
+        Export Excel
+      {/if}
+    </Button>
+
     <div class="mr-2 flex items-center gap-1.5 rounded-full border border-slate-200 bg-slate-50 px-3 py-1.5 text-[10px] font-medium">
       {#if globalSyncStatus === "saved"}
         <Cloud size={14} class="text-emerald-500" />
@@ -692,7 +709,7 @@
                 onclick={() => openItemDialog(item)}
               >
                 {#if item.target_waktu_penyelesaian}
-                  {formatIndonesianDate(item.target_waktu_penyelesaian)}
+                  {formatAoiDate(item.target_waktu_penyelesaian)}
                 {:else}
                   <span class="italic text-slate-400">Belum ada target waktu</span>
                 {/if}
@@ -901,7 +918,7 @@
                 disabled={!canWrite}
               />
               <span class="text-sm font-medium text-slate-500">
-                {formatIndonesianDate(editTargetWaktu)}
+                {formatAoiDate(editTargetWaktu)}
               </span>
             </div>
           </div>

@@ -6,6 +6,8 @@ import { buildMonitoringData } from "../_lib/monitoring-aggregator.js";
 import type { MonitoringHierarchyItem } from "../_lib/monitoring-aggregator.js";
 import type { AoiLevelGroup, MonitoringGrandTotal } from "../_lib/types.js";
 
+const MONITORING_VIEW_VERSION = "major-points-v1";
+
 type HierarchyRow = {
 	type: string | null;
 	sort_order: number | null;
@@ -122,7 +124,7 @@ export async function getMonitoringPageData(year: number, auth: AuthContext): Pr
 
 	const keterangan = await loadKeteranganMap(year);
 	const { levels, grandTotal } = buildMonitoringData(hierarchy.hierarchy, items, keterangan.map);
-	const dataVersion = latestIsoVersion(
+	const sourceDataVersion = latestIsoVersion(
 		[
 			...items.map((item) => item.updated_at),
 			...items.map((item) => item.followup_updated_at),
@@ -131,5 +133,6 @@ export async function getMonitoringPageData(year: number, auth: AuthContext): Pr
 		],
 		`/monitoring-aoi:${year}:${items.length}:${hierarchy.hierarchy.length}:${availableYears.join(",")}`
 	);
+	const dataVersion = `${MONITORING_VIEW_VERSION}:${sourceDataVersion}`;
 	return { levels, grandTotal, availableYears, dataVersion, error: null };
 }
