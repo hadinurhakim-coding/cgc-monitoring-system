@@ -10,6 +10,7 @@ type TrendPoint = {
 	points_sum: number;
 	score_pct: number;
 	overall_score: number;
+	has_data: boolean;
 	payload: Record<string, unknown>;
 	updated_at: string;
 };
@@ -92,6 +93,27 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 	return typeof value === "object" && value !== null;
 }
 
+const SUMMARY_GROUP_KEYS = ["partA", "partB", "partC", "partD", "bonus", "penalti"] as const;
+const SUMMARY_ANSWER_KEYS = ["na", "tidak", "ya"] as const;
+
+function hasAssessmentData(
+	payload: Record<string, unknown>,
+	overallScore: number,
+	pointsSum: number
+): boolean {
+	if (overallScore !== 0 || pointsSum !== 0) return true;
+
+	return SUMMARY_GROUP_KEYS.some((groupKey) => {
+		const group = payload[groupKey];
+		if (!isRecord(group)) return false;
+
+		return SUMMARY_ANSWER_KEYS.some((answerKey) => {
+			const count = group[answerKey];
+			return typeof count === "number" && count > 0;
+		});
+	});
+}
+
 export const load: PageServerLoad = async ({ url, locals, cookies }) => {
 	if (!hasPermission(locals.auth.role, "dashboard:read")) {
 		throw error(403, "Akses dashboard ditolak");
@@ -125,12 +147,15 @@ export const load: PageServerLoad = async ({ url, locals, cookies }) => {
 
 	const trend = (trendRows ?? []).map((r) => {
 		const payload = (r.payload ?? {}) as Record<string, unknown>;
+		const pointsSum = Number(r.points_sum ?? 0);
+		const overallScore = Number(payload.overallScore ?? 0);
 		return {
 			year: Number(r.year),
 			question_count: Number(r.question_count ?? 0),
-			points_sum: Number(r.points_sum ?? 0),
+			points_sum: pointsSum,
 			score_pct: Number(r.score_pct ?? 0),
-			overall_score: Number((payload as Record<string, unknown>)?.overallScore ?? 0),
+			overall_score: overallScore,
+			has_data: hasAssessmentData(payload, overallScore, pointsSum),
 			payload,
 			updated_at: String(r.updated_at ?? "")
 		};
