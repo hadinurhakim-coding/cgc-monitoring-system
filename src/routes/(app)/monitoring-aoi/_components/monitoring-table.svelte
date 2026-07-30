@@ -9,6 +9,7 @@
     type PageCacheScope
   } from "$lib/client/encrypted-page-cache.js";
   import * as DropdownMenu from "$lib/components/ui/dropdown-menu/index.js";
+  import { buildYearOptions } from "$lib/year-options.js";
   import type { AoiLevelGroup, AoiPartGroup, MonitoringGrandTotal } from "../_lib/types.js";
   import { addStatusCounts, emptyStatusCounts } from "../_lib/types.js";
 
@@ -173,12 +174,7 @@
   });
 
   const years = $derived.by(() => {
-    const nowYear = new Date().getFullYear();
-    const fromDb = [...availableYears].sort((a, b) => b - a).map(String);
-    const sliding = Array.from({ length: 10 }, (_, i) => String(nowYear + 1 - i));
-    const merged = [...new Set([...fromDb, ...sliding])].sort((a, b) => parseInt(b) - parseInt(a));
-    if (yearQuery && !merged.includes(yearQuery) && /^\d{4}$/.test(yearQuery)) merged.unshift(yearQuery);
-    return merged.filter((y) => y.includes(yearQuery));
+    return buildYearOptions(availableYears, yearQuery);
   });
 </script>
 

@@ -6,6 +6,7 @@
   import { resolve } from "$app/paths";
   import { toast } from "svelte-sonner";
   import { Search, Cloud, LoaderCircle, CircleAlert, Calendar, Check, FileDown, LayoutDashboard, RefreshCw } from "@lucide/svelte";
+  import { buildYearOptions } from "$lib/year-options.js";
   import ScoreSummaryTable from "./score-summary-table.svelte";
   import type { AssessmentItem } from "../_lib/types.js";
 
@@ -32,7 +33,6 @@
   let yearQuery = $state("");
   let isRecomputing = $state(false);
   let isExporting = $state(false);
-  const MIN_ASSESSMENT_YEAR = 2024;
 
   type RecomputeResponse = {
     message?: string;
@@ -86,32 +86,7 @@
   }
 
   const years = $derived(() => {
-    const nowYear = new Date().getFullYear();
-    const fromDb = [...availableYears]
-      .filter((year) => year >= MIN_ASSESSMENT_YEAR)
-      .sort((a, b) => b - a)
-      .map((y) => String(y));
-    const sliding = Array.from(
-      { length: Math.max(nowYear + 2 - MIN_ASSESSMENT_YEAR, 1) },
-      (_, i) =>
-      String(nowYear + 1 - i),
-    );
-    const merged = [...new Set([...fromDb, ...sliding])];
-    merged.sort((a, b) => parseInt(b, 10) - parseInt(a, 10));
-    
-    if (
-      yearQuery &&
-      !merged.includes(yearQuery) &&
-      /^\d{4}$/.test(yearQuery) &&
-      parseInt(yearQuery, 10) >= MIN_ASSESSMENT_YEAR
-    ) {
-      merged.unshift(yearQuery);
-    }
-    return merged.filter(
-      (year) =>
-        parseInt(year, 10) >= MIN_ASSESSMENT_YEAR &&
-        year.includes(yearQuery),
-    );
+    return buildYearOptions(availableYears, yearQuery);
   });
 </script>
 
