@@ -6,7 +6,6 @@ import { canKeepRecommendationForNonNoStatus } from "../_lib/recommendation-rule
 import { getAssessmentQuestionRowsForYear } from "./assessment-service.server.js";
 
 const ALLOWED_FIELDS = new Set(["implementation", "evidence", "status", "recommendation"]);
-const CLEAR_RECOMMENDATION_STATUSES = new Set(["YES", "NA"]);
 
 type AdminDb = ReturnType<typeof createAdminServerClient>;
 
@@ -196,7 +195,7 @@ export async function saveAssessmentAnswer(
 			}
 			valueToSave = normalizedStatus;
 			clearRecommendation =
-				CLEAR_RECOMMENDATION_STATUSES.has(normalizedStatus) &&
+				normalizedStatus !== "NO" &&
 				!canKeepRecommendationForNonNoStatus({
 					year,
 					itemId: item.item_id,

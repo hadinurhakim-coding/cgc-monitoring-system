@@ -21,6 +21,10 @@
     if (expected === "NO") return st === "NO" || st === "N";
     return st === "NA";
   }
+
+  async function toggleStatus(status: "YES" | "NO" | "NA"): Promise<void> {
+    await onSave(q, "status", statusMatches(q, status) ? "" : status);
+  }
 </script>
 
 <div class="flex flex-col h-full items-stretch divide-y divide-border">
@@ -32,7 +36,9 @@
     )
       ? 'bg-emerald-500 text-white shadow-sm'
       : 'bg-transparent text-slate-400 hover:bg-slate-100'}"
-    onclick={() => onSave(q, "status", "YES")}
+    aria-pressed={statusMatches(q, "YES")}
+    title={statusMatches(q, "YES") ? "Klik lagi untuk menghapus pilihan YES" : "Pilih YES"}
+    onclick={() => toggleStatus("YES")}
   >
     YES
   </button>
@@ -44,7 +50,9 @@
     )
       ? 'bg-rose-500 text-white shadow-sm'
       : 'bg-transparent text-slate-400 hover:bg-slate-100'}"
-    onclick={() => onSave(q, "status", "NO")}
+    aria-pressed={statusMatches(q, "NO")}
+    title={statusMatches(q, "NO") ? "Klik lagi untuk menghapus pilihan NO" : "Pilih NO"}
+    onclick={() => toggleStatus("NO")}
   >
     NO
   </button>
@@ -56,7 +64,9 @@
     )
       ? 'bg-slate-400 text-white shadow-sm'
       : 'bg-transparent text-slate-400 hover:bg-slate-100'}"
-    onclick={() => onSave(q, "status", "NA")}
+    aria-pressed={statusMatches(q, "NA")}
+    title={statusMatches(q, "NA") ? "Klik lagi untuk menghapus pilihan NA" : "Pilih NA"}
+    onclick={() => toggleStatus("NA")}
   >
     NA
   </button>

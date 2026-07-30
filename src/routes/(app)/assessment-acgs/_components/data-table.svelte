@@ -277,7 +277,7 @@
   function recommendationDisabled(q: AssessmentItem): boolean {
     if (canKeepRecommendationForAssessmentItem(currentYear, q)) return false;
     const status = normalizedStatus(q);
-    return status === "YES" || status === "NA";
+    return status !== "NO";
   }
 
   function validateEvidenceFile(file: File): string | null {
@@ -468,7 +468,7 @@
     const statusValue = field === "status" ? value.trim().toUpperCase() : "";
     const shouldClearRecommendation =
       field === "status" &&
-      (statusValue === "YES" || statusValue === "NA") &&
+      statusValue !== "NO" &&
       !canKeepRecommendationForNonNoStatus({
         year: currentYear,
         itemId: q.item_id ?? q.part_id ?? q.label ?? q.id,
