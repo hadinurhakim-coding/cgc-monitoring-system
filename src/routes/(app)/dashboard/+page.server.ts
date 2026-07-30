@@ -2,7 +2,6 @@ import type { PageServerLoad } from "./$types.js";
 import { error } from "@sveltejs/kit";
 import { createAdminServerClient } from "$lib/server/auth/clients.js";
 import { hasPermission, isAdminRole, scopedDivisionId } from "$lib/server/rbac.js";
-import { ACCESS_TOKEN_COOKIE } from "$lib/server/auth/cookies.js";
 
 type TrendPoint = {
 	year: number;
@@ -114,12 +113,11 @@ function hasAssessmentData(
 	});
 }
 
-export const load: PageServerLoad = async ({ url, locals, cookies }) => {
+export const load: PageServerLoad = async ({ url, locals }) => {
 	if (!hasPermission(locals.auth.role, "dashboard:read")) {
 		throw error(403, "Akses dashboard ditolak");
 	}
 
-	const accessToken = cookies.get(ACCESS_TOKEN_COOKIE) ?? "";
 	const admin = createAdminServerClient();
 
 	const nowYear = new Date().getFullYear();
@@ -237,7 +235,6 @@ export const load: PageServerLoad = async ({ url, locals, cookies }) => {
 		fieldFilter,
 		limitedByDivision: !isAdmin,
 		trend,
-		activity,
-		accessToken
+		activity
 	};
 };

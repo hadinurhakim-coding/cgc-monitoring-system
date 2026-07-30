@@ -25,8 +25,6 @@
 		metadata: Record<string, unknown>;
 	};
 
-	type RealtimeStatus = "connecting" | "live" | "error" | "unavailable";
-
 	type Props = {
 		rows: AuditActivityRow[];
 		selectedYear: number;
@@ -34,7 +32,6 @@
 		sourceFilter?: string;
 		fieldFilter?: string;
 		limitedByDivision?: boolean;
-		realtimeStatus?: RealtimeStatus;
 	};
 
 	const sourceOptions = [
@@ -77,8 +74,7 @@
 		search = "",
 		sourceFilter = "all",
 		fieldFilter = "all",
-		limitedByDivision = false,
-		realtimeStatus = "unavailable"
+		limitedByDivision = false
 	}: Props = $props();
 
 	let expandedLogId = $state<number | null>(null);
@@ -197,12 +193,6 @@
 		expandedLogId = expandedLogId === logId ? null : logId;
 	}
 
-	function realtimeLabel(status: RealtimeStatus): string {
-		if (status === "live") return "Realtime aktif";
-		if (status === "connecting") return "Menghubungkan realtime";
-		if (status === "error") return "Realtime bermasalah";
-		return "Realtime tidak tersedia";
-	}
 </script>
 
 <Card.Root class="min-w-0">
@@ -212,25 +202,11 @@
 				<div class="flex flex-wrap items-center gap-2">
 					<Card.Title>Aktivitas Terbaru (Audit Log)</Card.Title>
 					<span
-						class={cn(
-							"inline-flex items-center gap-1.5 rounded-full border px-2 py-1 text-xs font-medium",
-							realtimeStatus === "live" && "border-emerald-300 bg-emerald-50 text-emerald-700 dark:border-emerald-800 dark:bg-emerald-950 dark:text-emerald-300",
-							realtimeStatus === "connecting" && "border-amber-300 bg-amber-50 text-amber-700 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-300",
-							realtimeStatus === "error" && "border-destructive/30 bg-destructive/10 text-destructive",
-							realtimeStatus === "unavailable" && "border-border bg-muted text-muted-foreground"
-						)}
+						class="border-border bg-muted text-muted-foreground inline-flex items-center gap-1.5 rounded-full border px-2 py-1 text-xs font-medium"
 						role="status"
 					>
-						<span
-							class={cn(
-								"size-1.5 rounded-full",
-								realtimeStatus === "live" && "bg-emerald-500 motion-safe:animate-pulse",
-								realtimeStatus === "connecting" && "bg-amber-500",
-								realtimeStatus === "error" && "bg-destructive",
-								realtimeStatus === "unavailable" && "bg-muted-foreground"
-							)}
-						></span>
-						{realtimeLabel(realtimeStatus)}
+						<span class="bg-muted-foreground size-1.5 rounded-full"></span>
+						Diperbarui saat diminta
 					</span>
 				</div>
 				<Card.Description>
@@ -440,7 +416,7 @@
 				<p class="text-muted-foreground mt-1 text-sm">
 					{hasActiveFilter
 						? "Ubah kata kunci atau filter untuk melihat hasil lain."
-						: "Aktivitas baru akan muncul otomatis setelah perubahan tersimpan."}
+						: "Gunakan tombol Terapkan atau muat ulang halaman untuk memperbarui aktivitas."}
 				</p>
 			</div>
 		{/if}
