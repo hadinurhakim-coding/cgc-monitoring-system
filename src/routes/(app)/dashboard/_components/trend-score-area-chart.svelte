@@ -1,9 +1,7 @@
 <script lang="ts">
 	import { Calendar } from "@lucide/svelte";
 	import { scaleLinear } from "d3-scale";
-	import { curveLinear } from "d3-shape";
-	import { Area, AreaChart, ChartClipPath } from "layerchart";
-	import { cubicInOut } from "svelte/easing";
+	import { BarChart } from "layerchart";
 
 	import * as Card from "$lib/components/ui/card/index.js";
 	import * as Chart from "$lib/components/ui/chart/index.js";
@@ -40,7 +38,7 @@
 	);
 
 	const chartConfig = {
-		score: { label: "Total Skor", color: "var(--chart-1)" }
+		score: { label: "Total Skor", color: "var(--chart-2)" }
 	} satisfies Chart.ChartConfig;
 
 	const scoreFormatter = new Intl.NumberFormat("id-ID", {
@@ -81,11 +79,23 @@
 					</div>
 				{:else}
 					<ChartContainer config={chartConfig} class="aspect-auto h-72 w-full">
-						<AreaChart
+						<BarChart
 							data={chartData}
 							x="year"
-							xScale={scaleLinear()}
 							yScale={scaleLinear().domain([0, 130])}
+							axis="x"
+							grid={false}
+							rule={false}
+							bandPadding={0.5}
+							padding={{ top: 32, right: 8, bottom: 0, left: 8 }}
+							labels={{
+								value: "score",
+								placement: "outside",
+								offset: 8,
+								format: (value: unknown) => formatScore(Number(value)),
+								fill: "var(--foreground)",
+								class: "text-sm font-bold"
+							}}
 							series={[
 								{
 									key: "score",
@@ -99,46 +109,20 @@
 									tickMarks: false,
 									format: (value: number) => String(value)
 								},
-								yAxis: {
-									ticks: [0, 26, 52, 78, 104, 130],
-									tickMarks: false,
-									grid: true,
-									format: (value: number) => String(Math.round(value))
+								bars: {
+									radius: 10,
+									rounded: "top",
+									strokeWidth: 0
 								}
 							}}
 						>
-							{#snippet marks({ context })}
-								<defs>
-									<linearGradient id="fillScore" x1="0" y1="0" x2="0" y2="1">
-										<stop offset="5%" stop-color="var(--color-score)" stop-opacity={0.72} />
-										<stop offset="95%" stop-color="var(--color-score)" stop-opacity={0.08} />
-									</linearGradient>
-								</defs>
-								<ChartClipPath
-									motion={{
-										width: { type: "tween", duration: 1000, easing: cubicInOut }
-									}}
-								>
-									{#each context.series.visibleSeries as series (series.key)}
-										<Area
-											seriesKey={series.key}
-											curve={curveLinear}
-											fillOpacity={0.55}
-											line={{ class: "stroke-2" }}
-											motion="tween"
-											{...series.props}
-											fill="url(#fillScore)"
-										/>
-									{/each}
-								</ChartClipPath>
-							{/snippet}
 							{#snippet tooltip()}
 								<Chart.Tooltip
 									labelFormatter={(value: unknown) => `Tahun ${value}`}
 									indicator="line"
 								/>
 							{/snippet}
-						</AreaChart>
+						</BarChart>
 					</ChartContainer>
 				{/if}
 			</div>
