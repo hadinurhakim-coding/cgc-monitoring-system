@@ -8,7 +8,9 @@
     type PageCacheScope
   } from "$lib/client/encrypted-page-cache.js";
   import { extractEvidenceFiles, extractEvidenceText, reconstructEvidence } from "$lib/evidence-utils.js";
+  import { Button } from "$lib/components/ui/button/index.js";
   import { Skeleton } from "$lib/components/ui/skeleton/index.js";
+  import { FileSpreadsheet, LoaderCircle } from "@lucide/svelte";
   import { toast } from "svelte-sonner";
 
   // Components
@@ -121,6 +123,7 @@
   let fixedHeaderHeight = $state(0);
   let fixedHeaderTableWidth = $state(0);
   let fixedHeaderScrollLeft = $state(0);
+  let exportingExcelTable = $state<"score" | "detail" | null>(null);
 
   interface MarkerItem {
     key: string;
@@ -586,6 +589,58 @@
     goto(`${resolve("/assessment-acgs")}?year=${currentYear}&q=${q}`, { keepFocus: true, noScroll: true });
   }
 
+  async function handleExportExcel(table: "score" | "detail"): Promise<void> {
+    if (!browser || exportingExcelTable) return;
+
+    const visibleRowCount = table === "score" ? allTableQuestions.length : filteredTableQuestions.length;
+    if (visibleRowCount === 0) {
+      toast.error("Tidak ada data Assessment ACGS untuk diekspor");
+      return;
+    }
+
+    exportingExcelTable = table;
+    try {
+      const exportUrl = new URL(resolve("/assessment-acgs/api/export-excel"), window.location.origin);
+      exportUrl.searchParams.set("year", String(currentYear));
+      exportUrl.searchParams.set("table", table);
+      if (table === "detail" && debouncedFilterText) {
+        exportUrl.searchParams.set("q", debouncedFilterText);
+      }
+
+      const response = await fetch(exportUrl);
+      if (!response.ok) {
+        const message = await response.text().catch(() => response.statusText);
+        throw new Error(message || `HTTP ${response.status}`);
+      }
+
+      const blob = await response.blob();
+      const objectUrl = URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = objectUrl;
+      anchor.download =
+        table === "score"
+          ? `skor-capaian-assessment-acgs-${currentYear}.xlsx`
+          : `detail-assessment-acgs-${currentYear}${debouncedFilterText ? "-filtered" : ""}.xlsx`;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      window.setTimeout(() => URL.revokeObjectURL(objectUrl), 0);
+
+      const exportedRows = Number.parseInt(response.headers.get("X-Exported-Rows") ?? "", 10);
+      const rowCount = Number.isFinite(exportedRows) ? exportedRows : visibleRowCount;
+      const tableLabel = table === "score" ? "skor capaian" : "detail assessment";
+      toast.success(`Tabel ${tableLabel} berhasil diekspor ke Excel`, {
+        description: `${rowCount} pertanyaan Assessment ACGS tahun ${currentYear} disertakan.`
+      });
+    } catch (error) {
+      toast.error("Gagal mengekspor Excel", {
+        description: error instanceof Error ? error.message : "Terjadi kesalahan"
+      });
+    } finally {
+      exportingExcelTable = null;
+    }
+  }
+
   // Header Logic Helpers
   function hasServerResolvedHeaders(q: AssessmentItem) {
     return isAcgsQuestionRow(q) && "acgs_resolved_level" in q;
@@ -653,9 +708,28 @@
   />
 
   <section class="space-y-3">
-    <h2 class="text-center text-lg font-bold text-slate-800">
-      Tabel Skor Capaian Assessment ACGS PT PLN (Persero), Tahun Buku {selectedYear || currentYear}
-    </h2>
+    <div class="flex flex-col gap-2 sm:flex-row sm:items-center">
+      <h2 class="flex-1 text-center text-lg font-bold text-slate-800">
+        Tabel Skor Capaian Assessment ACGS PT PLN (Persero), Tahun Buku {selectedYear || currentYear}
+      </h2>
+      <Button
+        type="button"
+        variant="outline"
+        size="sm"
+        class="gap-2 self-end border-primary/20 text-primary hover:border-primary/40 hover:bg-primary/5"
+        disabled={exportingExcelTable !== null || allTableQuestions.length === 0}
+        aria-label="Export tabel skor capaian Assessment ACGS ke Excel"
+        onclick={() => handleExportExcel("score")}
+      >
+        {#if exportingExcelTable === "score"}
+          <LoaderCircle size={16} class="animate-spin" />
+          Mengekspor...
+        {:else}
+          <FileSpreadsheet size={16} />
+          Export Excel
+        {/if}
+      </Button>
+    </div>
     {#if isLoading}
       <div class="max-w-full min-w-0 overflow-x-auto rounded-lg border border-border bg-white shadow-sm animate-pulse">
         <div class="p-4 space-y-2">
@@ -750,6 +824,26 @@
       </table>
     </div>
   {/if}
+
+  <div class="flex justify-end">
+    <Button
+      type="button"
+      variant="outline"
+      size="sm"
+      class="gap-2 border-primary/20 text-primary hover:border-primary/40 hover:bg-primary/5"
+      disabled={exportingExcelTable !== null || filteredTableQuestions.length === 0}
+      aria-label={`Export ${filteredTableQuestions.length} detail Assessment ACGS ke Excel`}
+      onclick={() => handleExportExcel("detail")}
+    >
+      {#if exportingExcelTable === "detail"}
+        <LoaderCircle size={16} class="animate-spin" />
+        Mengekspor...
+      {:else}
+        <FileSpreadsheet size={16} />
+        Export Excel
+      {/if}
+    </Button>
+  </div>
 
   <div bind:this={tableShell} class="w-full max-w-full min-w-0 overflow-hidden rounded-lg border border-border bg-white shadow-sm">
     <div bind:this={tableScroller} class="w-full max-w-full overflow-x-auto">
