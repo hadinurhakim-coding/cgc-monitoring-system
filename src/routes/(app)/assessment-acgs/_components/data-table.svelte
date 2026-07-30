@@ -641,6 +641,17 @@
 <svelte:window onbeforeunload={saveScrollPosition} />
 
 <div class="min-w-0 space-y-4">
+  <TableToolbar
+    bind:searchQuery={searchQuery}
+    onSearch={handleFullSearch}
+    onSearchInput={handleSearchInput}
+    syncStatus={syncStatus}
+    bind:selectedYear={selectedYear}
+    availableYears={availableYears}
+    canRecompute={canRecompute}
+    assessmentQuestions={allTableQuestions}
+  />
+
   <section class="space-y-3">
     <h2 class="text-center text-lg font-bold text-slate-800">
       Tabel Skor Capaian Assessment ACGS PT PLN (Persero), Tahun Buku {selectedYear || currentYear}
@@ -664,17 +675,6 @@
       <ScoreSummaryTable questions={allTableQuestions} />
     {/if}
   </section>
-
-  <TableToolbar 
-    bind:searchQuery={searchQuery}
-    onSearch={handleFullSearch}
-    onSearchInput={handleSearchInput}
-    syncStatus={syncStatus}
-    bind:selectedYear={selectedYear}
-    availableYears={availableYears}
-    canRecompute={canRecompute}
-    assessmentQuestions={allTableQuestions}
-  />
 
   {#if !isLoading && pagedQuestions.length > 0}
     <nav
