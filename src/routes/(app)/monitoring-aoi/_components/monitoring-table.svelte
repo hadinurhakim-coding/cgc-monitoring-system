@@ -70,6 +70,11 @@
     return String(value);
   }
 
+  function percentageText(value: number, total: number): string {
+    if (total <= 0) return "0,00%";
+    return `${((value / total) * 100).toFixed(2).replace(".", ",")}%`;
+  }
+
   function normalizeSearchValue(value: string | number | null | undefined): string {
     return String(value ?? "").trim().toLowerCase();
   }
@@ -372,6 +377,27 @@
         <td class="border border-border px-2 py-2 text-center">{countText(filteredGrandTotal.statusCounts.onProgress)}</td>
         <td class="border border-border px-2 py-2 text-center">{countText(filteredGrandTotal.statusCounts.tidakDapat)}</td>
         <td class="border border-border px-2 py-2 text-center">{countText(filteredGrandTotal.statusCounts.belum)}</td>
+        <td class="border border-border"></td>
+      </tr>
+
+      <!-- Status percentages -->
+      <tr class="bg-primary/10 font-semibold text-slate-900">
+        <td colspan="2" class="border border-border px-3 py-2 text-right uppercase">Persentase</td>
+        <td class="border border-border px-2 py-2 text-center">
+          {filteredGrandTotal.jumlahAoi > 0 ? "100,00%" : "0,00%"}
+        </td>
+        <td class="border border-border px-2 py-2 text-center text-emerald-700">
+          {percentageText(filteredGrandTotal.statusCounts.selesai, filteredGrandTotal.jumlahAoi)}
+        </td>
+        <td class="border border-border px-2 py-2 text-center text-blue-700">
+          {percentageText(filteredGrandTotal.statusCounts.onProgress, filteredGrandTotal.jumlahAoi)}
+        </td>
+        <td class="border border-border px-2 py-2 text-center text-amber-700">
+          {percentageText(filteredGrandTotal.statusCounts.tidakDapat, filteredGrandTotal.jumlahAoi)}
+        </td>
+        <td class="border border-border px-2 py-2 text-center text-muted-foreground">
+          {percentageText(filteredGrandTotal.statusCounts.belum, filteredGrandTotal.jumlahAoi)}
+        </td>
         <td class="border border-border"></td>
       </tr>
     </tbody>
